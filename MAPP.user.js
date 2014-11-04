@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name        Mush Analyse Profile Plus
 // @namespace   Mush Analyse Profile Plus
-// @description Player profile Analyser
+// @description Player profile Analyser (based on Mush Analyse Profile by Scipion)
 // @include     http://mush.twinoid.es/u/profile/*
 // @include     http://mush.twinoid.com/u/profile/*
 // @include     http://mush.vg/u/profile/*
