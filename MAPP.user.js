@@ -1,15 +1,17 @@
 // ==UserScript==
-// @name        Mush Analyse Profile Plus
-// @namespace   Mush Analyse Profile Plus
-// @description Player profile Analyser (based on Mush Analyse Profile by Scipion)
-// @include     http://mush.twinoid.es/u/profile/*
-// @include     http://mush.twinoid.com/u/profile/*
-// @include     http://mush.vg/u/profile/*
-// @include     http://mush.twinoid.es/me*
-// @include     http://mush.twinoid.com/me*
-// @include     http://mush.vg/me*
+// @name	Mush Analyse Profile Plus
+// @namespace	Mush Analyse Profile Plus
+// @description	Player profile Analyser (based on Mush Analyse Profile by Scipion)
+// @include	http://mush.twinoid.es/u/profile/*
+// @include	http://mush.twinoid.com/u/profile/*
+// @include	http://mush.vg/u/profile/*
+// @include	http://mush.twinoid.es/me*
+// @include	http://mush.twinoid.com/me*
+// @include	http://mush.vg/me*
+// @author	Scipion - http://mush.vg/u/profile/332
+// @author	Javiernh - http://mush.twinoid.es/u/profile/21696
 // @downloadURL	https://raw.github.com/Javiernh/Mush-Analyse-Profile-Plus/release/MAPP.user.js
-// @version     1.1
+// @version	1.1.1
 // ==/UserScript==
 
 var $ = unsafeWindow.jQuery;
@@ -55,6 +57,10 @@ addGlobalStyle('\
 	width:80px; \
 	font-variant:small-caps; \
 } \
+#profile #AnalyseProfile_Result ul li { \
+	height:105px; \
+	vertical-align: bottom; \
+} \
 #AnalyseProfile_Result ul li.diestats { \
 	border-width : 1px; \
 	border-color : #FBA6B0 #DF011C #DF0125 #DF011C; \
@@ -66,12 +72,17 @@ addGlobalStyle('\
 	font-size:100%; \
 	width:80px; \
 	font-variant:small-caps; \
+	padding: 0 9px 9px 9px \
 } \
 .stroke { \
-	-webkit-text-fill-color: #ff4059; \
-	-webkit-text-stroke: 1px blue; \
-	font-weight: bold; \
-	font-size:25px; \
+	color: #ff4059; \
+	text-shadow: \
+		-1px -1px 0 blue, \
+		1px -1px 0 blue, \
+		-1px 1px 0 blue, \
+		1px 1px 0 blue; \
+	font-weight: 900; \
+	font-size:26px; \
 }\
 ');
 
@@ -165,8 +176,8 @@ function Analyse_AddTable(n)
 		var l = infos['deathSorted'][d].length;
 		for(var k =0; k < l; k++) {
 			tabHtml += '<li class="diestats"> \
+				<p class="stroke">' + infos['deathSorted'][d][k][0] + '</p> \
 				<strong>' + infos['deathSorted'][d][k][1] + '</strong> \
-				<p class="stroke" style="width:80px;">' + infos['deathSorted'][d][k][0] + '</p> \
 				<p style="width:80px;"><em>' + (100*infos['deathSorted'][d][k][0]/infos['nbrGames']).toFixed(2) + ' %</em></p> \
 			</li>';
 		}
