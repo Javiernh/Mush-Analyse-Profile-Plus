@@ -9,7 +9,7 @@
 // @include     http://mush.twinoid.com/me*
 // @include     http://mush.vg/me*
 // @updateurl	https://github.com/Javiernh/Mush-Analyse-Profile-Plus/raw/release/MAPP.user.js
-// @version     1.0
+// @version     1.1
 // ==/UserScript==
 
 var $ = unsafeWindow.jQuery;
