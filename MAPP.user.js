@@ -34,7 +34,44 @@ addGlobalStyle('\
 			border: 1px inset; border-color: #4e5162; font-size: 15px; } \
 .nshipinput:hover { border: 1px inset; border-color: white; color: lime; } \
 .nshipinput:focus { background-color: #17195B; border: 1px inset; border-color: cyan; } \
-.tabletitle { font-size: 15px; border: cyan solid 1px; border-radius: 5px; color: silver; margin-top: 12px; margin-bottom: 7px; }\
+.bodychar { \
+	position: relative;\
+	opacity: 1;\
+	width: 28px;\
+	height: 44px;\
+	background: url("http://mush.twinoid.es/img/art/char.png") no-repeat;\
+	z-index: 4;\
+}\
+#AnalyseProfile_Result ul li.stats { \
+	border-width : 1px; \
+	border-color : yellow orange orange orange; \
+	-moz-box-shadow : inset 0px 0px 4px goldenrod, 0px 0px 4px goldenrod, 0px 2px 4px goldenrod; \
+	-webkit-box-shadow : inset 0px 0px 4px goldenrod, 0px 0px 4px goldenrod, 0px 2px 4px goldenrod; \
+	box-shadow : inset 0px 0px 4px goldenrod, 0px 0px 4px goldenrod, 0px 2px 4px goldenrod; \
+	background-color: #FCF5C2; \
+	color : #090a61; \
+	font-size:100%; \
+	width:80px; \
+	font-variant:small-caps; \
+} \
+#AnalyseProfile_Result ul li.diestats { \
+	border-width : 1px; \
+	border-color : #FBA6B0 #DF011C #DF0125 #DF011C; \
+	-moz-box-shadow : inset 0px 0px 4px #FB3939, 0px 0px 4px #FB3939, 0px 2px 4px #FB3939; \
+	-webkit-box-shadow : inset 0px 0px 4px #FB3939, 0px 0px 4px #FB3939, 0px 2px 4px #FB3939; \
+	box-shadow : inset 0px 0px 4px #FB3939, 0px 0px 4px #FB3939, 0px 2px 4px #FB3939; \
+	background-color: #FCC2C9; \
+	color : #090a61; \
+	font-size:100%; \
+	width:80px; \
+	font-variant:small-caps; \
+} \
+.stroke { \
+	-webkit-text-fill-color: #ff4059; \
+	-webkit-text-stroke: 1px blue; \
+	font-weight: bold; \
+	font-size:25px; \
+}\
 ');
 
 function charaToClassChar(str)
@@ -58,42 +95,42 @@ function Analyse_AddTable(n)
 				maxlength="4" value='+infos['nbrGames']+'> (0 para todas)</div></h3>';
 	tabHtml	+=	'<ul>';
 	// Ship Days
-	tabHtml +=	'<li class="nova" style="font-size:100%; width:80px; font-variant:small-caps;"> \
+	tabHtml +=	'<li class="stats"> \
 					<img src="/img/icons/ui/'+iconday+'.png" style="width:26px; height:26px;"><strong><br>Días Nave</strong> \
 					<p style="width:80px;">Max: ' + infos['maxDay'] + '</p> \
 					<p style="width:80px;">Med: <em>' + (infos['totalDay']/infos['nbrGames']).toFixed(1) + '</em></p> \
 					<p style="width:80px; color:#17195B; font-weight:bold;">Tot: ' + infos['totalDay'] + '</p> \
 				</li>';
 	// Triumph
-	tabHtml +=	'<li class="nova" style="font-size:100%; width:80px; font-variant:small-caps;"> \
+	tabHtml +=	'<li class="stats"> \
 					<img src="/img/icons/ui/triumph.png" style="width:26px; height:26px;"><strong><br>Gloria</strong> \
 					<p style="width:80px;">Max: ' + infos['maxTriumph'] + '</p> \
 					<p style="width:80px;">Med: <em>' + (infos['totalTriumph']/infos['nbrGames']).toFixed(1) + '</em></p> \
 					<p style="width:80px; color:#17195B; font-weight:bold;">Tot: ' + infos['totalTriumph'] + '</p> \
 				</li>';
 	// Researches
-	tabHtml +=	'<li class="nova" style="font-size:100%; width:80px; font-variant:small-caps;"> \
+	tabHtml +=	'<li class="stats"> \
 					<img src="/img/icons/ui/microsc.png" style="width:26px; height:26px;"><strong><br>Investigaciones</strong> \
 					<p style="width:80px;">Max: ' + infos['maxSearch'] + '</p> \
 					<p style="width:80px;">Med: <em>' + (infos['totalSearch']/infos['nbrGames']).toFixed(1) + '</em></p> \
 					<p style="width:80px; color:#17195B; font-weight:bold;">Tot: ' + infos['totalSearch'] + '</p> \
 				</li>';
 	// Projects
-	tabHtml +=	'<li class="nova" style="font-size:100%; width:80px; font-variant:small-caps;"> \
+	tabHtml +=	'<li class="stats"> \
 					<img src="/img/icons/ui/conceptor.png" style="width:26px; height:26px;"><strong><br>Proyectos</strong> \
 					<p style="width:80px;">Max: ' + infos['maxProjects'] + '</p> \
 					<p style="width:80px;">Med: <em>' + (infos['totalProjects']/infos['nbrGames']).toFixed(1) + '</em></p> \
 					<p style="width:80px; color:#17195B; font-weight:bold;">Tot: ' + infos['totalProjects'] + '</p> \
 				</li>';
 	// Planets
-	tabHtml +=	'<li class="nova" style="font-size:100%; width:80px; font-variant:small-caps;"> \
+	tabHtml +=	'<li class="stats"> \
 					<img src="/img/icons/ui/planet.png" style="width:26px; height:26px;"><strong><br>Planetas</strong> \
 					<p style="width:80px;">Max: ' + infos['maxPlanetsScan'] + '</p> \
 					<p style="width:80px;">Med: <em>' + (infos['totalPlanetsScan']/infos['nbrGames']).toFixed(1) + '</em></p> \
 					<p style="width:80px; color:#17195B; font-weight:bold;">Tot: ' + infos['totalPlanetsScan'] + '</p> \
 				</li>';
 	// Expeditions
-	tabHtml +=	'<li class="nova" style="font-size:100%; width:80px; font-variant:small-caps;"> \
+	tabHtml +=	'<li class="stats"> \
 					<img src="/img/icons/ui/survival.png" style="width:26px; height:26px;"><strong><br>Exploraciones</strong> \
 					<p style="width:80px;">Max: ' + infos['maxExplo'] + '</p> \
 					<p style="width:80px;">Med: <em>' + (infos['totalExplo']/infos['nbrGames']).toFixed(1) + '</em></p> \
@@ -101,55 +138,43 @@ function Analyse_AddTable(n)
 				</li>';
 
 	tabHtml +=	'</ul>';
-    tabHtml +=	'<ul>';
 
-	// Characters stats
-	tabHtml +=	'<li class="score" style="margin-left: 10px;"><table class="summar" style="display: inline-block;"> \
-				<caption>Personajes</caption> \
-				<tbody> \
-					<tr>\
-						<th>Personaje</th> \
-						<th>Naves jugadas</th> \
-					</tr> ';
-			for(var c in infos['charaSorted'])
-			{
-				var l = infos['charaSorted'][c].length;
-				for(var k =0; k < l; k++)
-				{
-					tabHtml += '<tr> \
-						<td><img class="char ' + charaToClassChar(infos['charaSorted'][c][k][1]) + '" src="/img/design/pixel.gif" > \
-						<span class="charname">' + infos['charaSorted'][c][k][1] + '</span></td> \
-						<td>' + infos['charaSorted'][c][k][0] + ' (<em>' + (100*infos['charaSorted'][c][k][0]/infos['nbrGames']).toFixed(2) + ' %</em>)</td> \
-					</tr>';
-				}
-			} 
-			tabHtml += '</tbody></table></li>';
-	// Dies stats
-    tabHtml +=	'<li class="score scoremush" style="float: right; margin-right: 45px;"><table style="display: inline-block;" class="summar"> \
-				<caption>Muertes</caption> \
-				<tbody> \
-					<tr>\
-						<th>Causa de muerte</th> \
-						<th>Número de decesos</th> \
-					</tr> \
-				';
-			for(var d in infos['deathSorted'])
-			{
-				var l = infos['deathSorted'][d].length;
-				for(var k =0; k < l; k++)
-				{
-					tabHtml += '\
-					<tr> \
-						<td>' + infos['deathSorted'][d][k][1] + '</td> \
-						<td>' + infos['deathSorted'][d][k][0] + ' (<em>' + (100*infos['deathSorted'][d][k][0]/infos['nbrGames']).toFixed(2) + ' %</em>)</td> \
-					</tr>';
-				}
-			}
-		tabHtml += '\
-				</tbody> \
-			</table></li> \
-			</ul> \
-		</div>';
+	// Character Stats
+
+	tabHtml +=	'<ul><ul class="tabletitle">ESTADÍSTICAS DE PERSONAJES</ul>';
+	for(var c in infos['charaSorted']) {
+		var l = infos['charaSorted'][c].length;
+		for(var k =0; k < l; k++) {
+			tabHtml += '<li class="nova" style="font-size:100%; width:80px; font-variant:small-caps;"> \
+				<img class="bodychar ' + charaToClassChar(infos['charaSorted'][c][k][1]) + '" src="/img/design/pixel.gif" > \
+				<strong><br>' + infos['charaSorted'][c][k][1] + '</strong> \
+				<p style="width:80px;">Naves: ' + infos['charaSorted'][c][k][0] + '</p> \
+				<p style="width:80px;"><em>' + (100*infos['charaSorted'][c][k][0]/infos['nbrGames']).toFixed(2) + ' %</em></p> \
+			</li>';
+		}
+	}
+	tabHtml +=	'</ul>';
+
+	// End Character Stats
+
+	// Dies Stats
+
+	tabHtml +=	'<ul><ul>ESTADÍSTICAS DE MUERTES</ul>';
+	for(var d in infos['deathSorted']) {
+		var l = infos['deathSorted'][d].length;
+		for(var k =0; k < l; k++) {
+			tabHtml += '<li class="diestats"> \
+				<strong>' + infos['deathSorted'][d][k][1] + '</strong> \
+				<p class="stroke" style="width:80px;">' + infos['deathSorted'][d][k][0] + '</p> \
+				<p style="width:80px;"><em>' + (100*infos['deathSorted'][d][k][0]/infos['nbrGames']).toFixed(2) + ' %</em></p> \
+			</li>';
+		}
+	}
+	tabHtml +=	'</ul>';
+
+	// End Dies Stats
+
+	tabHtml += '</div>';
 
 	$('#profile > div.column2 > div.data > .bgtablesummar:last').after(tabHtml);
 	
