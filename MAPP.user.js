@@ -11,7 +11,7 @@
 // @author	Scipion - http://mush.vg/u/profile/332
 // @author	Javiernh - http://mush.twinoid.es/u/profile/21696
 // @downloadURL	https://raw.github.com/Javiernh/Mush-Analyse-Profile-Plus/release/MAPP.user.js
-// @version	1.1.1
+// @version	1.1.2
 // ==/UserScript==
 
 var $ = unsafeWindow.jQuery;
@@ -57,7 +57,7 @@ addGlobalStyle('\
 	width:80px; \
 	font-variant:small-caps; \
 } \
-#profile #AnalyseProfile_Result ul li { \
+#profile #AnalyseProfile_Result #dies-stats li { \
 	height:105px; \
 	vertical-align: bottom; \
 } \
@@ -105,7 +105,7 @@ function Analyse_AddTable(n)
 				Mush Analyse Profile Plus v' + scriptVersion + ' - \
 				Naves analizadas : <input id="nShip" class="nshipinput" type="text" tabindex="1" \
 				maxlength="4" value='+infos['nbrGames']+'> (0 para todas)</div></h3>';
-	tabHtml	+=	'<ul>';
+	tabHtml	+=	'<ul id="ships-stats">';
 	// Ship Days
 	tabHtml +=	'<li class="stats"> \
 					<img src="/img/icons/ui/'+iconday+'.png" style="width:26px; height:26px;"><strong><br>Días Nave</strong> \
@@ -153,7 +153,7 @@ function Analyse_AddTable(n)
 
 	// Character Stats
 
-	tabHtml +=	'<ul><ul class="tabletitle">ESTADÍSTICAS DE PERSONAJES</ul>';
+	tabHtml +=	'<ul id="char-stats"><ul class="tabletitle">ESTADÍSTICAS DE PERSONAJES</ul>';
 	for(var c in infos['charaSorted']) {
 		var l = infos['charaSorted'][c].length;
 		for(var k =0; k < l; k++) {
@@ -171,7 +171,7 @@ function Analyse_AddTable(n)
 
 	// Dies Stats
 
-	tabHtml +=	'<ul><ul>ESTADÍSTICAS DE MUERTES</ul>';
+	tabHtml +=	'<ul id="dies-stats"><ul>ESTADÍSTICAS DE MUERTES</ul>';
 	for(var d in infos['deathSorted']) {
 		var l = infos['deathSorted'][d].length;
 		for(var k =0; k < l; k++) {
