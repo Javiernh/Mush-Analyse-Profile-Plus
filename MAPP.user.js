@@ -11,7 +11,7 @@
 // @author	Scipion - http://mush.vg/u/profile/332
 // @author	Javiernh - http://mush.twinoid.es/u/profile/21696
 // @downloadURL	https://raw.github.com/Javiernh/Mush-Analyse-Profile-Plus/release/MAPP.user.js
-// @version	1.1.2
+// @version	1.1.3
 // ==/UserScript==
 
 var $ = unsafeWindow.jQuery;
@@ -45,6 +45,9 @@ addGlobalStyle('\
 	background: url("http://mush.twinoid.es/img/art/char.png") no-repeat;\
 	z-index: 4;\
 }\
+#profile #AnalyseProfile_Result ul { \
+	padding: 0px 0px 15px 0px \
+} \
 #AnalyseProfile_Result ul li.stats { \
 	border-width : 1px; \
 	border-color : yellow orange orange orange; \
@@ -55,10 +58,26 @@ addGlobalStyle('\
 	color : #090a61; \
 	font-size:100%; \
 	width:80px; \
+	padding: 4px 0px 15px 0px \
+	margin:4px 4px 4px 4px; \
 	font-variant:small-caps; \
 } \
+#AnalyseProfile_Result ul li.charstat { \
+	border-width : 1px; \
+	border-color : #A6EEFB #01c3df #01c3df #01c3df; \
+	-moz-box-shadow : inset 0px 0px 4px #3965fb, 0px 0px 4px #3965fb, 0px 2px 4px #3965fb; \
+	-webkit-box-shadow : inset 0px 0px 4px #3965fb, 0px 0px 4px #3965fb, 0px 2px 4px #3965fb; \
+	box-shadow : inset 0px 0px 4px #3965fb, 0px 0px 4px #3965fb, 0px 2px 4px #3965fb; \
+	background-color : #c2f3fc; \
+	color : #090a61; \
+	font-size:100%; \
+	width:80px; \
+	margin:4px 4px 4px 4px; \
+	font-variant:small-caps; \
+	padding: 6px 9px 9px 9px \
+} \
 #profile #AnalyseProfile_Result #dies-stats li { \
-	height:105px; \
+	height:115px; \
 	vertical-align: bottom; \
 } \
 #AnalyseProfile_Result ul li.diestats { \
@@ -71,6 +90,7 @@ addGlobalStyle('\
 	color : #090a61; \
 	font-size:100%; \
 	width:80px; \
+	margin:4px 4px 4px 4px; \
 	font-variant:small-caps; \
 	padding: 0 9px 9px 9px \
 } \
@@ -149,41 +169,34 @@ function Analyse_AddTable(n)
 					<p style="width:80px; color:#17195B; font-weight:bold;">Tot: ' + infos['totalExplo'] + '</p> \
 				</li>';
 
+	// Stats notice
+	tabHtml += '<p style="font-size: 80%;">¹ Valores referentes a la nave; \
+				salvo la <strong>Gloria</strong>, que pertenece al jugador.</p>';
 	tabHtml +=	'</ul>';
 
 	// Character Stats
-
 	tabHtml +=	'<ul id="char-stats"><ul class="tabletitle">ESTADÍSTICAS DE PERSONAJES</ul>';
-	for(var c in infos['charaSorted']) {
-		var l = infos['charaSorted'][c].length;
-		for(var k =0; k < l; k++) {
-			tabHtml += '<li class="nova" style="font-size:100%; width:80px; font-variant:small-caps;"> \
-				<img class="bodychar ' + charaToClassChar(infos['charaSorted'][c][k][1]) + '" src="/img/design/pixel.gif" > \
-				<strong><br>' + infos['charaSorted'][c][k][1] + '</strong> \
-				<p style="width:80px;">Naves: ' + infos['charaSorted'][c][k][0] + '</p> \
-				<p style="width:80px;"><em>' + (100*infos['charaSorted'][c][k][0]/infos['nbrGames']).toFixed(2) + ' %</em></p> \
+	for(var character in infos['charaSorted']) {
+		tabHtml += '<li class="charstat" style="font-size:100%; width:80px; font-variant:small-caps;"> \
+				<img class="bodychar ' + charaToClassChar(infos['charaSorted'][character][1]) + '" src="/img/design/pixel.gif" > \
+				<strong><br>' + infos['charaSorted'][character][1] + '</strong> \
+				<p style="width:80px;">Naves: ' + infos['charaSorted'][character][0] + '</p> \
+				<p style="width:80px;"><em>' + (100*infos['charaSorted'][character][0]/infos['nbrGames']).toFixed(2) + ' %</em></p> \
 			</li>';
-		}
 	}
 	tabHtml +=	'</ul>';
-
 	// End Character Stats
 
 	// Dies Stats
-
 	tabHtml +=	'<ul id="dies-stats"><ul>ESTADÍSTICAS DE MUERTES</ul>';
-	for(var d in infos['deathSorted']) {
-		var l = infos['deathSorted'][d].length;
-		for(var k =0; k < l; k++) {
-			tabHtml += '<li class="diestats"> \
-				<p class="stroke">' + infos['deathSorted'][d][k][0] + '</p> \
-				<strong>' + infos['deathSorted'][d][k][1] + '</strong> \
-				<p style="width:80px;"><em>' + (100*infos['deathSorted'][d][k][0]/infos['nbrGames']).toFixed(2) + ' %</em></p> \
+	for(var death in infos['deathSorted']) {
+		tabHtml += '<li class="diestats"> \
+				<p class="stroke">' + infos['deathSorted'][death][1] + '</p> \
+				<strong>' + infos['deathSorted'][death][0] + '</strong> \
+				<p style="width:80px;"><em>' + (100*infos['deathSorted'][death][1]/infos['nbrGames']).toFixed(2) + ' %</em></p> \
 			</li>';
-		}
 	}
 	tabHtml +=	'</ul>';
-
 	// End Dies Stats
 
 	tabHtml += '</div>';
@@ -223,11 +236,11 @@ function Analyse_Analyse(n)
 	infos['allDeaths'] = new Array();
 	infos['allCharacters'] = new Array();
 	
-	infos['nbrGames'] = 0 ; //Nbr de parties
-	infos['nbrGamesBeta'] = 0; //Parties en Beta
+	infos['nbrGames'] = 0 ; // Ships number
+	infos['nbrGamesBeta'] = 0; // Beta ship number
 	
 	$('#cdTrips > table.summar > tbody > tr.cdTripEntry').each(function(index,elem){
-		//Character, Day, Explo, search, projets, scan, titres, triomphe, mort, vaisseau
+		// character, day, explo, search, projets, scan, titles, triumph, death, ship
 		var death = $(this).children('td:eq(8)').text();
 		
 		if(n == 0 || infos['nbrGames'] < n)
@@ -263,59 +276,59 @@ function Analyse_Analyse(n)
 					infos['min'] = parseInt();
                 }
 */
-				var d = $(this).children('td:eq(1)').text();
-                if (infos['maxDay'] < parseInt(d)) {
-					infos['maxDay'] = parseInt(d);
+				var day = $(this).children('td:eq(1)').text();
+                if (infos['maxDay'] < parseInt(day)) {
+					infos['maxDay'] = parseInt(day);
                 }
-                if ((infos['minDay'] > parseInt(d))||(infos['minDay'] == -1)) {
-					infos['minDay'] = parseInt(d);
+                if ((infos['minDay'] > parseInt(day))||(infos['minDay'] == -1)) {
+					infos['minDay'] = parseInt(day);
                 }
-				infos['totalDay'] += parseInt(d);
+				infos['totalDay'] += parseInt(day);
 				
-				var e = $(this).children('td:eq(2)').text();
-                if (infos['maxExplo'] < parseInt(e)) {
-					infos['maxExplo'] = parseInt(e);
+				var explo = $(this).children('td:eq(2)').text();
+                if (infos['maxExplo'] < parseInt(explo)) {
+					infos['maxExplo'] = parseInt(explo);
                 }
-                if ((infos['minExplo'] > parseInt(e)) || (infos['minExplo'] == -1)) {
-					infos['minExplo'] = parseInt(e);
+                if ((infos['minExplo'] > parseInt(explo)) || (infos['minExplo'] == -1)) {
+					infos['minExplo'] = parseInt(explo);
                 }
-				infos['totalExplo'] += parseInt(e);
+				infos['totalExplo'] += parseInt(explo);
 				
-				var s = $(this).children('td:eq(3)').text();
-                if (infos['maxSearch'] < parseInt(s)) {
-					infos['maxSearch'] = parseInt(s);
+				var search = $(this).children('td:eq(3)').text();
+                if (infos['maxSearch'] < parseInt(search)) {
+					infos['maxSearch'] = parseInt(search);
                 }
-                if ((infos['minSearch'] > parseInt(s)) || (infos['minSearch'] == -1)) {
-					infos['minSearch'] = parseInt(s);
+                if ((infos['minSearch'] > parseInt(search)) || (infos['minSearch'] == -1)) {
+					infos['minSearch'] = parseInt(search);
                 }
-				infos['totalSearch'] += parseInt(s);
+				infos['totalSearch'] += parseInt(search);
 				
-				var p = $(this).children('td:eq(4)').text();
-                if (infos['maxProjects'] < parseInt(p)) {
-					infos['maxProjects'] = parseInt(p);
+				var projets = $(this).children('td:eq(4)').text();
+                if (infos['maxProjects'] < parseInt(projets)) {
+					infos['maxProjects'] = parseInt(projets);
                 }
-                if ((infos['minProjects'] > parseInt(p)) || (infos['minProjects'] == -1)) {
-					infos['minProjects'] = parseInt(p);
+                if ((infos['minProjects'] > parseInt(projets)) || (infos['minProjects'] == -1)) {
+					infos['minProjects'] = parseInt(projets);
                 }
-				infos['totalProjects'] += parseInt(p);
+				infos['totalProjects'] += parseInt(projets);
 				
-				var sc = $(this).children('td:eq(5)').text();
-                if (infos['maxPlanetsScan'] < parseInt(sc)) {
-					infos['maxPlanetsScan'] = parseInt(sc);
+				var scan = $(this).children('td:eq(5)').text();
+                if (infos['maxPlanetsScan'] < parseInt(scan)) {
+					infos['maxPlanetsScan'] = parseInt(scan);
                 }
-                if ((infos['minPlanetsScan'] > parseInt(sc)) || (infos['minPlanetsScan'] == -1)) {
-					infos['minPlanetsScan'] = parseInt(sc);
+                if ((infos['minPlanetsScan'] > parseInt(scan)) || (infos['minPlanetsScan'] == -1)) {
+					infos['minPlanetsScan'] = parseInt(scan);
                 }
-				infos['totalPlanetsScan'] += parseInt(sc);
+				infos['totalPlanetsScan'] += parseInt(scan);
 				
-				var t = $(this).children('td:eq(7)').text();
-                if (infos['maxTriumph'] < parseInt(t)) {
-					infos['maxTriumph'] = parseInt(t);
+				var triumph = $(this).children('td:eq(7)').text();
+                if (infos['maxTriumph'] < parseInt(triumph)) {
+					infos['maxTriumph'] = parseInt(triumph);
                 }
-                if ((infos['minTriumph'] > parseInt(t)) || (infos['minTriumph'] == -1)) {
-					infos['minTriumph'] = parseInt(t);
+                if ((infos['minTriumph'] > parseInt(triumph)) || (infos['minTriumph'] == -1)) {
+					infos['minTriumph'] = parseInt(triumph);
                 }
-				infos['totalTriumph'] += parseInt(t);
+				infos['totalTriumph'] += parseInt(triumph);
 			}
 			else
 			{
@@ -325,34 +338,23 @@ function Analyse_Analyse(n)
 			
 	}); 
 	
-	//Trie morts/persos
-	infos['charaSorted'] = new Array();
-	for(var c in infos['allCharacters'])
-	{
-		infos['charaSorted'][infos['allCharacters'][c]] = new Array();
+	// Sort characters & deaths
+	infos['charaSorted'] = [];	var i = 0;
+	for(var character in infos['allCharacters']) {
+		infos['charaSorted'][i] = [infos['allCharacters'][character], character];	i++;
 	}
+
+	infos['charaSorted'].sort(function(a,b){return b[0] - a[0]});
 	
-	for(var c in infos['allCharacters'])
-	{
-		infos['charaSorted'][infos['allCharacters'][c]].push(new Array(infos['allCharacters'][c], c));
+	infos['deathSorted'] = [];
+	var i = 0;
+	for(var death in infos['allDeaths']) {
+		infos['deathSorted'][i] = [death, infos['allDeaths'][death]];
+		i++;
+		console.log(infos['deathSorted'][death]);
 	}
-	
-	infos['charaSorted'].sort(function(a,b){return a - b});
-	
-	infos['deathSorted'] = new Array();
-	for(var d in infos['allDeaths'])
-	{
-		infos['deathSorted'][infos['allDeaths'][d]] = new Array();
-	}
-	
-	for(var d in infos['allDeaths'])
-	{
-		infos['deathSorted'][infos['allDeaths'][d]].push(new Array(infos['allDeaths'][d], d));
-	}
-	
-	infos['deathSorted'].sort(function(a,b){return a - b});
-	
-	
+	infos['deathSorted'].sort(function(a,b){return b[1] - a[1]});	//console.log(infos['deathSorted']);
+
 	return infos;
 }
 
