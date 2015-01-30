@@ -11,7 +11,7 @@
 // @author	Scipion - http://mush.vg/u/profile/332
 // @author	Javiernh - http://mush.twinoid.es/u/profile/21696
 // @downloadURL	https://raw.github.com/Javiernh/Mush-Analyse-Profile-Plus/release/MAPP.user.js
-// @version	1.1.3
+// @version	1.1.4
 // ==/UserScript==
 
 var $ = unsafeWindow.jQuery;
@@ -114,6 +114,7 @@ function charaToClassChar(str)
 	return str;
 }
 
+first = 0;
 function Analyse_AddTable(n)
 {	
 	var infos = Analyse_Analyse(n);
@@ -123,8 +124,13 @@ function Analyse_AddTable(n)
 	var tabHtml = '<div id="AnalyseProfile_Result" class="awards twinstyle"> \
 			<h3><div class="cornerright"> \
 				Mush Analyse Profile Plus v' + scriptVersion + ' - \
-				Naves analizadas : <input id="nShip" class="nshipinput" type="text" tabindex="1" \
-				maxlength="4" value='+infos['nbrGames']+'> (0 para todas)</div></h3>';
+\
+				Saltar <input id="firstShip" class="nshipinput" type="text" tabindex="1" \
+				maxlength="4" value='+ first +'> naves recientes - \
+\
+				Naves analizadas : <input onfocus="this.select();" id="nShip" class="nshipinput" type="text" tabindex="1" \
+				maxlength="4" value='+ (infos['nbrGames']) +'> (0 para todas)\
+				</div></h3>';
 	tabHtml	+=	'<ul id="ships-stats">';
 	// Ship Days
 	tabHtml +=	'<li class="stats"> \
@@ -174,7 +180,7 @@ function Analyse_AddTable(n)
 				salvo la <strong>Gloria</strong>, que pertenece al jugador.</p>';
 	tabHtml +=	'</ul>';
 
-	// Character Stats
+	// CHARACTER STATS
 	tabHtml +=	'<ul id="char-stats"><ul class="tabletitle">ESTADÍSTICAS DE PERSONAJES</ul>';
 	for(var character in infos['charaSorted']) {
 		tabHtml += '<li class="charstat" style="font-size:100%; width:80px; font-variant:small-caps;"> \
@@ -187,7 +193,7 @@ function Analyse_AddTable(n)
 	tabHtml +=	'</ul>';
 	// End Character Stats
 
-	// Dies Stats
+	// DIES STATS
 	tabHtml +=	'<ul id="dies-stats"><ul>ESTADÍSTICAS DE MUERTES</ul>';
 	for(var death in infos['deathSorted']) {
 		tabHtml += '<li class="diestats"> \
@@ -202,10 +208,19 @@ function Analyse_AddTable(n)
 	tabHtml += '</div>';
 
 	$('#profile > div.column2 > div.data > .bgtablesummar:last').after(tabHtml);
+
+	$('#firstShip').keyup(function( event ) {
+        if (event.which == 13 || event.keyCode == 13) {
+			first = document.getElementById('firstShip').value;		console.log(first);
+			document.getElementById('nShip').focus();
+        }
+        return false;
+	});
 	
 	$('#nShip').keyup(function( event ) {
         if (event.which == 13 || event.keyCode == 13) {
-			var n = document.getElementById('nShip').value; //alert(n);
+			first = document.getElementById('firstShip').value;		console.log(first);
+			var n = document.getElementById('nShip').value;			console.log(n);
 			Analyse_Init(n);
         }
         return false;
@@ -238,12 +253,15 @@ function Analyse_Analyse(n)
 	
 	infos['nbrGames'] = 0 ; // Ships number
 	infos['nbrGamesBeta'] = 0; // Beta ship number
+	TotalShip = 0;
 	
 	$('#cdTrips > table.summar > tbody > tr.cdTripEntry').each(function(index,elem){
 		// character, day, explo, search, projets, scan, titles, triumph, death, ship
 		var death = $(this).children('td:eq(8)').text();
-		
-		if(n == 0 || infos['nbrGames'] < n)
+
+		TotalShip++;
+
+		if((index >= first && infos['nbrGames'] < n) || (index >= first && n == 0))
 		{
 			if(death != 'No hay ayuda disponible')
 			{
