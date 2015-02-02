@@ -11,7 +11,7 @@
 // @author	Scipion - http://mush.vg/u/profile/332
 // @author	Javiernh - http://mush.twinoid.es/u/profile/21696
 // @downloadURL	https://raw.github.com/Javiernh/Mush-Analyse-Profile-Plus/release/MAPP.user.js
-// @version	1.1.4
+// @version	1.1.5
 // ==/UserScript==
 
 var $ = unsafeWindow.jQuery;
@@ -45,7 +45,7 @@ addGlobalStyle('\
 	background: url("http://mush.twinoid.es/img/art/char.png") no-repeat;\
 	z-index: 4;\
 }\
-#profile #AnalyseProfile_Result ul { \
+#profile #AnalyseProfile_Result > ul, ul.tabletitle { \
 	padding: 0px 0px 15px 0px \
 } \
 #AnalyseProfile_Result ul li.stats { \
@@ -76,7 +76,7 @@ addGlobalStyle('\
 	font-variant:small-caps; \
 	padding: 6px 9px 9px 9px \
 } \
-#profile #AnalyseProfile_Result #dies-stats li { \
+#profile #AnalyseProfile_Result #dies-stats > li { \
 	height:115px; \
 	vertical-align: bottom; \
 } \
@@ -94,6 +94,13 @@ addGlobalStyle('\
 	font-variant:small-caps; \
 	padding: 0 9px 9px 9px \
 } \
+#AnalyseProfile_Result ul li.diestats:hover { \
+	background-color: #ECFFA2; \
+	border-color : #BCFFA2 #40E000 #49E000 #40E000; \
+	-moz-box-shadow : inset 0px 0px 4px #56FF35, 0px 0px 4px #56FF35, 0px 2px 4px #56FF35; \
+	-webkit-box-shadow : inset 0px 0px 4px #56FF35, 0px 0px 4px #56FF35, 0px 2px 4px #56FF35; \
+	box-shadow : inset 0px 0px 4px #56FF35, 0px 0px 4px #56FF35, 0px 2px 4px #56FF35; \
+}\
 .stroke { \
 	color: #ff4059; \
 	text-shadow: \
@@ -103,6 +110,58 @@ addGlobalStyle('\
 		1px 1px 0 blue; \
 	font-weight: 900; \
 	font-size:26px; \
+}\
+#AnalyseProfile_Result ul li.diestats ul.shiplist { \
+	display: none; \
+}\
+#AnalyseProfile_Result ul li.diestats ul.shiplist a.ship { \
+	display: block; \
+	width: 95px; \
+	height: 18px; \
+	font-size: 13px; \
+	text-decoration: none! important;\
+	font-variant: normal; \
+	color : #090a61; \
+	text-shadow: 1px 1px 5px #FFF;\
+}\
+#AnalyseProfile_Result ul li.diestats ul.shiplist a.ship:hover { \
+//	color: #ff4059; \
+//	text-shadow: 1px 1px 0px #000;\
+}\
+#AnalyseProfile_Result ul li.diestats:hover > ul.shiplist {\
+	display: block;\
+	position: relative;\
+	width: 100px;\
+//	left: -10px;\
+//	bottom: -125px;\
+	left: 90px;\
+	top: 0px;\
+	text-align: right;\
+	z-index: 50;\
+	height: 0px;\
+	padding: 0px;\
+	border: 0px;\
+}\
+#AnalyseProfile_Result ul li.diestats ul.shiplist li {\
+	text-align: left;\
+	margin: 0px;\
+	display: block! important;\
+	width: 80px;\
+	height: auto;\
+	padding: 0px 15px 0 5px! important;\
+	border-width : 1px; \
+	border-color : #FBA6B0 #DF011C #DF0125 #DF011C; \
+	-moz-box-shadow : inset 0px 0px 4px #FB3939, 0px 0px 4px #FB3939, 0px 2px 4px #FB3939; \
+	-webkit-box-shadow : inset 0px 0px 4px #FB3939, 0px 0px 4px #FB3939, 0px 2px 4px #FB3939; \
+	box-shadow : inset 0px 0px 4px #FB3939, 0px 0px 4px #FB3939, 0px 2px 4px #FB3939; \
+	background-color: #FCC2C9; \
+}\
+#AnalyseProfile_Result ul li.diestats ul.shiplist li:hover {\
+	background-color: #ECFFA2; \
+	border-color : #BCFFA2 #40E000 #49E000 #40E000; \
+	-moz-box-shadow : inset 0px 0px 4px #56FF35, 0px 0px 4px #56FF35, 0px 2px 4px #56FF35; \
+	-webkit-box-shadow : inset 0px 0px 4px #56FF35, 0px 0px 4px #56FF35, 0px 2px 4px #56FF35; \
+	box-shadow : inset 0px 0px 4px #56FF35, 0px 0px 4px #56FF35, 0px 2px 4px #56FF35; \
 }\
 ');
 
@@ -114,7 +173,7 @@ function charaToClassChar(str)
 	return str;
 }
 
-first = 0;
+first = 0;	NShips = 0;
 function Analyse_AddTable(n)
 {	
 	var infos = Analyse_Analyse(n);
@@ -124,10 +183,8 @@ function Analyse_AddTable(n)
 	var tabHtml = '<div id="AnalyseProfile_Result" class="awards twinstyle"> \
 			<h3><div class="cornerright"> \
 				Mush Analyse Profile Plus v' + scriptVersion + ' - \
-\
 				Saltar <input id="firstShip" class="nshipinput" type="text" tabindex="1" \
 				maxlength="4" value='+ first +'> naves recientes - \
-\
 				Naves analizadas : <input onfocus="this.select();" id="nShip" class="nshipinput" type="text" tabindex="1" \
 				maxlength="4" value='+ (infos['nbrGames']) +'> (0 para todas)\
 				</div></h3>';
@@ -194,13 +251,25 @@ function Analyse_AddTable(n)
 	// End Character Stats
 
 	// DIES STATS
-	tabHtml +=	'<ul id="dies-stats"><ul>ESTADÍSTICAS DE MUERTES</ul>';
+	tabHtml +=	'<ul id="dies-stats"><ul class="tabletitle">ESTADÍSTICAS DE MUERTES</ul>';
 	for(var death in infos['deathSorted']) {
-		tabHtml += '<li class="diestats"> \
-				<p class="stroke">' + infos['deathSorted'][death][1] + '</p> \
+		tabHtml += '<li class="diestats">';
+		tabHtml += '<ul class= shiplist>';
+		Return_Ship_Links(infos['deathSorted'][death][0]);
+		for(var link in shipsnumbers) {
+			tabHtml += '<li><a class="ship" href="/theEnd/'+shipsnumbers[link]+'">Nave - '+shipsnumbers[link]+'</a></li>';
+		}
+		tabHtml += '</ul>';
+		tabHtml += '<p class="stroke">' + infos['deathSorted'][death][1] + '</p> \
 				<strong>' + infos['deathSorted'][death][0] + '</strong> \
-				<p style="width:80px;"><em>' + (100*infos['deathSorted'][death][1]/infos['nbrGames']).toFixed(2) + ' %</em></p> \
-			</li>';
+				<p style="width:80px;"><em>' + (100*infos['deathSorted'][death][1]/infos['nbrGames']).toFixed(2) + ' %</em></p>';
+/*		tabHtml += '<ul class= shiplist>';
+		Return_Ship_Links(infos['deathSorted'][death][0]);
+		for(var link in shipsnumbers) {
+			tabHtml += '<li><a class="ship" href="/theEnd/'+shipsnumbers[link]+'">Nave - '+shipsnumbers[link]+'</a></li>';
+		}
+		tabHtml += '</ul>';
+*/		tabHtml += '</li>';
 	}
 	tabHtml +=	'</ul>';
 	// End Dies Stats
@@ -211,7 +280,7 @@ function Analyse_AddTable(n)
 
 	$('#firstShip').keyup(function( event ) {
         if (event.which == 13 || event.keyCode == 13) {
-			first = document.getElementById('firstShip').value;		console.log(first);
+			first = document.getElementById('firstShip').value;		//console.log(first);
 			document.getElementById('nShip').focus();
         }
         return false;
@@ -219,13 +288,35 @@ function Analyse_AddTable(n)
 	
 	$('#nShip').keyup(function( event ) {
         if (event.which == 13 || event.keyCode == 13) {
-			first = document.getElementById('firstShip').value;		console.log(first);
-			var n = document.getElementById('nShip').value;			console.log(n);
-			Analyse_Init(n);
+			first = document.getElementById('firstShip').value;		//console.log(first);
+			NShips = document.getElementById('nShip').value;			//console.log(n);
+			Analyse_Init(NShips);
         }
         return false;
 	});
+
+// NEW NEW NEW NEW NEW NEW NEW NEW NEW NEW NEW NEW NEW
+/*    $('#dies-stats .diestats').each(function(){
+        $(this).mouseenter(function(){
+			var text1 = $(this).find("strong").text();
+			Return_Ship_Links(text1);		//console.log(shipsnumbers);
+			
+		});
+		$(this).mouseleave(function(){
+			console.log("Borra");
+		});
+	});*/
 }
+
+function Return_Ship_Links(dt) {
+	shipsnumbers = [];
+	$('#cdTrips > table.summar > tbody > tr.cdTripEntry').each(function(index,elem){
+        if ((index >= first) && (first+NShips > index || NShips == 0) && ($(this).children('td:eq(8)').text() == dt)) {
+            shipsnumbers[shipsnumbers.length] = $(this).children('td:eq(9)').find("a").attr('href').replace("/theEnd/", "");
+        }
+    });
+}
+// NEW NEW NEW NEW NEW NEW NEW NEW NEW NEW NEW NEW NEW
 
 function Analyse_Analyse(n)
 {
@@ -250,9 +341,10 @@ function Analyse_Analyse(n)
 	infos['minTriumph'] = -1;
 	infos['allDeaths'] = new Array();
 	infos['allCharacters'] = new Array();
-	
+
 	infos['nbrGames'] = 0 ; // Ships number
 	infos['nbrGamesBeta'] = 0; // Beta ship number
+
 	TotalShip = 0;
 	
 	$('#cdTrips > table.summar > tbody > tr.cdTripEntry').each(function(index,elem){
@@ -354,7 +446,7 @@ function Analyse_Analyse(n)
 			}
 		}
 			
-	}); 
+	});
 	
 	// Sort characters & deaths
 	infos['charaSorted'] = [];	var i = 0;
