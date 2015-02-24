@@ -11,7 +11,7 @@
 // @author	Scipion - http://mush.vg/u/profile/332
 // @author	Javiernh - http://mush.twinoid.es/u/profile/21696
 // @downloadURL	https://raw.github.com/Javiernh/Mush-Analyse-Profile-Plus/release/MAPP.user.js
-// @version	1.1.5
+// @version	1.2
 // ==/UserScript==
 
 var $ = unsafeWindow.jQuery;
@@ -111,12 +111,14 @@ addGlobalStyle('\
 	font-weight: 900; \
 	font-size:26px; \
 }\
-#AnalyseProfile_Result ul li.diestats ul.shiplist { \
+#AnalyseProfile_Result ul li.diestats ul.shiplist, \
+#AnalyseProfile_Result ul li.stats ul.shiplist { \
 	display: none; \
 }\
-#AnalyseProfile_Result ul li.diestats ul.shiplist a.ship { \
+#AnalyseProfile_Result ul li.diestats ul.shiplist a.ship, \
+#AnalyseProfile_Result ul li.stats ul.shiplist a.ship { \
 	display: block; \
-	width: 95px; \
+	width: 85px; \
 	height: 18px; \
 	font-size: 13px; \
 	text-decoration: none! important;\
@@ -124,17 +126,24 @@ addGlobalStyle('\
 	color : #090a61; \
 	text-shadow: 1px 1px 5px #FFF;\
 }\
-#AnalyseProfile_Result ul li.diestats ul.shiplist a.ship:hover { \
+#AnalyseProfile_Result ul li.diestats ul.shiplist a.ship img.icon_char_ship, \
+#AnalyseProfile_Result ul li.stats ul.shiplist a.ship img.icon_char_ship { \
+//	vertical-align: initial;\
+	padding-bottom: 5px;\
+}\
+#AnalyseProfile_Result ul li.diestats ul.shiplist a.ship:hover, \
+#AnalyseProfile_Result ul li.stats ul.shiplist a.ship:hover { \
 //	color: #ff4059; \
 //	text-shadow: 1px 1px 0px #000;\
 }\
-#AnalyseProfile_Result ul li.diestats:hover > ul.shiplist {\
+#AnalyseProfile_Result ul li.diestats:hover > ul.shiplist, \
+#AnalyseProfile_Result ul li.stats:hover > ul.shiplist {\
 	display: block;\
 	position: relative;\
 	width: 100px;\
 //	left: -10px;\
 //	bottom: -125px;\
-	left: 90px;\
+	left: 85px;\
 	top: 0px;\
 	text-align: right;\
 	z-index: 50;\
@@ -142,21 +151,32 @@ addGlobalStyle('\
 	padding: 0px;\
 	border: 0px;\
 }\
-#AnalyseProfile_Result ul li.diestats ul.shiplist li {\
+#AnalyseProfile_Result ul li.diestats ul.shiplist li, \
+#AnalyseProfile_Result ul li.stats ul.shiplist li{\
 	text-align: left;\
 	margin: 0px;\
 	display: block! important;\
-	width: 80px;\
+	width: 85px;\
 	height: auto;\
-	padding: 0px 15px 0 5px! important;\
+	padding: 0px 5px 0 5px! important;\
 	border-width : 1px; \
+}\
+#AnalyseProfile_Result ul li.diestats ul.shiplist li {\
 	border-color : #FBA6B0 #DF011C #DF0125 #DF011C; \
 	-moz-box-shadow : inset 0px 0px 4px #FB3939, 0px 0px 4px #FB3939, 0px 2px 4px #FB3939; \
 	-webkit-box-shadow : inset 0px 0px 4px #FB3939, 0px 0px 4px #FB3939, 0px 2px 4px #FB3939; \
 	box-shadow : inset 0px 0px 4px #FB3939, 0px 0px 4px #FB3939, 0px 2px 4px #FB3939; \
 	background-color: #FCC2C9; \
 }\
-#AnalyseProfile_Result ul li.diestats ul.shiplist li:hover {\
+#AnalyseProfile_Result ul li.stats ul.shiplist li {\
+	border-color : yellow orange orange orange; \
+	-moz-box-shadow : inset 0px 0px 4px goldenrod, 0px 0px 4px goldenrod, 0px 2px 4px goldenrod; \
+	-webkit-box-shadow : inset 0px 0px 4px goldenrod, 0px 0px 4px goldenrod, 0px 2px 4px goldenrod; \
+	box-shadow : inset 0px 0px 4px goldenrod, 0px 0px 4px goldenrod, 0px 2px 4px goldenrod; \
+	background-color: #FCF5C2; \
+}\
+#AnalyseProfile_Result ul li.diestats ul.shiplist li:hover, \
+#AnalyseProfile_Result ul li.stats ul.shiplist li:hover{\
 	background-color: #ECFFA2; \
 	border-color : #BCFFA2 #40E000 #49E000 #40E000; \
 	-moz-box-shadow : inset 0px 0px 4px #56FF35, 0px 0px 4px #56FF35, 0px 2px 4px #56FF35; \
@@ -173,7 +193,7 @@ function charaToClassChar(str) {
 }
 
 first = 0;	NShips = 0;
-function Analyse_AddTable(n) {	
+function Analyse_AddTable(n) {
 	var infos = Analyse_Analyse(n);
 	var iconday = 'slow_cycle';
 	var daytoicon = parseInt(infos['maxDay']/5)*5;
@@ -188,46 +208,82 @@ function Analyse_AddTable(n) {
 				</div></h3>';
 	tabHtml	+=	'<ul id="ships-stats">';
 	// Ship Days
-	tabHtml +=	'<li class="stats"> \
-					<img src="/img/icons/ui/'+iconday+'.png" style="width:26px; height:26px;"><strong><br>Días Nave</strong> \
-					<p style="width:80px;">Max: ' + infos['maxDay'] + '</p> \
-					<p style="width:80px;">Med: <em>' + (infos['totalDay']/infos['nbrGames']).toFixed(1) + '</em></p> \
-					<p style="width:80px; color:#17195B; font-weight:bold;">Tot: ' + infos['totalDay'] + '</p> \
+	tabHtml +=	'<li class="stats">';
+	tabHtml += '<ul class= shiplist>';
+	Return_Ship_Links(infos['maxDay'], 1);
+	for(var link in shipsnumbers) {
+		tabHtml += '<li><a class="ship" href="/theEnd/'+shipsnumbers[link]+'"><img class="icon_char_ship" src="/img/icons/ui/'+ icon_char_ship[link] +'.png"> : #'+ shipsnumbers[link] +'</a></li>';		// Added charac icon
+	}
+	tabHtml += '</ul>';
+	tabHtml	+= '<img src="/img/icons/ui/'+iconday+'.png" style="width:26px; height:26px;"><strong><br>Días Nave</strong> \
+				<p style="width:80px;">Max: ' + infos['maxDay'] + '</p> \
+				<p style="width:80px;">Med: <em>' + (infos['totalDay']/infos['nbrGames']).toFixed(1) + '</em></p> \
+				<p style="width:80px; color:#17195B; font-weight:bold;">Tot: ' + infos['totalDay'] + '</p> \
 			</li>';
 	// Triumph
-	tabHtml +=	'<li class="stats"> \
-					<img src="/img/icons/ui/triumph.png" style="width:26px; height:26px;"><strong><br>Gloria</strong> \
-					<p style="width:80px;">Max: ' + infos['maxTriumph'] + '</p> \
-					<p style="width:80px;">Med: <em>' + (infos['totalTriumph']/infos['nbrGames']).toFixed(1) + '</em></p> \
-					<p style="width:80px; color:#17195B; font-weight:bold;">Tot: ' + infos['totalTriumph'] + '</p> \
+	tabHtml +=	'<li class="stats">';
+	tabHtml += '<ul class= shiplist>';
+	Return_Ship_Links(infos['maxTriumph'], 7);
+	for(var link in shipsnumbers) {
+		tabHtml += '<li><a class="ship" href="/theEnd/'+shipsnumbers[link]+'"><img class="icon_char_ship" src="/img/icons/ui/'+ icon_char_ship[link] +'.png"> : #'+ shipsnumbers[link] +'</a></li>';		// Added charac icon
+	}
+	tabHtml += '</ul>';
+	tabHtml	+= '<img src="/img/icons/ui/triumph.png" style="width:26px; height:26px;"><strong><br>Gloria</strong> \
+				<p style="width:80px;">Max: ' + infos['maxTriumph'] + '</p> \
+				<p style="width:80px;">Med: <em>' + (infos['totalTriumph']/infos['nbrGames']).toFixed(1) + '</em></p> \
+				<p style="width:80px; color:#17195B; font-weight:bold;">Tot: ' + infos['totalTriumph'] + '</p> \
 			</li>';
 	// Researches
-	tabHtml +=	'<li class="stats"> \
-					<img src="/img/icons/ui/microsc.png" style="width:26px; height:26px;"><strong><br>Investigaciones</strong> \
-					<p style="width:80px;">Max: ' + infos['maxSearch'] + '</p> \
-					<p style="width:80px;">Med: <em>' + (infos['totalSearch']/infos['nbrGames']).toFixed(1) + '</em></p> \
-					<p style="width:80px; color:#17195B; font-weight:bold;">Tot: ' + infos['totalSearch'] + '</p> \
+	tabHtml +=	'<li class="stats">';
+	tabHtml += '<ul class= shiplist>';
+	Return_Ship_Links(infos['maxSearch'], 3);
+	for(var link in shipsnumbers) {
+		tabHtml += '<li><a class="ship" href="/theEnd/'+shipsnumbers[link]+'"><img class="icon_char_ship" src="/img/icons/ui/'+ icon_char_ship[link] +'.png"> : #'+ shipsnumbers[link] +'</a></li>';		// Added charac icon
+	}
+	tabHtml += '</ul>';
+	tabHtml	+= '<img src="/img/icons/ui/microsc.png" style="width:26px; height:26px;"><strong><br>Investigaciones</strong> \
+				<p style="width:80px;">Max: ' + infos['maxSearch'] + '</p> \
+				<p style="width:80px;">Med: <em>' + (infos['totalSearch']/infos['nbrGames']).toFixed(1) + '</em></p> \
+				<p style="width:80px; color:#17195B; font-weight:bold;">Tot: ' + infos['totalSearch'] + '</p> \
 			</li>';
 	// Projects
-	tabHtml +=	'<li class="stats"> \
-					<img src="/img/icons/ui/conceptor.png" style="width:26px; height:26px;"><strong><br>Proyectos</strong> \
-					<p style="width:80px;">Max: ' + infos['maxProjects'] + '</p> \
-					<p style="width:80px;">Med: <em>' + (infos['totalProjects']/infos['nbrGames']).toFixed(1) + '</em></p> \
-					<p style="width:80px; color:#17195B; font-weight:bold;">Tot: ' + infos['totalProjects'] + '</p> \
+	tabHtml +=	'<li class="stats">';
+	tabHtml += '<ul class= shiplist>';
+	Return_Ship_Links(infos['maxProjects'], 4);
+	for(var link in shipsnumbers) {
+		tabHtml += '<li><a class="ship" href="/theEnd/'+shipsnumbers[link]+'"><img class="icon_char_ship" src="/img/icons/ui/'+ icon_char_ship[link] +'.png"> : #'+ shipsnumbers[link] +'</a></li>';		// Added charac icon
+	}
+	tabHtml += '</ul>';
+	tabHtml += '<img src="/img/icons/ui/conceptor.png" style="width:26px; height:26px;"><strong><br>Proyectos</strong> \
+				<p style="width:80px;">Max: ' + infos['maxProjects'] + '</p> \
+				<p style="width:80px;">Med: <em>' + (infos['totalProjects']/infos['nbrGames']).toFixed(1) + '</em></p> \
+				<p style="width:80px; color:#17195B; font-weight:bold;">Tot: ' + infos['totalProjects'] + '</p> \
 			</li>';
 	// Planets
-	tabHtml +=	'<li class="stats"> \
-					<img src="/img/icons/ui/planet.png" style="width:26px; height:26px;"><strong><br>Planetas</strong> \
-					<p style="width:80px;">Max: ' + infos['maxPlanetsScan'] + '</p> \
-					<p style="width:80px;">Med: <em>' + (infos['totalPlanetsScan']/infos['nbrGames']).toFixed(1) + '</em></p> \
-					<p style="width:80px; color:#17195B; font-weight:bold;">Tot: ' + infos['totalPlanetsScan'] + '</p> \
+	tabHtml +=	'<li class="stats">';
+	tabHtml += '<ul class= shiplist>';
+	Return_Ship_Links(infos['maxPlanetsScan'], 5);
+	for(var link in shipsnumbers) {
+		tabHtml += '<li><a class="ship" href="/theEnd/'+shipsnumbers[link]+'"><img class="icon_char_ship" src="/img/icons/ui/'+ icon_char_ship[link] +'.png"> : #'+ shipsnumbers[link] +'</a></li>';		// Added charac icon
+	}
+	tabHtml += '</ul>';
+	tabHtml	+= '<img src="/img/icons/ui/planet.png" style="width:26px; height:26px;"><strong><br>Planetas</strong> \
+				<p style="width:80px;">Max: ' + infos['maxPlanetsScan'] + '</p> \
+				<p style="width:80px;">Med: <em>' + (infos['totalPlanetsScan']/infos['nbrGames']).toFixed(1) + '</em></p> \
+				<p style="width:80px; color:#17195B; font-weight:bold;">Tot: ' + infos['totalPlanetsScan'] + '</p> \
 			</li>';
 	// Expeditions
-	tabHtml +=	'<li class="stats"> \
-					<img src="/img/icons/ui/survival.png" style="width:26px; height:26px;"><strong><br>Exploraciones</strong> \
-					<p style="width:80px;">Max: ' + infos['maxExplo'] + '</p> \
-					<p style="width:80px;">Med: <em>' + (infos['totalExplo']/infos['nbrGames']).toFixed(1) + '</em></p> \
-					<p style="width:80px; color:#17195B; font-weight:bold;">Tot: ' + infos['totalExplo'] + '</p> \
+	tabHtml +=	'<li class="stats">';
+	tabHtml += '<ul class= shiplist>';
+	Return_Ship_Links(infos['maxExplo'], 2);
+	for(var link in shipsnumbers) {
+		tabHtml += '<li><a class="ship" href="/theEnd/'+shipsnumbers[link]+'"><img class="icon_char_ship" src="/img/icons/ui/'+ icon_char_ship[link] +'.png"> : #'+ shipsnumbers[link] +'</a></li>';		// Added charac icon
+	}
+	tabHtml += '</ul>';
+	tabHtml	+= '<img src="/img/icons/ui/survival.png" style="width:26px; height:26px;"><strong><br>Exploraciones</strong> \
+				<p style="width:80px;">Max: ' + infos['maxExplo'] + '</p> \
+				<p style="width:80px;">Med: <em>' + (infos['totalExplo']/infos['nbrGames']).toFixed(1) + '</em></p> \
+				<p style="width:80px; color:#17195B; font-weight:bold;">Tot: ' + infos['totalExplo'] + '</p> \
 			</li>';
 
 	// Stats notice
@@ -253,16 +309,16 @@ function Analyse_AddTable(n) {
 	for(var death in infos['deathSorted']) {
 		tabHtml += '<li class="diestats">';
 		tabHtml += '<ul class= shiplist>';
-		Return_Ship_Links(infos['deathSorted'][death][0]);
+		Return_Ship_Links(infos['deathSorted'][death][0], 8);
 		for(var link in shipsnumbers) {
-			tabHtml += '<li><a class="ship" href="/theEnd/'+shipsnumbers[link]+'">Nave - '+shipsnumbers[link]+'</a></li>';
+            tabHtml += '<li><a class="ship" href="/theEnd/'+shipsnumbers[link]+'"><img class="icon_char_ship" src="/img/icons/ui/'+ icon_char_ship[link] +'.png"> : #'+ shipsnumbers[link] +'</a></li>';		// Added charac icon
 		}
 		tabHtml += '</ul>';
 		tabHtml += '<p class="stroke">' + infos['deathSorted'][death][1] + '</p> \
 				<strong>' + infos['deathSorted'][death][0] + '</strong> \
 				<p style="width:80px;"><em>' + (100*infos['deathSorted'][death][1]/infos['nbrGames']).toFixed(2) + ' %</em></p>';
 /*		tabHtml += '<ul class= shiplist>';
-		Return_Ship_Links(infos['deathSorted'][death][0]);
+		Return_Ship_Links(infos['deathSorted'][death][0], 8);
 		for(var link in shipsnumbers) {
 			tabHtml += '<li><a class="ship" href="/theEnd/'+shipsnumbers[link]+'">Nave - '+shipsnumbers[link]+'</a></li>';
 		}
@@ -292,26 +348,21 @@ function Analyse_AddTable(n) {
         }
         return false;
 	});
-
-/*    $('#dies-stats .diestats').each(function(){
-        $(this).mouseenter(function(){
-			var text1 = $(this).find("strong").text();
-			Return_Ship_Links(text1);		//console.log(shipsnumbers);
-			
-		});
-		$(this).mouseleave(function(){
-			console.log("Borra");
-		});
-	});*/
 }
 
-function Return_Ship_Links(dt) {
+function Return_Ship_Links(dt, td_eq) {
 	shipsnumbers = [];
+    charac_in_ship = [];	// Added new array
+    icon_char_ship = [];	// Added new array
 	$('#cdTrips > table.summar > tbody > tr.cdTripEntry').each(function(index,elem){
-        if ((index >= first) && (first+NShips > index || NShips == 0) && ($(this).children('td:eq(8)').text() == dt)) {
-            shipsnumbers[shipsnumbers.length] = $(this).children('td:eq(9)').find("a").attr('href').replace("/theEnd/", "");
-        }
-    });
+		var comparator = $(this).children('td:eq('+ td_eq +')').text();
+        if (td_eq != 8) { comparator = parseInt(comparator); }
+		if ((index >= first) && (first+NShips > index || NShips == 0) && (comparator == dt)) {
+			charac_in_ship[charac_in_ship.length] = $(this).children('td:eq(0)').text().trim();	// Added charac name array
+			icon_char_ship[icon_char_ship.length] = $(this).children('td:eq(0)').text().trim().toLowerCase().replace(" ","");	// Added charac name array
+			shipsnumbers[shipsnumbers.length] = $(this).children('td:eq(9)').find("a").attr('href').replace("/theEnd/", "");
+		}
+	});
 }
 
 function Analyse_Analyse(n) {
