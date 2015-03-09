@@ -11,7 +11,7 @@
 // @author	Scipion - http://mush.vg/u/profile/332
 // @author	Javiernh - http://mush.twinoid.es/u/profile/21696
 // @downloadURL	https://raw.github.com/Javiernh/Mush-Analyse-Profile-Plus/release/MAPP.user.js
-// @version	1.2
+// @version	1.2.1
 // ==/UserScript==
 
 var $ = unsafeWindow.jQuery;
@@ -94,7 +94,8 @@ addGlobalStyle('\
 	font-variant:small-caps; \
 	padding: 0 9px 9px 9px \
 } \
-#AnalyseProfile_Result ul li.diestats:hover { \
+#AnalyseProfile_Result ul li.diestats:hover, \
+#AnalyseProfile_Result ul li.stats:hover { \
 	background-color: #ECFFA2; \
 	border-color : #BCFFA2 #40E000 #49E000 #40E000; \
 	-moz-box-shadow : inset 0px 0px 4px #56FF35, 0px 0px 4px #56FF35, 0px 2px 4px #56FF35; \
