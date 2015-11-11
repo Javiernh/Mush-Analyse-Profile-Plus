@@ -280,8 +280,8 @@ Profile.AddTable = function(n) {
 	tabHtml +=	'<ul id="char-stats"><ul class="tabletitle">ESTADÍSTICAS DE PERSONAJES</ul>';
 	for(var character in infos.charVoyages) {
 		tabHtml += '<li class="charstat" style="font-size:100%; width:80px; font-variant:small-caps;"> \
-				<img class="bodychar ' + character.toLowerCase().replace(' ', '_') + '" src="/img/design/pixel.gif" > \
-				<strong><br>' + character + '</strong> \
+				<img class="bodychar ' + infos.charVoyages[character][1].toLowerCase().replace(' ', '_') + '" src="/img/design/pixel.gif" > \
+				<strong><br>' + infos.charVoyages[character][1] + '</strong> \
 				<p style="width:80px;">' + infos.voyage + ': ' + infos.charVoyages[character][0] + '</p> \
 				<p style="width:80px;"><em>' + (100*infos.charVoyages[character][0]/infos.nbrGames).toFixed(2) + ' %</em></p> \
 			</li>';
@@ -308,6 +308,12 @@ Profile.AddTable = function(n) {
 			tabHtml += '<p style="height:19px;"><strong>' + infos.deathSorted[death][0] + '</strong></p>';
 		}
 		tabHtml += '<p style="width:80px;"><em>' + (100*infos.deathSorted[death][1]/infos.nbrGames).toFixed(2) + ' %</em></p>';
+//		tabHtml += '<ul class= shiplist>';
+//		Profile.ShipLinks(infos.deathSorted[death][0], 8);
+//		for(var link in shipsnumbers) {
+//			tabHtml += '<li><a class="ship" href="/theEnd/'+shipsnumbers[link]+'">Nave - '+shipsnumbers[link]+'</a></li>';
+//		}
+//		tabHtml += '</ul>';
 		tabHtml += '</li>';
 	}
 	tabHtml +=	'</ul>';
@@ -520,5 +526,6 @@ Profile.Analyse.init = function(n) {
 	$('#AnalyseProfile_Result').remove();
 	Profile.AddTable(n);
 }
+
 
 Profile.init();
