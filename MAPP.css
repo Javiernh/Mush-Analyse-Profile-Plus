@@ -59,8 +59,7 @@
 	font-variant:small-caps;
 	padding: 0 9px 9px 9px
 }
-#ProfileData ul li.diestats:hover,
-#ProfileData ul li.stats:hover {
+#ProfileData ul li.diestats:hover, #ProfileData ul li.stats:hover {
 	background-color: #ECFFA2;
 	border-color : #BCFFA2 #40E000 #49E000 #40E000;
 	-moz-box-shadow : inset 0px 0px 4px #56FF35, 0px 0px 4px #56FF35, 0px 2px 4px #56FF35;
@@ -77,12 +76,10 @@
 	font-weight: 900;
 	font-size:26px;
 }
-#ProfileData ul li.diestats ul.shiplist,
-#ProfileData ul li.stats ul.shiplist {
+#ProfileData ul li.diestats ul.shiplist, #ProfileData ul li.stats ul.shiplist {
 	display: none;
 }
-#ProfileData ul li.diestats ul.shiplist a.ship,
-#ProfileData ul li.stats ul.shiplist a.ship {
+#ProfileData ul li.diestats ul.shiplist a.ship, #ProfileData ul li.stats ul.shiplist a.ship {
 	display: block;
 	width: 85px;
 	height: 18px;
@@ -92,23 +89,17 @@
 	color : #090a61;
 	text-shadow: 1px 1px 5px #FFF;
 }
-#ProfileData ul li.diestats ul.shiplist a.ship img.icon_char_ship,
-#ProfileData ul li.stats ul.shiplist a.ship img.icon_char_ship {
-//	vertical-align: initial;
+#ProfileData ul li.diestats ul.shiplist a.ship img.icon_char_ship, #ProfileData ul li.stats ul.shiplist a.ship img.icon_char_ship {
 	padding-bottom: 5px;
 }
-#ProfileData ul li.diestats ul.shiplist a.ship:hover,
-#ProfileData ul li.stats ul.shiplist a.ship:hover {
+#ProfileData ul li.diestats ul.shiplist a.ship:hover, #ProfileData ul li.stats ul.shiplist a.ship:hover {
 	color: #ff4059;
 	text-shadow: 1px 1px 0px #000;
 }
-#ProfileData ul li.diestats:hover > ul.shiplist,
-#ProfileData ul li.stats:hover > ul.shiplist {
+#ProfileData ul li.diestats:hover > ul.shiplist, #ProfileData ul li.stats:hover > ul.shiplist {
 	display: block;
 	position: relative;
 	width: 100px;
-//	left: -10px;
-//	bottom: -125px;
 	left: 85px;
 	top: 0px;
 	text-align: right;
@@ -117,8 +108,7 @@
 	padding: 0px;
 	border: 0px;
 }
-#ProfileData ul li.diestats ul.shiplist li,
-#ProfileData ul li.stats ul.shiplist li{
+#ProfileData ul li.diestats ul.shiplist li, #ProfileData ul li.stats ul.shiplist li{
 	text-align: left;
 	margin: 0px;
 	display: block! important;
@@ -141,8 +131,7 @@
 	box-shadow : inset 0px 0px 4px goldenrod, 0px 0px 4px goldenrod, 0px 2px 4px goldenrod;
 	background-color: #FCF5C2;
 }
-#ProfileData ul li.diestats ul.shiplist li:hover,
-#ProfileData ul li.stats ul.shiplist li:hover{
+#ProfileData ul li.diestats ul.shiplist li:hover, #ProfileData ul li.stats ul.shiplist li:hover{
 	background-color: #ECFFA2;
 	border-color : #BCFFA2 #40E000 #49E000 #40E000;
 	-moz-box-shadow : inset 0px 0px 4px #56FF35, 0px 0px 4px #56FF35, 0px 2px 4px #56FF35;
