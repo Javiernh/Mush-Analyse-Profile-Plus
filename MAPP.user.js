@@ -1,5 +1,5 @@
 // ==UserScript==
-// @name MAPP
+// @name MAPP Beta
 // @namespace Mush Analyse Profile Plus
 // @description Script Mush para los Perfiles (mejorado por Javiernh)
 // @/downloadURL https://raw.github.com/Javiernh/Mush-Analyse-Profile-Plus/release/MAPP.user.js
@@ -10,339 +10,266 @@
 // @include	http://mush.twinoid.com/me*
 // @include	http://mush.vg/me*
 // @require	http://code.jquery.com/jquery-latest.js
-// @version		1.3
+// @version		1.4b
 // ==/UserScript==
+/* jshint -W043 */
 
-Profile = function() {}
+Profile = {};
 Profile.version = GM_info.script.version;
-Profile.init = function() {
-	Profile.css();
-	Profile.Analyse.init(0);
+Profile.Title = GM_info.script.name;
+Profile.domain = document.domain;
+Profile.MushURL = 'http://' + document.domain;
+Profile.Stats = {};
+	Profile.Stats.cycles = [];
+//	Profile.Stats.maxDay = 0;
+// **************** Conseguir una visualización más rápida **************** //
+
+Profile.Stats.data = function() {
+	$('.tid_scrollContent:eq(1) > table tr').each(function() {
+		var c = $(this).children('td:eq(1)').children().text().search(/(ciclos|cycles)/i);
+		if (c !== -1) {
+			var charname = $(this).children('td:eq(0)').children().attr('src').replace(Profile.MushURL + '/img/icons/ui/', '').replace('.png', '');
+			var cycles = $(this).children('td:eq(2)').text().replace('x', '');
+			Profile.Stats.cycles[charname] = cycles;
+			$('#char-stats > li.' + charname + ' strong').after('<p>' + Profile.Cycles + ': ' + Profile.Stats.cycles[charname] + '</p>');
+		}
+	});
+}	// END FUNCTION - Profile.Stats.data
+
+// **************** Conseguir una visualización más rápida **************** //
+Profile.Voyages = {};
+	Profile.Voyages.totalDay = 0;
+	Profile.Voyages.maxDay = 0;
+	Profile.Voyages.minDay = -1;
+	Profile.Voyages.totalResearch = 0;
+	Profile.Voyages.maxResearch = 0;
+	Profile.Voyages.minResearch = -1;
+	Profile.Voyages.totalProjects = 0;
+	Profile.Voyages.maxProjects = 0;
+	Profile.Voyages.minProjects = -1;
+	Profile.Voyages.totalPlanets = 0;
+	Profile.Voyages.maxPlanets = 0;
+	Profile.Voyages.minPlanets = -1;
+	Profile.Voyages.totalExplo = 0;
+	Profile.Voyages.maxExplo = 0;
+	Profile.Voyages.minExplo = -1;
+	Profile.Voyages.totalGlory = 0;
+	Profile.Voyages.maxGlory = 0;
+	Profile.Voyages.minGlory = -1;
+	Profile.Voyages.allDeaths = [];
+	Profile.Voyages.allCharacters = [];
+	Profile.Voyages.quantity = 0 ;
+	Profile.Voyages.links = [];
+	Profile.Voyages.TxtVoyage = $('#cdTrips h3 .cornerright').text().toLowerCase();
+	Profile.Voyages.TxtCharacter = $('#cdTrips > table.summar > tbody > tr:first > th:eq(0)').text();
+	Profile.Voyages.TxtDays = $('#cdTrips > table.summar > tbody > tr:first > th:eq(1)').text().toLowerCase();
+	Profile.Voyages.TxtGlory = $('#cdTrips > table.summar > tbody > tr:first > th:eq(7)').text().toLowerCase();
+	Profile.Voyages.TxtResearch = $('#cdTrips > table.summar > tbody > tr:first > th:eq(3)').text().toLowerCase();
+	Profile.Voyages.TxtPlanets = $('#cdTrips > table.summar > tbody > tr:first > th:eq(5)').text().toLowerCase().split(' ')[0];
+	Profile.Voyages.TxtExplor = $('#cdTrips > table.summar > tbody > tr:first > th:eq(2)').text().toLowerCase();
+	Profile.Voyages.number = 0;
+
+switch (Profile.domain) {
+	case 'mush.twinoid.es':
+		Profile.Cycles = 'ciclos';
+		Profile.Title1 = 'Estadísticas de viajes';
+		Profile.Title2 = 'Estadísticas de personajes';
+		Profile.Title3 = 'Estadísticas de muertes';
+		Profile.Voyages.TxtProject = $('#cdTrips > table.summar > tbody > tr:first > th:eq(4)').text().toLowerCase().split(' ')[0];
+		break;
+	case 'mush.twinoid.com':
+		Profile.Cycles = 'cycles';
+		Profile.Title1 = 'Voyages statistics';
+		Profile.Title2 = 'Characters statistics';
+		Profile.Title3 = 'Deaths statistics';
+		Profile.Voyages.TxtProject = $('#cdTrips > table.summar > tbody > tr:first > th:eq(4)').text().toLowerCase().split(' ')[1];
+		break;
+	default:
+		Profile.Cycles = 'cycles';
+		Profile.Title1 = 'Statistiques de voyages';
+		Profile.Title2 = 'Statistiques de personnages';
+		Profile.Title3 = 'Statistiques de morts';
+		Profile.Voyages.TxtProject = $('#cdTrips > table.summar > tbody > tr:first > th:eq(4)').text().toLowerCase().split(' ')[0];
 }
 
-Profile.css = function() {
-	$("<style>").attr("type", "text/css").html("\
-		.nshipinput	{ width: 35px; height: 16px; padding-right: 3px; text-align: right; background: transparent; cursor: pointer; \
-					border: 1px inset; border-color: #4e5162; font-size: 15px; color: #FEB500; } \
-		.nshipinput:hover { border: 1px inset; border-color: white; color: white; } \
-		.nshipinput:focus { background-color: #FE7D00; border: 1px inset; border-color: #FEB500; color: white; } \
-		.bodychar { \
-			position: relative;\
-			opacity: 1;\
-			width: 28px;\
-			height: 44px;\
-			background: url('http://mush.twinoid.es/img/art/char.png') no-repeat;\
-			z-index: 4;\
-		}\
-		#profile #AnalyseProfile_Result > ul, ul.tabletitle { \
-			padding: 0px 0px 15px 0px \
-		} \
-		#AnalyseProfile_Result ul li.stats { \
-			border-width : 1px; \
-			border-color : yellow orange orange orange; \
-			-moz-box-shadow : inset 0px 0px 4px goldenrod, 0px 0px 4px goldenrod, 0px 2px 4px goldenrod; \
-			-webkit-box-shadow : inset 0px 0px 4px goldenrod, 0px 0px 4px goldenrod, 0px 2px 4px goldenrod; \
-			box-shadow : inset 0px 0px 4px goldenrod, 0px 0px 4px goldenrod, 0px 2px 4px goldenrod; \
-			background-color: #FCF5C2; \
-			color : #090a61; \
-			font-size:100%; \
-			width:80px; \
-			padding: 4px 0px 15px 0px \
-			margin:4px 4px 4px 4px; \
-			font-variant:small-caps; \
-		} \
-		#AnalyseProfile_Result ul li.charstat { \
-			border-width : 1px; \
-			border-color : #A6EEFB #01c3df #01c3df #01c3df; \
-			-moz-box-shadow : inset 0px 0px 4px #3965fb, 0px 0px 4px #3965fb, 0px 2px 4px #3965fb; \
-			-webkit-box-shadow : inset 0px 0px 4px #3965fb, 0px 0px 4px #3965fb, 0px 2px 4px #3965fb; \
-			box-shadow : inset 0px 0px 4px #3965fb, 0px 0px 4px #3965fb, 0px 2px 4px #3965fb; \
-			background-color : #c2f3fc; \
-			color : #090a61; \
-			font-size:100%; \
-			width:80px; \
-			margin:4px 4px 4px 4px; \
-			font-variant:small-caps; \
-			padding: 6px 9px 9px 9px \
-		} \
-		#profile #AnalyseProfile_Result #dies-stats > li { \
-			height:75px; \
-			vertical-align: bottom; \
-		} \
-		#AnalyseProfile_Result ul li.diestats { \
-			border-width : 1px; \
-			border-color : #FBA6B0 #DF011C #DF0125 #DF011C; \
-			-moz-box-shadow : inset 0px 0px 4px #FB3939, 0px 0px 4px #FB3939, 0px 2px 4px #FB3939; \
-			-webkit-box-shadow : inset 0px 0px 4px #FB3939, 0px 0px 4px #FB3939, 0px 2px 4px #FB3939; \
-			box-shadow : inset 0px 0px 4px #FB3939, 0px 0px 4px #FB3939, 0px 2px 4px #FB3939; \
-			background-color: #FCC2C9; \
-			color : #090a61; \
-			font-size:100%; \
-			width:80px; \
-			margin:4px 4px 4px 4px; \
-			font-variant:small-caps; \
-			padding: 0 9px 9px 9px \
-		} \
-		#AnalyseProfile_Result ul li.diestats:hover, \
-		#AnalyseProfile_Result ul li.stats:hover { \
-			background-color: #ECFFA2; \
-			border-color : #BCFFA2 #40E000 #49E000 #40E000; \
-			-moz-box-shadow : inset 0px 0px 4px #56FF35, 0px 0px 4px #56FF35, 0px 2px 4px #56FF35; \
-			-webkit-box-shadow : inset 0px 0px 4px #56FF35, 0px 0px 4px #56FF35, 0px 2px 4px #56FF35; \
-			box-shadow : inset 0px 0px 4px #56FF35, 0px 0px 4px #56FF35, 0px 2px 4px #56FF35; \
-		}\
-		.stroke { \
-			color: #ff4059; \
-			text-shadow: \
-				-1px -1px 0 blue, \
-				1px -1px 0 blue, \
-				-1px 1px 0 blue, \
-				1px 1px 0 blue; \
-			font-weight: 900; \
-			font-size:26px; \
-		}\
-		#AnalyseProfile_Result ul li.diestats ul.shiplist, \
-		#AnalyseProfile_Result ul li.stats ul.shiplist { \
-			display: none; \
-		}\
-		#AnalyseProfile_Result ul li.diestats ul.shiplist a.ship, \
-		#AnalyseProfile_Result ul li.stats ul.shiplist a.ship { \
-			display: block; \
-			width: 85px; \
-			height: 18px; \
-			font-size: 13px; \
-			text-decoration: none! important;\
-			font-variant: normal; \
-			color : #090a61; \
-			text-shadow: 1px 1px 5px #FFF;\
-		}\
-		#AnalyseProfile_Result ul li.diestats ul.shiplist a.ship img.icon_char_ship, \
-		#AnalyseProfile_Result ul li.stats ul.shiplist a.ship img.icon_char_ship { \
-		//	vertical-align: initial;\
-			padding-bottom: 5px;\
-		}\
-		#AnalyseProfile_Result ul li.diestats ul.shiplist a.ship:hover, \
-		#AnalyseProfile_Result ul li.stats ul.shiplist a.ship:hover { \
-			color: #ff4059; \
-			text-shadow: 1px 1px 0px #000;\
-		}\
-		#AnalyseProfile_Result ul li.diestats:hover > ul.shiplist, \
-		#AnalyseProfile_Result ul li.stats:hover > ul.shiplist {\
-			display: block;\
-			position: relative;\
-			width: 100px;\
-		//	left: -10px;\
-		//	bottom: -125px;\
-			left: 85px;\
-			top: 0px;\
-			text-align: right;\
-			z-index: 50;\
-			height: 0px;\
-			padding: 0px;\
-			border: 0px;\
-		}\
-		#AnalyseProfile_Result ul li.diestats ul.shiplist li, \
-		#AnalyseProfile_Result ul li.stats ul.shiplist li{\
-			text-align: left;\
-			margin: 0px;\
-			display: block! important;\
-			width: 85px;\
-			height: auto;\
-			padding: 0px 5px 0 5px! important;\
-			border-width : 1px; \
-		}\
-		#AnalyseProfile_Result ul li.diestats ul.shiplist li {\
-			border-color : #FBA6B0 #DF011C #DF0125 #DF011C; \
-			-moz-box-shadow : inset 0px 0px 4px #FB3939, 0px 0px 4px #FB3939, 0px 2px 4px #FB3939; \
-			-webkit-box-shadow : inset 0px 0px 4px #FB3939, 0px 0px 4px #FB3939, 0px 2px 4px #FB3939; \
-			box-shadow : inset 0px 0px 4px #FB3939, 0px 0px 4px #FB3939, 0px 2px 4px #FB3939; \
-			background-color: #FCC2C9; \
-		}\
-		#AnalyseProfile_Result ul li.stats ul.shiplist li {\
-			border-color : yellow orange orange orange; \
-			-moz-box-shadow : inset 0px 0px 4px goldenrod, 0px 0px 4px goldenrod, 0px 2px 4px goldenrod; \
-			-webkit-box-shadow : inset 0px 0px 4px goldenrod, 0px 0px 4px goldenrod, 0px 2px 4px goldenrod; \
-			box-shadow : inset 0px 0px 4px goldenrod, 0px 0px 4px goldenrod, 0px 2px 4px goldenrod; \
-			background-color: #FCF5C2; \
-		}\
-		#AnalyseProfile_Result ul li.diestats ul.shiplist li:hover, \
-		#AnalyseProfile_Result ul li.stats ul.shiplist li:hover{\
-			background-color: #ECFFA2; \
-			border-color : #BCFFA2 #40E000 #49E000 #40E000; \
-			-moz-box-shadow : inset 0px 0px 4px #56FF35, 0px 0px 4px #56FF35, 0px 2px 4px #56FF35; \
-			-webkit-box-shadow : inset 0px 0px 4px #56FF35, 0px 0px 4px #56FF35, 0px 2px 4px #56FF35; \
-			box-shadow : inset 0px 0px 4px #56FF35, 0px 0px 4px #56FF35, 0px 2px 4px #56FF35; \
-		}\
-	").appendTo("head");
-}
-
-first = 0;	NShips = 0;
-Profile.AddTable = function(n) {
-	var infos = Profile.Analyse(n);
-	var iconday = 'slow_cycle';
-	var daytoicon = parseInt(infos.maxDay/5)*5;
+Profile.DisplayData = function() {
+	iconday = 'slow_cycle';		// Icono de reloj para los que no llegan a 5 días de duración.
+	var daytoicon = parseInt(Profile.Voyages.maxDay/5)*5;
 	if (daytoicon == 25) { daytoicon = 20; }		// Corrección de ausencia del icono de 25 días.
 	if (daytoicon !== 0) { iconday = 'day'+ daytoicon; }
-	var tabHtml = '<div id="AnalyseProfile_Result" class="awards twinstyle"> \
-			<h3><div class="cornerright"> \
-				Mush Analyse Profile Plus v' + Profile.version + ' - \
-				Quitar <input id="firstShip" class="nshipinput" type="text" tabindex="1" \
-				maxlength="4" value='+ first +'> nave(s) reciente(s) - \
-				Analizar : <input onfocus="this.select();" id="nShip" class="nshipinput" type="text" tabindex="1" \
-				maxlength="4" value='+ (infos.nbrGames) +'> (0 para todas)\
-				</div></h3>';
-	tabHtml	+=	'<ul id="ships-stats">';
-	// Ship Days
-	tabHtml +=	'<li class="stats">';
-	tabHtml += '<ul class= shiplist>';
-	Profile.ShipLinks(infos.maxDay, 1);
-	for(var link in shipsnumbers) {
-		tabHtml += '<li><a class="ship" href="/theEnd/'+shipsnumbers[link]+'"><img class="icon_char_ship" src="/img/icons/ui/'+ icon_char_ship[link] +'.png"> : #'+ shipsnumbers[link] +'</a></li>';		// Added charac icon
-	}
-	tabHtml += '</ul>';
-	tabHtml	+= '<img src="/img/icons/ui/'+iconday+'.png" style="width:26px; height:26px;"><strong><br>Días Nave</strong> \
-				<p style="width:80px;">Max: ' + infos.maxDay + '</p> \
-				<p style="width:80px;">Med: <em>' + (infos.totalDay/infos.nbrGames).toFixed(1) + '</em></p> \
-				<p style="width:80px; color:#17195B; font-weight:bold;">Tot: ' + infos.totalDay + '</p> \
-			</li>';
-	// Triumph
-	tabHtml +=	'<li class="stats">';
-	tabHtml += '<ul class= shiplist>';
-	Profile.ShipLinks(infos.maxTriumph, 7);
-	for(var link in shipsnumbers) {
-		tabHtml += '<li><a class="ship" href="/theEnd/'+shipsnumbers[link]+'"><img class="icon_char_ship" src="/img/icons/ui/'+ icon_char_ship[link] +'.png"> : #'+ shipsnumbers[link] +'</a></li>';		// Added charac icon
-	}
-	tabHtml += '</ul>';
-	tabHtml	+= '<img src="/img/icons/ui/triumph.png" style="width:26px; height:26px;"><strong><br>Gloria</strong> \
-				<p style="width:80px;">Max: ' + infos.maxTriumph + '</p> \
-				<p style="width:80px;">Med: <em>' + (infos.totalTriumph/infos.nbrGames).toFixed(1) + '</em></p> \
-				<p style="width:80px; color:#17195B; font-weight:bold;">Tot: ' + infos.totalTriumph + '</p> \
-			</li>';
-	// Researches
-	tabHtml +=	'<li class="stats">';
-	tabHtml += '<ul class= shiplist>';
-	Profile.ShipLinks(infos.maxSearch, 3);
-	for(var link in shipsnumbers) {
-		tabHtml += '<li><a class="ship" href="/theEnd/'+shipsnumbers[link]+'"><img class="icon_char_ship" src="/img/icons/ui/'+ icon_char_ship[link] +'.png"> : #'+ shipsnumbers[link] +'</a></li>';		// Added charac icon
-	}
-	tabHtml += '</ul>';
-	tabHtml	+= '<img src="/img/icons/ui/microsc.png" style="width:26px; height:26px;"><strong><br>Investigaciones</strong> \
-				<p style="width:80px;">Max: ' + infos.maxSearch + '</p> \
-				<p style="width:80px;">Med: <em>' + (infos.totalSearch/infos.nbrGames).toFixed(1) + '</em></p> \
-				<p style="width:80px; color:#17195B; font-weight:bold;">Tot: ' + infos.totalSearch + '</p> \
-			</li>';
-	// Projects
-	tabHtml +=	'<li class="stats">';
-	tabHtml += '<ul class= shiplist>';
-	Profile.ShipLinks(infos.maxProjects, 4);
-	for(var link in shipsnumbers) {
-		tabHtml += '<li><a class="ship" href="/theEnd/'+shipsnumbers[link]+'"><img class="icon_char_ship" src="/img/icons/ui/'+ icon_char_ship[link] +'.png"> : #'+ shipsnumbers[link] +'</a></li>';		// Added charac icon
-	}
-	tabHtml += '</ul>';
-	tabHtml += '<img src="/img/icons/ui/conceptor.png" style="width:26px; height:26px;"><strong><br>Proyectos</strong> \
-				<p style="width:80px;">Max: ' + infos.maxProjects + '</p> \
-				<p style="width:80px;">Med: <em>' + (infos.totalProjects/infos.nbrGames).toFixed(1) + '</em></p> \
-				<p style="width:80px; color:#17195B; font-weight:bold;">Tot: ' + infos.totalProjects + '</p> \
-			</li>';
-	// Planets
-	tabHtml +=	'<li class="stats">';
-	tabHtml += '<ul class= shiplist>';
-	Profile.ShipLinks(infos.maxPlanetsScan, 5);
-	for(var link in shipsnumbers) {
-		tabHtml += '<li><a class="ship" href="/theEnd/'+shipsnumbers[link]+'"><img class="icon_char_ship" src="/img/icons/ui/'+ icon_char_ship[link] +'.png"> : #'+ shipsnumbers[link] +'</a></li>';		// Added charac icon
-	}
-	tabHtml += '</ul>';
-	tabHtml	+= '<img src="/img/icons/ui/planet.png" style="width:26px; height:26px;"><strong><br>Planetas</strong> \
-				<p style="width:80px;">Max: ' + infos.maxPlanetsScan + '</p> \
-				<p style="width:80px;">Med: <em>' + (infos.totalPlanetsScan/infos.nbrGames).toFixed(1) + '</em></p> \
-				<p style="width:80px; color:#17195B; font-weight:bold;">Tot: ' + infos.totalPlanetsScan + '</p> \
-			</li>';
-	// Expeditions
-	tabHtml +=	'<li class="stats">';
-	tabHtml += '<ul class= shiplist>';
-	Profile.ShipLinks(infos.maxExplo, 2);
-	for(var link in shipsnumbers) {
-		tabHtml += '<li><a class="ship" href="/theEnd/'+shipsnumbers[link]+'"><img class="icon_char_ship" src="/img/icons/ui/'+ icon_char_ship[link] +'.png"> : #'+ shipsnumbers[link] +'</a></li>';		// Added charac icon
-	}
-	tabHtml += '</ul>';
-	tabHtml	+= '<img src="/img/icons/ui/survival.png" style="width:26px; height:26px;"><strong><br>Exploraciones</strong> \
-				<p style="width:80px;">Max: ' + infos.maxExplo + '</p> \
-				<p style="width:80px;">Med: <em>' + (infos.totalExplo/infos.nbrGames).toFixed(1) + '</em></p> \
-				<p style="width:80px; color:#17195B; font-weight:bold;">Tot: ' + infos.totalExplo + '</p> \
-			</li>';
-
-	// Stats notice
-	tabHtml +=	'<p style="font-size: 80%;">¹ Valores referentes a la nave; \
-				salvo la <strong>Gloria</strong>, que pertenece al jugador.</p>';
-	tabHtml +=	'</ul>';
-
-	// CHARACTER STATS
-	tabHtml +=	'<ul id="char-stats"><ul class="tabletitle">ESTADÍSTICAS DE PERSONAJES</ul>';
-	for(var character in infos.charVoyages) {
-		tabHtml += '<li class="charstat" style="font-size:100%; width:80px; font-variant:small-caps;"> \
-				<img class="bodychar ' + infos.charVoyages[character][1].toLowerCase().replace(' ', '_') + '" src="/img/design/pixel.gif" > \
-				<strong><br>' + infos.charVoyages[character][1] + '</strong> \
-				<p style="width:80px;">' + infos.voyage + ': ' + infos.charVoyages[character][0] + '</p> \
-				<p style="width:80px;"><em>' + (100*infos.charVoyages[character][0]/infos.nbrGames).toFixed(2) + ' %</em></p> \
-			</li>';
-	}
-	tabHtml +=	'</ul>';
-	// End Character Stats
-
-	// DIES STATS
-	tabHtml +=	'<ul id="dies-stats"><ul class="tabletitle">ESTADÍSTICAS DE MUERTES</ul>';
-	for(var death in infos.deathSorted) {
-		tabHtml += '<li class="diestats">';
-		tabHtml += '<ul class= shiplist>';
-		Profile.ShipLinks(infos.deathSorted[death][0], 8);
-		for(var link in shipsnumbers) {
-            tabHtml += '<li><a class="ship" href="/theEnd/'+shipsnumbers[link]+'"><img class="icon_char_ship" src="/img/icons/ui/'+ icon_char_ship[link] +'.png"> : #'+ shipsnumbers[link] +'</a></li>';		// Added charac icon
+	$('<div id="ProfileData" class="awards twinstyle bgtablesummar"></div>').prependTo('#profile > div.column2 > div.data');
+//	$('<h3><div class="cornerright">' + Profile.Title + ' v' + Profile.version + ' </div></h3>').appendTo('#ProfileData');
+	$('<h3>' + Profile.Title + ' v' + Profile.version + '</h3>').appendTo('#ProfileData');
+// ------------------------------ VOYAGES ------------------------------ //
+	$('<ul id="ships-stats"><h4 class="ul_title">' + Profile.Title1 + '</h4></ul>').appendTo('#ProfileData');
+	// ------------------------- DAYS ------------------------- //
+		$('<li id="p_days" class="stats"></li>').appendTo('#ships-stats');
+			$('<img src="/img/icons/ui/'+ iconday +'.png" style="width:26px; height:26px;"></br>').appendTo('#p_days');
+			$('<strong class="li_title">' + Profile.Voyages.TxtDays + '</strong>').appendTo('#p_days');
+			$('<p style="padding-top: 3px;">max: ' + Profile.Voyages.maxDay + '</p>').appendTo('#p_days');
+			$('<p>med: <em>' + (Profile.Voyages.totalDay/Profile.Voyages.number).toFixed(1) + '</em></p>').appendTo('#p_days');
+	// ------------------------- GLORY ------------------------- //
+		$('<li id="p_glory" class="stats"></li>').appendTo('#ships-stats');
+			$('<img src="/img/icons/ui/triumph.png" style="width:26px; height:26px;"></br>').appendTo('#p_glory');
+			$('<strong class="li_title">' + Profile.Voyages.TxtGlory + '</strong>').appendTo('#p_glory');
+			$('<p style="padding-top: 3px;">max: ' + Profile.Voyages.maxGlory + '</p>').appendTo('#p_glory');
+			$('<p>med: <em>' + (Profile.Voyages.totalGlory/Profile.Voyages.number).toFixed(1) + '</em></p>').appendTo('#p_glory');
+	// ------------------------- RESEARCH ------------------------- //
+		$('<li id="p_research" class="stats"></li>').appendTo('#ships-stats');
+			$('<img src="/img/icons/ui/microsc.png" style="width:26px; height:26px;"></br>').appendTo('#p_research');
+			$('<strong class="li_title">' + Profile.Voyages.TxtResearch + '</strong>').appendTo('#p_research');
+			$('<p style="padding-top: 3px;">max: ' + Profile.Voyages.maxResearch + '</p>').appendTo('#p_research');
+			$('<p>med: <em>' + (Profile.Voyages.totalResearch/Profile.Voyages.number).toFixed(1) + '</em></p>').appendTo('#p_research');
+	// ------------------------- PROJECTS ------------------------- //
+		$('<li id="p_projects" class="stats"></li>').appendTo('#ships-stats');
+			$('<img src="/img/icons/ui/conceptor.png" style="width:26px; height:26px;"></br>').appendTo('#p_projects');
+			$('<strong class="li_title">' + Profile.Voyages.TxtProject + '</strong>').appendTo('#p_projects');
+			$('<p style="padding-top: 3px;">max: ' + Profile.Voyages.maxProjects + '</p>').appendTo('#p_projects');
+			$('<p>med: <em>' + (Profile.Voyages.totalProjects/Profile.Voyages.number).toFixed(1) + '</em></p>').appendTo('#p_projects');
+	// ------------------------- PLANETS ------------------------- //
+		$('<li id="p_scanned" class="stats"></li>').appendTo('#ships-stats');
+			$('<img src="/img/icons/ui/planet.png" style="width:26px; height:26px;"></br>').appendTo('#p_scanned');
+			$('<strong class="li_title">' + Profile.Voyages.TxtPlanets + '</strong>').appendTo('#p_scanned');
+			$('<p style="padding-top: 3px;">max: ' + Profile.Voyages.maxPlanets + '</p>').appendTo('#p_scanned');
+			$('<p>med: <em>' + (Profile.Voyages.totalPlanets/Profile.Voyages.number).toFixed(1) + '</em></p>').appendTo('#p_scanned');
+	// ------------------------- EXPLORATIONS ------------------------- //
+		$('<li id="p_explorations" class="stats"></li>').appendTo('#ships-stats');
+			$('<img src="/img/icons/ui/survival.png" style="width:26px; height:26px;"></br>').appendTo('#p_explorations');
+			$('<strong class="li_title">' + Profile.Voyages.TxtExplor + '</strong>').appendTo('#p_explorations');
+			$('<p style="padding-top: 3px;">max: ' + Profile.Voyages.maxExplo + '</p>').appendTo('#p_explorations');
+			$('<p>med: <em>' + (Profile.Voyages.totalExplo/Profile.Voyages.number).toFixed(1) + '</em></p>').appendTo('#p_explorations');
+// ------------------------------ CHARACTERS ------------------------------ //
+	$('<ul id="char-stats"><h4 class="ul_title">' + Profile.Title2 + '</h4></ul>').appendTo('#ProfileData');
+	for (var character in Profile.Voyages.allCharSorted) {
+		var char = Profile.Voyages.allCharSorted[character][1].toLowerCase().replace(' ', '');
+		$('<li class="charstat ' + char + '" style="font-size:100%; width:80px; font-variant:small-caps;">').appendTo('#char-stats');
+			$('<img class="bodychar ' + Profile.Voyages.allCharSorted[character][1].toLowerCase().replace(' ', '_') + '" src="/img/design/pixel.gif" >')
+				.appendTo('#char-stats > li.' + char);
+			$('<br><strong class="li_title character">' + Profile.Voyages.allCharSorted[character][1] + '</strong>').appendTo('#char-stats > li.' + char);
+			$('<p>' + Profile.Voyages.TxtVoyage + ': ' + Profile.Voyages.allCharSorted[character][0] + '</p>').appendTo('#char-stats > li.' + char);
+			$('<p><em>' + (100 * Profile.Voyages.allCharSorted[character][0] / Profile.Voyages.number).toFixed(2) + ' %</em></p>').appendTo('#char-stats > li.' + char);
 		}
-		tabHtml += '</ul>';
+// ------------------------------ DEATHS ------------------------------ //
+	$('<ul id="dies-stats"><h4 class="ul_title">' + Profile.Title3 + '</h4></ul>').appendTo('#ProfileData');
+	for(var death in Profile.Voyages.allDeathSorted) {
+		$('<li class="diestats ' + death + '">').appendTo('#dies-stats');
+			$('<p class="stroke">' + Profile.Voyages.allDeathSorted[death][1] + '</p>').appendTo('#dies-stats > li.' + death);
+			if(Profile.Voyages.allDeathSorted[death][0].length > 14) {
+				$('<p class="li_title"><marquee scrolldelay="500" direction="up" style="height: 16px; text-align: center;"><strong>' + 
+					Profile.Voyages.allDeathSorted[death][0] + '</strong></marquee></p>').appendTo('#dies-stats > li.' + death);
+			}
+			else {
+				$('<p class="li_title" style="height:19px;"><strong>' + Profile.Voyages.allDeathSorted[death][0] + '</strong></p>').appendTo('#dies-stats > li.' + death);
+			}
+	}
+// ***************************************************************************************************************************
+// ***************************************************************************************************************************
+// ***************************************************************************************************************************
+}	// END FUNCTION - Profile.DisplayData
 
-		tabHtml += '<p class="stroke">' + infos.deathSorted[death][1] + '</p>';
-		if(infos.deathSorted[death][0].length > 14) {
-			tabHtml += '<p><marquee scrolldelay="500" direction="up" style="height: 16px; text-align: center;"><strong>' + infos.deathSorted[death][0] + '</strong></marquee></p>';
+Profile.Voyages.data = function() {
+//	$('.bgtablesummar:first').css({display: "none"});
+	Profile.Voyages.links = [];
+    charac_in_ship = [];	// Added new array
+    icon_char_ship = [];	// Added new array
+	$('#cdTrips > table.summar > tbody > tr.cdTripEntry').each(function(index,elem) {
+	// 0:character, 1:days, 2:explorations, 3:research, 4:projects, 5:scanned, 6:titles, 7:glory, 8:death, 9:ship
+		Profile.Voyages.number++;
+	// ------------------ 0: CHARACTER ------------------ //
+		var character = $(this).children('td:eq(0)').children('span.charname').text();
+		if(Profile.Voyages.allCharacters[character] > 0) {
+			Profile.Voyages.allCharacters[character]++;
 		}
 		else {
-			tabHtml += '<p style="height:19px;"><strong>' + infos.deathSorted[death][0] + '</strong></p>';
+			Profile.Voyages.allCharacters[character] = 1;
 		}
-		tabHtml += '<p style="width:80px;"><em>' + (100*infos.deathSorted[death][1]/infos.nbrGames).toFixed(2) + ' %</em></p>';
-//		tabHtml += '<ul class= shiplist>';
-//		Profile.ShipLinks(infos.deathSorted[death][0], 8);
-//		for(var link in shipsnumbers) {
-//			tabHtml += '<li><a class="ship" href="/theEnd/'+shipsnumbers[link]+'">Nave - '+shipsnumbers[link]+'</a></li>';
-//		}
-//		tabHtml += '</ul>';
-		tabHtml += '</li>';
+	// ------------------ 1: DAYS ------------------ //
+		var day = $(this).children('td:eq(1)').text();
+		if (Profile.Voyages.maxDay < parseInt(day)) {
+			Profile.Voyages.maxDay = parseInt(day);
+		}
+		if ((Profile.Voyages.minDay > parseInt(day)) || (Profile.Voyages.minDay == -1)) {
+			Profile.Voyages.minDay = parseInt(day);
+		}
+		Profile.Voyages.totalDay += parseInt(day);
+	// ------------------ 2: EXPLORATIONS ------------------ //
+		var explo = $(this).children('td:eq(2)').text();
+		if (Profile.Voyages.maxExplo < parseInt(explo)) {
+			Profile.Voyages.maxExplo = parseInt(explo);
+		}
+		if ((Profile.Voyages.minExplo > parseInt(explo)) || (Profile.Voyages.minExplo == -1)) {
+			Profile.Voyages.minExplo = parseInt(explo);
+		}
+		Profile.Voyages.totalExplo += parseInt(explo);
+	// ------------------ 3: RESEARCH ------------------ //
+		var research = $(this).children('td:eq(3)').text();
+		if (Profile.Voyages.maxResearch < parseInt(research)) {
+			Profile.Voyages.maxResearch = parseInt(research);
+		}
+		if ((Profile.Voyages.minResearch > parseInt(research)) || (Profile.Voyages.minResearch == -1)) {
+			Profile.Voyages.minResearch = parseInt(research);
+		}
+		Profile.Voyages.totalResearch += parseInt(research);
+	// ------------------ 4: PROJECTS ------------------ //
+		var projects = $(this).children('td:eq(4)').text();
+		if (Profile.Voyages.maxProjects < parseInt(projects)) {
+			Profile.Voyages.maxProjects = parseInt(projects);
+		}
+		if ((Profile.Voyages.minProjects > parseInt(projects)) || (Profile.Voyages.minProjects == -1)) {
+			Profile.Voyages.minProjects = parseInt(projects);
+		}
+		Profile.Voyages.totalProjects += parseInt(projects);
+	// ------------------ 5: SCANNED ------------------ //
+		var scanned = $(this).children('td:eq(5)').text();
+		if (Profile.Voyages.maxPlanets < parseInt(scanned)) {
+			Profile.Voyages.maxPlanets = parseInt(scanned);
+		}
+		if ((Profile.Voyages.minPlanets > parseInt(scanned)) || (Profile.Voyages.minPlanets == -1)) {
+			Profile.Voyages.minPlanets = parseInt(scanned);
+		}
+		Profile.Voyages.totalPlanets += parseInt(scanned);
+	// ------------------ 7: GLORY ------------------ //
+		var glory = $(this).children('td:eq(7)').text();
+		if (Profile.Voyages.maxGlory < parseInt(glory)) {
+			Profile.Voyages.maxGlory = parseInt(glory);
+		}
+		if ((Profile.Voyages.minGlory > parseInt(glory)) || (Profile.Voyages.minGlory == -1)) {
+			Profile.Voyages.minGlory = parseInt(glory);
+		}
+		Profile.Voyages.totalGlory += parseInt(glory);
+	// ------------------ 8: DEATH ------------------ //
+		var death = $(this).children('td:eq(8)').text();
+		Profile.Voyages.quantity++;
+		if (Profile.Voyages.allDeaths[death] > 0) {
+			Profile.Voyages.allDeaths[death]++;
+		}
+		else {
+			Profile.Voyages.allDeaths[death] = 1;
+		}
+	// ----------------------------------------------------- //
+	});	// END EACH FUNCTION - Extracting voyages data
+// ------------------ SORTING CHARACTERS ------------------ //
+	Profile.Voyages.allCharSorted = [];
+	var i = 0;
+	for(var character in Profile.Voyages.allCharacters) {
+		var char = "http://mush.twinoid.es/img/icons/ui/" + character.toLowerCase().replace(" ", "") + ".png";
+		Profile.Voyages.allCharSorted[i] = [Profile.Voyages.allCharacters[character], character];		// [#voyages, character]
+		i++;
 	}
-	tabHtml +=	'</ul>';
-	// End Dies Stats
+	Profile.Voyages.allCharSorted.sort(function(a,b){return b[0] - a[0];});
+// ------------------ SORTING DEATHS ------------------ //
+	Profile.Voyages.allDeathSorted = [];
+	var j = 0;
+	for(var death in Profile.Voyages.allDeaths) {
+		Profile.Voyages.allDeathSorted[j] = [death, Profile.Voyages.allDeaths[death]];
+		j++;
+	}
+	Profile.Voyages.allDeathSorted.sort(function(a,b){return b[1] - a[1];});
+// ------------------------------------------------------- //
+}	// END FUNCTION - Profile.Voyages.data
 
-	tabHtml += '</div>';
-
-	$('#profile > div.column2 > div.data > .bgtablesummar:last').after(tabHtml);
-
-	$('#firstShip').keyup(function( event ) {
-        if (event.which == 13 || event.keyCode == 13) {
-			first = document.getElementById('firstShip').value;		//console.log(first);
-			document.getElementById('nShip').focus();
-        }
-        return false;
-	});
-	
-	$('#nShip').keyup(function( event ) {
-        if (event.which == 13 || event.keyCode == 13) {
-			first = document.getElementById('firstShip').value;		//console.log(first);
-			NShips = document.getElementById('nShip').value;		//console.log(n);
-			Profile.Analyse.init(NShips);
-        }
-        return false;
-	});
-}
-
-Profile.ShipLinks = function(dt, td_eq) {
-	shipsnumbers = [];
+Profile.Links = function(dt, td_eq) {
+	Profile.Voyages.links = [];
     charac_in_ship = [];	// Added new array
     icon_char_ship = [];	// Added new array
 	$('#cdTrips > table.summar > tbody > tr.cdTripEntry').each(function(index,elem){
@@ -351,181 +278,213 @@ Profile.ShipLinks = function(dt, td_eq) {
 		if ((index >= first) && (first+NShips > index || NShips === 0) && (comparator == dt)) {
 			charac_in_ship[charac_in_ship.length] = $(this).children('td:eq(0)').text().trim();	// Added charac name array
 			icon_char_ship[icon_char_ship.length] = $(this).children('td:eq(0)').text().trim().toLowerCase().replace(" ","");	// Added charac name array
-			shipsnumbers[shipsnumbers.length] = $(this).children('td:eq(9)').find("a").attr('href').replace("/theEnd/", "");
+			Profile.Voyages.links[Profile.Voyages.links.length] = $(this).children('td:eq(9)').find("a").attr('href').replace("/theEnd/", "");
 		}
 	});
-}
+}	// END FUNCTION - Profile.Links
 
-//	********** HoverScroll **********
-
-// Override default parameters onload
-//	$.fn.hoverscroll.params = $.extend($.fn.hoverscroll.params, {
-//		vertical : true,
-//		width: 85,
-//		height: 86,
-//		arrows: false
-//	});
-// Generate hoverscroll with overridden default parameters
-//	$('#dies-stats li ul.shiplist').hoverscroll();
-
-//	********** HoverScroll **********
-	
-Profile.Analyse = function(n) {
-	var infos = [];
-	infos.totalDay = 0;
-	infos.maxDay = 0;
-	infos.minDay = -1;
-	infos.totalSearch = 0;
-	infos.maxSearch = 0;
-	infos.minSearch = -1;
-	infos.totalProjects = 0;
-	infos.maxProjects = 0;
-	infos.minProjects = -1;
-	infos.totalPlanetsScan = 0;
-	infos.maxPlanetsScan = 0;
-	infos.minPlanetsScan = -1;
-	infos.totalExplo = 0;
-	infos.maxExplo = 0;
-	infos.minExplo = -1;
-	infos.totalTriumph = 0;
-	infos.maxTriumph = 0;
-	infos.minTriumph = -1;
-	infos.allDeaths = [];
-	infos.allCharacters = [];
-
-	infos.nbrGames = 0 ; // Ships number
-	infos.nbrGamesBeta = 0; // Beta ship number
-	infos.voyage = $('#cdTrips h3 .cornerright').text();
-
-	TotalShip = 0;
-	
-	$('#cdTrips > table.summar > tbody > tr.cdTripEntry').each(function(index,elem){
-		// character, day, explo, search, projets, scan, titles, triumph, death, ship
-		var death = $(this).children('td:eq(8)').text();
-
-		TotalShip++;
-
-		if((index >= first && infos.nbrGames < n) || (index >= first && n === 0))
-		{
-			if(death !== 'No hay ayuda disponible')
-			{
-				infos.nbrGames++;
-				
-				if(infos.allDeaths[death] > 0)
-				{
-					infos.allDeaths[death]++;
-				}
-				else
-				{
-					infos.allDeaths[death] = 1;
-				}
-
-				var character = $(this).children('td:eq(0)').children('span.charname').text();
-
-				if(infos.allCharacters[character] > 0)
-				{
-					infos.allCharacters[character]++;
-				}
-				else
-				{
-					infos.allCharacters[character] = 1;
-				}
-
-//				if (infos.max < parseInt()) {
-//					infos.max = parseInt();
-//				}
-//				if ((infos.min > parseInt()) || (infos.min == -1)) {
-//					infos.min = parseInt();
-//				}
-
-				var day = $(this).children('td:eq(1)').text();
-				if (infos.maxDay < parseInt(day)) {
-					infos.maxDay = parseInt(day);
-				}
-				if ((infos.minDay > parseInt(day))||(infos.minDay == -1)) {
-					infos.minDay = parseInt(day);
-				}
-				infos.totalDay += parseInt(day);
-				
-				var explo = $(this).children('td:eq(2)').text();
-				if (infos.maxExplo < parseInt(explo)) {
-					infos.maxExplo = parseInt(explo);
-				}
-				if ((infos.minExplo > parseInt(explo)) || (infos.minExplo == -1)) {
-					infos.minExplo = parseInt(explo);
-				}
-				infos.totalExplo += parseInt(explo);
-
-				var search = $(this).children('td:eq(3)').text();
-				if (infos.maxSearch < parseInt(search)) {
-					infos.maxSearch = parseInt(search);
-				}
-				if ((infos.minSearch > parseInt(search)) || (infos.minSearch == -1)) {
-					infos.minSearch = parseInt(search);
-				}
-				infos.totalSearch += parseInt(search);
-
-				var projets = $(this).children('td:eq(4)').text();
-				if (infos.maxProjects < parseInt(projets)) {
-					infos.maxProjects = parseInt(projets);
-				}
-				if ((infos.minProjects > parseInt(projets)) || (infos.minProjects == -1)) {
-					infos.minProjects = parseInt(projets);
-				}
-				infos.totalProjects += parseInt(projets);
-
-				var scan = $(this).children('td:eq(5)').text();
-				if (infos.maxPlanetsScan < parseInt(scan)) {
-					infos.maxPlanetsScan = parseInt(scan);
-				}
-				if ((infos.minPlanetsScan > parseInt(scan)) || (infos.minPlanetsScan == -1)) {
-					infos.minPlanetsScan = parseInt(scan);
-				}
-				infos.totalPlanetsScan += parseInt(scan);
-
-				var triumph = $(this).children('td:eq(7)').text();
-				if (infos.maxTriumph < parseInt(triumph)) {
-					infos.maxTriumph = parseInt(triumph);
-				}
-				if ((infos.minTriumph > parseInt(triumph)) || (infos.minTriumph == -1)) {
-					infos.minTriumph = parseInt(triumph);
-				}
-				infos.totalTriumph += parseInt(triumph);
-			}
-			else
-			{
-				infos.nbrGamesBeta++;
-			}
-		}
-
+Profile.init = function() {
+	Profile.Voyages.data();
+	Profile.css();
+	Profile.DisplayData();
+	$(document).ready(function() {
+		Profile.Stats.data();	// Extract and display cycles when document is ready
 	});
+}	// END FUNCTION - Profile.init
 
-	// Sort characters & deaths
-	infos.charVoyages = [];
-	var i = 0;
-	for(var character in infos.allCharacters) {
-		infos.charVoyages[i] = [infos.allCharacters[character], character];
-		i++;
-	}
+Profile.css = function() {
+	$("<style>").attr("type", "text/css").html("\
+		h4.ul_title { \
+			margin-bottom : 4px; \
+			margin-top : 2px; \
+		} \
+		.nshipinput	{ width : 35px; height : 16px; padding-right : 3px; text-align : right; background : transparent; cursor : pointer; \
+					border: 1px inset; border-color : #4e5162; font-size : 15px; color : #FEB500; } \
+		.nshipinput:hover { border : 1px inset; border-color : white; color : white; } \
+		.nshipinput:focus { background-color : #FE7D00; border : 1px inset; border-color : #FEB500; color : white; } \
+		.bodychar { \
+			position : relative; \
+			opacity : 1; \
+			width : 28px; \
+			height : 44px; \
+			background : url('http://mush.twinoid.es/img/art/char.png') no-repeat; \
+			z-index : 4; \
+		}\
+		#profile #ProfileData > ul, ul.tabletitle { \
+			padding : 0px 0px 15px 0px; \
+		} \
+		#ProfileData ul li.stats { \
+			border-width : 1px; \
+			border-color : yellow orange orange orange; \
+			-moz-box-shadow : inset 0px 0px 4px goldenrod, 0px 0px 4px goldenrod, 0px 2px 4px goldenrod; \
+			-webkit-box-shadow : inset 0px 0px 4px goldenrod, 0px 0px 4px goldenrod, 0px 2px 4px goldenrod; \
+			box-shadow : inset 0px 0px 4px goldenrod, 0px 0px 4px goldenrod, 0px 2px 4px goldenrod; \
+			background-color : #FCF5C2; \
+			color : #090a61; \
+			font-size : 100%; \
+			width : 80px; \
+			padding : 9px 9px 9px 9px; \
+			margin : 4px 4px 4px 4px; \
+			font-variant : small-caps; \
+		} \
+		#ProfileData ul li.charstat { \
+			border-width : 1px; \
+			border-color : #A6EEFB #01c3df #01c3df #01c3df; \
+			-moz-box-shadow : inset 0px 0px 4px #3965fb, 0px 0px 4px #3965fb, 0px 2px 4px #3965fb; \
+			-webkit-box-shadow : inset 0px 0px 4px #3965fb, 0px 0px 4px #3965fb, 0px 2px 4px #3965fb; \
+			box-shadow : inset 0px 0px 4px #3965fb, 0px 0px 4px #3965fb, 0px 2px 4px #3965fb; \
+			background-color : #c2f3fc; \
+			color : #090a61; \
+			font-size : 100%; \
+			width : 80px; \
+			margin : 4px 4px 4px 4px; \
+			font-variant : small-caps; \
+			padding : 6px 9px 9px 9px; \
+			height : 95px; \
+		} \
+		#profile #ProfileData #dies-stats > li { \
+			height : 75px; \
+			vertical-align : bottom; \
+		} \
+		#ProfileData ul li.diestats { \
+			border-width : 1px; \
+			border-color : #FBA6B0 #DF011C #DF0125 #DF011C; \
+			-moz-box-shadow : inset 0px 0px 4px #FB3939, 0px 0px 4px #FB3939, 0px 2px 4px #FB3939; \
+			-webkit-box-shadow : inset 0px 0px 4px #FB3939, 0px 0px 4px #FB3939, 0px 2px 4px #FB3939; \
+			box-shadow : inset 0px 0px 4px #FB3939, 0px 0px 4px #FB3939, 0px 2px 4px #FB3939; \
+			background-color : #FCC2C9; \
+			color : #090a61; \
+			font-size : 100%; \
+			width : 80px; \
+			margin : 4px 4px 4px 4px; \
+			font-variant : small-caps; \
+			padding : 0 9px 9px 9px; \
+		} \
+		#ProfileData ul li.diestats:hover, \
+		#ProfileData ul li.stats:hover { \
+			background-color : #ECFFA2; \
+			border-color : #BCFFA2 #40E000 #49E000 #40E000; \
+			-moz-box-shadow : inset 0px 0px 4px #56FF35, 0px 0px 4px #56FF35, 0px 2px 4px #56FF35; \
+			-webkit-box-shadow : inset 0px 0px 4px #56FF35, 0px 0px 4px #56FF35, 0px 2px 4px #56FF35; \
+			box-shadow : inset 0px 0px 4px #56FF35, 0px 0px 4px #56FF35, 0px 2px 4px #56FF35; \
+		} \
+		.character + p, .character + p + p, .character + p + p + p { \
+			position : relative; \
+			bottom : 16px; \
+		} \
+		.character { \
+			position : relative; \
+			top : -28px; \
+			z-index : 5; \
+		} \
+		.li_title { \
+			color : #fff; \
+			text-shadow : \
+				-1px -1px 2px black, \
+				1px -1px 2px black, \
+				1px 0 2px black, \
+				-1px 0 2px black, \
+				-1px 1px 2px black, \
+				1px 1px 2px black; \
+			//letter-spacing : 1px; \
+			font-weight : 900; \
+			font-size : 100%; \
+		} \
+		.stroke { \
+			color : #ff4059; \
+			text-shadow : \
+				-1px -1px 0 blue, \
+				1px -1px 0 blue, \
+				-1px 1px 0 blue, \
+				1px 1px 0 blue; \
+			font-weight : 900; \
+			font-size : 26px; \
+		}\
+		#ProfileData ul li.diestats ul.shiplist, \
+		#ProfileData ul li.stats ul.shiplist { \
+			display : none; \
+		}\
+		#ProfileData ul li.diestats ul.shiplist a.ship, \
+		#ProfileData ul li.stats ul.shiplist a.ship { \
+			display : block; \
+			width : 85px; \
+			height : 18px; \
+			font-size : 13px; \
+			text-decoration : none! important; \
+			font-variant : normal; \
+			color : #090a61; \
+			text-shadow : 1px 1px 5px #FFF; \
+		}\
+		#ProfileData ul li.diestats ul.shiplist a.ship img.icon_char_ship, \
+		#ProfileData ul li.stats ul.shiplist a.ship img.icon_char_ship { \
+		//	vertical-align : initial; \
+			padding-bottom : 5px; \
+		}\
+		#ProfileData ul li.diestats ul.shiplist a.ship:hover, \
+		#ProfileData ul li.stats ul.shiplist a.ship:hover { \
+			color : #ff4059; \
+			text-shadow : 1px 1px 0px #000; \
+		}\
+		#ProfileData ul li.diestats:hover > ul.shiplist, \
+		#ProfileData ul li.stats:hover > ul.shiplist { \
+			display : block; \
+			position : relative; \
+			width : 100px; \
+		//	left : -10px; \
+		//	bottom : -125px; \
+			left : 85px; \
+			top : 0px; \
+			text-align : right; \
+			z-index : 50; \
+			height : 0px; \
+			padding : 0px; \
+			border : 0px; \
+		}\
+		#ProfileData ul li.diestats ul.shiplist li, \
+		#ProfileData ul li.stats ul.shiplist li{ \
+			text-align : left; \
+			margin : 0px; \
+			display : block! important; \
+			width : 85px; \
+			height : auto; \
+			padding : 0px 5px 0 5px! important; \
+			border-width : 1px; \
+		}\
+		#ProfileData ul li.diestats ul.shiplist li {\
+			border-color : #FBA6B0 #DF011C #DF0125 #DF011C; \
+			-moz-box-shadow : inset 0px 0px 4px #FB3939, 0px 0px 4px #FB3939, 0px 2px 4px #FB3939; \
+			-webkit-box-shadow : inset 0px 0px 4px #FB3939, 0px 0px 4px #FB3939, 0px 2px 4px #FB3939; \
+			box-shadow : inset 0px 0px 4px #FB3939, 0px 0px 4px #FB3939, 0px 2px 4px #FB3939; \
+			background-color : #FCC2C9; \
+		}\
+		#ProfileData ul li.stats ul.shiplist li {\
+			border-color : yellow orange orange orange; \
+			-moz-box-shadow : inset 0px 0px 4px goldenrod, 0px 0px 4px goldenrod, 0px 2px 4px goldenrod; \
+			-webkit-box-shadow : inset 0px 0px 4px goldenrod, 0px 0px 4px goldenrod, 0px 2px 4px goldenrod; \
+			box-shadow : inset 0px 0px 4px goldenrod, 0px 0px 4px goldenrod, 0px 2px 4px goldenrod; \
+			background-color : #FCF5C2; \
+		}\
+		#ProfileData ul li.diestats ul.shiplist li:hover, \
+		#ProfileData ul li.stats ul.shiplist li:hover{ \
+			background-color : #ECFFA2; \
+			border-color : #BCFFA2 #40E000 #49E000 #40E000; \
+			-moz-box-shadow : inset 0px 0px 4px #56FF35, 0px 0px 4px #56FF35, 0px 2px 4px #56FF35; \
+			-webkit-box-shadow : inset 0px 0px 4px #56FF35, 0px 0px 4px #56FF35, 0px 2px 4px #56FF35; \
+			box-shadow : inset 0px 0px 4px #56FF35, 0px 0px 4px #56FF35, 0px 2px 4px #56FF35; \
+		}\
+	").appendTo("head");
+}	// END FUNCTION - Profile.css
 
-	infos.charVoyages.sort(function(a,b){return b[0] - a[0]});
-
-	infos.deathSorted = [];
-	var i = 0;
-	for(var death in infos.allDeaths) {
-		infos.deathSorted[i] = [death, infos.allDeaths[death]];
-		i++;		// console.log(infos.deathSorted[death]);
-	}
-	infos.deathSorted.sort(function(a,b){return b[1] - a[1]});
-
-	return infos;
-}
-
+first = 0;	NShips = 0;
+Profile.Analyse = {};
 Profile.Analyse.init = function(n) {
 	if(isNaN(n) || n === null) { n = 0; }
-	$('#AnalyseProfile_Result').remove();
+	$('#ProfileData').remove();
 	Profile.AddTable(n);
 }
 
-
 Profile.init();
+
+// <div id="tid_simpleTip" style="opacity: 1; top: 979px; left: 117.046875px;"><img class="tid_arrow" alt=""
+//src="//data.twinoid.com/img/design/simpleTipArrow.png" style="margin-left: 101px; margin-top: 35px;">
+//<div class="tid_inner">¡Has sobrevivido hasta el final, eres parte de la historia!</div></div>
