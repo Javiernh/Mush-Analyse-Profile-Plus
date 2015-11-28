@@ -155,7 +155,7 @@ Profile.DisplayData = function() {
 		$('<li class="diestats ' + death + '">').appendTo('#dies-stats');
 			$('<p class="stroke">' + Profile.Voyages.allDeathSorted[death][1] + '</p>').appendTo('#dies-stats > li.' + death);
 			if(Profile.Voyages.allDeathSorted[death][0].length > 14) {
-				$('<p class="li_title"><marquee scrolldelay="500" direction="up" style="height: 16px; text-align: center;"><strong>' + 
+				$('<p class="li_title"><marquee scrolldelay="250" direction="up" style="height: 16px; text-align: center;"><strong>' + 
 					Profile.Voyages.allDeathSorted[death][0] + '</strong></marquee></p>').appendTo('#dies-stats > li.' + death);
 			}
 			else {
@@ -339,8 +339,8 @@ Profile.css = function() {
 			width : 80px; \
 			margin : 4px 4px 4px 4px; \
 			font-variant : small-caps; \
-			padding : 6px 9px 9px 9px; \
-			height : 95px; \
+			padding : 6px 9px 6px 9px; \
+			height : 100px; \
 		} \
 		#profile #ProfileData #dies-stats > li { \
 			height : 75px; \
@@ -393,10 +393,10 @@ Profile.css = function() {
 		.stroke { \
 			color : #ff4059; \
 			text-shadow : \
-				-1px -1px 0 blue, \
-				1px -1px 0 blue, \
-				-1px 1px 0 blue, \
-				1px 1px 0 blue; \
+				-1px -1px 2px blue, \
+				1px -1px 2px blue, \
+				-1px 1px 2px blue, \
+				1px 1px 2px blue; \
 			font-weight : 900; \
 			font-size : 26px; \
 		}\
