@@ -388,7 +388,7 @@ Profile.css = function() {
 				1px 1px 2px black; \
 			//letter-spacing : 1px; \
 			font-weight : 900; \
-			font-size : 100%; \
+			font-size : 13px; \
 		} \
 		.stroke { \
 			color : #ff4059; \
