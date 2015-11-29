@@ -40,22 +40,16 @@ Profile.Stats.data = function() {
 Profile.Voyages = {};
 	Profile.Voyages.totalDay = 0;
 	Profile.Voyages.maxDay = 0;
-	Profile.Voyages.minDay = -1;
 	Profile.Voyages.totalResearch = 0;
 	Profile.Voyages.maxResearch = 0;
-	Profile.Voyages.minResearch = -1;
 	Profile.Voyages.totalProjects = 0;
 	Profile.Voyages.maxProjects = 0;
-	Profile.Voyages.minProjects = -1;
 	Profile.Voyages.totalPlanets = 0;
 	Profile.Voyages.maxPlanets = 0;
-	Profile.Voyages.minPlanets = -1;
 	Profile.Voyages.totalExplo = 0;
 	Profile.Voyages.maxExplo = 0;
-	Profile.Voyages.minExplo = -1;
 	Profile.Voyages.totalGlory = 0;
 	Profile.Voyages.maxGlory = 0;
-	Profile.Voyages.minGlory = -1;
 	Profile.Voyages.allDeaths = [];
 	Profile.Voyages.allCharacters = [];
 	Profile.Voyages.quantity = 0 ;
@@ -104,6 +98,7 @@ Profile.DisplayData = function() {
 	$('<ul id="ships-stats"><h4 class="ul_title">' + Profile.Title1 + '</h4></ul>').appendTo('#ProfileData');
 	// ------------------------- DAYS ------------------------- //
 		$('<li id="p_days" class="stats"></li>').appendTo('#ships-stats');
+//			.appendTo('#p_days');
 			$('<img src="/img/icons/ui/'+ iconday +'.png" style="width:26px; height:26px;"></br>').appendTo('#p_days');
 			$('<strong class="li_title">' + Profile.Voyages.TxtDays + '</strong>').appendTo('#p_days');
 			$('<p style="padding-top: 3px;">max: ' + Profile.Voyages.maxDay + '</p>').appendTo('#p_days');
@@ -147,20 +142,22 @@ Profile.DisplayData = function() {
 				.appendTo('#char-stats > li.' + char);
 			$('<br><strong class="li_title character">' + Profile.Voyages.allCharSorted[character][1] + '</strong>').appendTo('#char-stats > li.' + char);
 			$('<p>' + Profile.Voyages.TxtVoyage + ': ' + Profile.Voyages.allCharSorted[character][0] + '</p>').appendTo('#char-stats > li.' + char);
-			$('<p><em>' + (100 * Profile.Voyages.allCharSorted[character][0] / Profile.Voyages.number).toFixed(2) + ' %</em></p>').appendTo('#char-stats > li.' + char);
+			$('<p><em>' + (100 * Profile.Voyages.allCharSorted[character][0] / Profile.Voyages.number).toFixed(2) + '%</em></p>').appendTo('#char-stats > li.' + char);
 		}
 // ------------------------------ DEATHS ------------------------------ //
 	$('<ul id="dies-stats"><h4 class="ul_title">' + Profile.Title3 + '</h4></ul>').appendTo('#ProfileData');
 	for(var death in Profile.Voyages.allDeathSorted) {
 		$('<li class="diestats ' + death + '">').appendTo('#dies-stats');
 			$('<p class="stroke">' + Profile.Voyages.allDeathSorted[death][1] + '</p>').appendTo('#dies-stats > li.' + death);
-			if(Profile.Voyages.allDeathSorted[death][0].length > 14) {
-				$('<p class="li_title"><marquee scrolldelay="250" direction="up" style="height: 16px; text-align: center;"><strong>' + 
-					Profile.Voyages.allDeathSorted[death][0] + '</strong></marquee></p>').appendTo('#dies-stats > li.' + death);
-			}
-			else {
-				$('<p class="li_title" style="height:19px;"><strong>' + Profile.Voyages.allDeathSorted[death][0] + '</strong></p>').appendTo('#dies-stats > li.' + death);
-			}
+//			if(Profile.Voyages.allDeathSorted[death][0].length > 14) {
+//				$('<p class="li_title"><marquee scrolldelay="250" direction="up" style="height: 16px; text-align: center;"><strong>' + 
+//					Profile.Voyages.allDeathSorted[death][0] + '</strong></marquee></p>').appendTo('#dies-stats > li.' + death);
+//			}
+//			else {
+				$('<p class="li_title death_text"><strong>' + Profile.Voyages.allDeathSorted[death][0] + '</strong></p>').appendTo('#dies-stats > li.' + death);
+//			}
+//			$('<p><em>' + (100* Profile.Voyages.allDeathSorted[death][1] / Profile.Voyages.number).toFixed(2) + '%</em></p>')
+//				.appendTo('#dies-stats > li.' + death);
 	}
 // ***************************************************************************************************************************
 // ***************************************************************************************************************************
@@ -188,17 +185,11 @@ Profile.Voyages.data = function() {
 		if (Profile.Voyages.maxDay < parseInt(day)) {
 			Profile.Voyages.maxDay = parseInt(day);
 		}
-		if ((Profile.Voyages.minDay > parseInt(day)) || (Profile.Voyages.minDay == -1)) {
-			Profile.Voyages.minDay = parseInt(day);
-		}
 		Profile.Voyages.totalDay += parseInt(day);
 	// ------------------ 2: EXPLORATIONS ------------------ //
 		var explo = $(this).children('td:eq(2)').text();
 		if (Profile.Voyages.maxExplo < parseInt(explo)) {
 			Profile.Voyages.maxExplo = parseInt(explo);
-		}
-		if ((Profile.Voyages.minExplo > parseInt(explo)) || (Profile.Voyages.minExplo == -1)) {
-			Profile.Voyages.minExplo = parseInt(explo);
 		}
 		Profile.Voyages.totalExplo += parseInt(explo);
 	// ------------------ 3: RESEARCH ------------------ //
@@ -206,17 +197,11 @@ Profile.Voyages.data = function() {
 		if (Profile.Voyages.maxResearch < parseInt(research)) {
 			Profile.Voyages.maxResearch = parseInt(research);
 		}
-		if ((Profile.Voyages.minResearch > parseInt(research)) || (Profile.Voyages.minResearch == -1)) {
-			Profile.Voyages.minResearch = parseInt(research);
-		}
 		Profile.Voyages.totalResearch += parseInt(research);
 	// ------------------ 4: PROJECTS ------------------ //
 		var projects = $(this).children('td:eq(4)').text();
 		if (Profile.Voyages.maxProjects < parseInt(projects)) {
 			Profile.Voyages.maxProjects = parseInt(projects);
-		}
-		if ((Profile.Voyages.minProjects > parseInt(projects)) || (Profile.Voyages.minProjects == -1)) {
-			Profile.Voyages.minProjects = parseInt(projects);
 		}
 		Profile.Voyages.totalProjects += parseInt(projects);
 	// ------------------ 5: SCANNED ------------------ //
@@ -224,17 +209,11 @@ Profile.Voyages.data = function() {
 		if (Profile.Voyages.maxPlanets < parseInt(scanned)) {
 			Profile.Voyages.maxPlanets = parseInt(scanned);
 		}
-		if ((Profile.Voyages.minPlanets > parseInt(scanned)) || (Profile.Voyages.minPlanets == -1)) {
-			Profile.Voyages.minPlanets = parseInt(scanned);
-		}
 		Profile.Voyages.totalPlanets += parseInt(scanned);
 	// ------------------ 7: GLORY ------------------ //
 		var glory = $(this).children('td:eq(7)').text();
 		if (Profile.Voyages.maxGlory < parseInt(glory)) {
 			Profile.Voyages.maxGlory = parseInt(glory);
-		}
-		if ((Profile.Voyages.minGlory > parseInt(glory)) || (Profile.Voyages.minGlory == -1)) {
-			Profile.Voyages.minGlory = parseInt(glory);
 		}
 		Profile.Voyages.totalGlory += parseInt(glory);
 	// ------------------ 8: DEATH ------------------ //
@@ -340,10 +319,10 @@ Profile.css = function() {
 			margin : 4px 4px 4px 4px; \
 			font-variant : small-caps; \
 			padding : 6px 9px 6px 9px; \
-			height : 100px; \
+			height : 95px; \
 		} \
 		#profile #ProfileData #dies-stats > li { \
-			height : 75px; \
+			height : 85px; \
 			vertical-align : bottom; \
 		} \
 		#ProfileData ul li.diestats { \
@@ -390,15 +369,25 @@ Profile.css = function() {
 			font-weight : 900; \
 			font-size : 13px; \
 		} \
+		.death_text { \
+			font-size : 12px; \
+			width : 76px; \
+			padding : 0 1px; \
+		} \
 		.stroke { \
 			color : #ff4059; \
 			text-shadow : \
-				-1px -1px 2px blue, \
-				1px -1px 2px blue, \
-				-1px 1px 2px blue, \
-				1px 1px 2px blue; \
-			font-weight : 900; \
-			font-size : 26px; \
+				-1px -1px 5px blue, \
+				-1px 0px 5px blue, \
+				-1px 1px 5px blue, \
+				0px 1px 5px blue, \
+				0px -1px 5px blue, \
+				1px 1px 5px blue, \
+				1px 0px 5px blue, \
+				1px -1px 5px blue; \
+			font-weight : 600; \
+			font-size : 21px; \
+			padding-top : 5px; \
 		}\
 		#ProfileData ul li.diestats ul.shiplist, \
 		#ProfileData ul li.stats ul.shiplist { \
@@ -474,7 +463,7 @@ Profile.css = function() {
 		}\
 	").appendTo("head");
 }	// END FUNCTION - Profile.css
-
+/*
 first = 0;	NShips = 0;
 Profile.Analyse = {};
 Profile.Analyse.init = function(n) {
@@ -482,7 +471,7 @@ Profile.Analyse.init = function(n) {
 	$('#ProfileData').remove();
 	Profile.AddTable(n);
 }
-
+*/
 Profile.init();
 
 // <div id="tid_simpleTip" style="opacity: 1; top: 979px; left: 117.046875px;"><img class="tid_arrow" alt=""
