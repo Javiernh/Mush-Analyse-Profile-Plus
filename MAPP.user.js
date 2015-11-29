@@ -10,7 +10,7 @@
 // @include	http://mush.twinoid.com/me*
 // @include	http://mush.vg/me*
 // @require	http://code.jquery.com/jquery-latest.js
-// @version		1.4b
+// @version		1.5b
 // ==/UserScript==
 /* jshint -W043 */
 
@@ -31,7 +31,7 @@ Profile.Stats.data = function() {
 			var charname = $(this).children('td:eq(0)').children().attr('src').replace(Profile.MushURL + '/img/icons/ui/', '').replace('.png', '');
 			var cycles = $(this).children('td:eq(2)').text().replace('x', '');
 			Profile.Stats.cycles[charname] = cycles;
-			$('#char-stats > li.' + charname + ' strong').after('<p>' + Profile.Cycles + ': ' + Profile.Stats.cycles[charname] + '</p>');
+			$('#char-stats > li.' + charname + ' > div').after('<p>' + Profile.Cycles + ': ' + Profile.Stats.cycles[charname] + '</p>');
 		}
 	});
 }	// END FUNCTION - Profile.Stats.data
@@ -138,9 +138,9 @@ Profile.DisplayData = function() {
 	for (var character in Profile.Voyages.allCharSorted) {
 		var char = Profile.Voyages.allCharSorted[character][1].toLowerCase().replace(' ', '');
 		$('<li class="charstat ' + char + '" style="font-size:100%; width:80px; font-variant:small-caps;">').appendTo('#char-stats');
-			$('<img class="bodychar ' + Profile.Voyages.allCharSorted[character][1].toLowerCase().replace(' ', '_') + '" src="/img/design/pixel.gif" >')
+			$('<div class="bodychar ' + Profile.Voyages.allCharSorted[character][1].toLowerCase().replace(' ', '_') + '"></div>')
 				.appendTo('#char-stats > li.' + char);
-			$('<br><strong class="li_title character">' + Profile.Voyages.allCharSorted[character][1] + '</strong>').appendTo('#char-stats > li.' + char);
+			$('<div><strong class="li_title character">' + Profile.Voyages.allCharSorted[character][1] + '</strong></div>').appendTo('#char-stats > li.' + char + ' > div');
 			$('<p>' + Profile.Voyages.TxtVoyage + ': ' + Profile.Voyages.allCharSorted[character][0] + '</p>').appendTo('#char-stats > li.' + char);
 			$('<p><em>' + (100 * Profile.Voyages.allCharSorted[character][0] / Profile.Voyages.number).toFixed(2) + '%</em></p>').appendTo('#char-stats > li.' + char);
 		}
@@ -306,6 +306,15 @@ Profile.css = function() {
 			margin : 4px 4px 4px 4px; \
 			font-variant : small-caps; \
 		} \
+		#ProfileData ul li.charstat > div { \
+			margin : 0 26px; \
+		} \
+		#ProfileData ul li.charstat > div > div { \
+			width : 80px; \
+			position : relative; \
+			left : -26px; \
+			top : 14px; \
+		} \
 		#ProfileData ul li.charstat { \
 			border-width : 1px; \
 			border-color : #A6EEFB #01c3df #01c3df #01c3df; \
@@ -346,15 +355,6 @@ Profile.css = function() {
 			-moz-box-shadow : inset 0px 0px 4px #56FF35, 0px 0px 4px #56FF35, 0px 2px 4px #56FF35; \
 			-webkit-box-shadow : inset 0px 0px 4px #56FF35, 0px 0px 4px #56FF35, 0px 2px 4px #56FF35; \
 			box-shadow : inset 0px 0px 4px #56FF35, 0px 0px 4px #56FF35, 0px 2px 4px #56FF35; \
-		} \
-		.character + p, .character + p + p, .character + p + p + p { \
-			position : relative; \
-			bottom : 16px; \
-		} \
-		.character { \
-			position : relative; \
-			top : -28px; \
-			z-index : 5; \
 		} \
 		.li_title { \
 			color : #fff; \
