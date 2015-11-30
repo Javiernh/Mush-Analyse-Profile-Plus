@@ -10,7 +10,7 @@
 // @include	http://mush.twinoid.com/me*
 // @include	http://mush.vg/me*
 // @require	http://code.jquery.com/jquery-latest.js
-// @version		1.5b
+// @version		1.5.1b
 // ==/UserScript==
 /* jshint -W043 */
 
@@ -22,7 +22,6 @@ Profile.MushURL = 'http://' + document.domain;
 Profile.Stats = {};
 	Profile.Stats.cycles = [];
 //	Profile.Stats.maxDay = 0;
-// **************** Conseguir una visualización más rápida **************** //
 
 Profile.Stats.data = function() {
 	$('.tid_scrollContent:eq(1) > table tr').each(function() {
@@ -36,7 +35,6 @@ Profile.Stats.data = function() {
 	});
 }	// END FUNCTION - Profile.Stats.data
 
-// **************** Conseguir una visualización más rápida **************** //
 Profile.Voyages = {};
 	Profile.Voyages.totalDay = 0;
 	Profile.Voyages.maxDay = 0;
@@ -147,21 +145,12 @@ Profile.DisplayData = function() {
 // ------------------------------ DEATHS ------------------------------ //
 	$('<ul id="dies-stats"><h4 class="ul_title">' + Profile.Title3 + '</h4></ul>').appendTo('#ProfileData');
 	for(var death in Profile.Voyages.allDeathSorted) {
-		$('<li class="diestats ' + death + '">').appendTo('#dies-stats');
+		var deathID = Profile.Voyages.allDeathSorted[death][0].replace(/\s/g, '');
+		$('<li id="' + deathID + '" class="diestats ' + death + '">').appendTo('#dies-stats');
 			$('<p class="stroke">' + Profile.Voyages.allDeathSorted[death][1] + '</p>').appendTo('#dies-stats > li.' + death);
-//			if(Profile.Voyages.allDeathSorted[death][0].length > 14) {
-//				$('<p class="li_title"><marquee scrolldelay="250" direction="up" style="height: 16px; text-align: center;"><strong>' + 
-//					Profile.Voyages.allDeathSorted[death][0] + '</strong></marquee></p>').appendTo('#dies-stats > li.' + death);
-//			}
-//			else {
-				$('<p class="li_title death_text"><strong>' + Profile.Voyages.allDeathSorted[death][0] + '</strong></p>').appendTo('#dies-stats > li.' + death);
-//			}
-//			$('<p><em>' + (100* Profile.Voyages.allDeathSorted[death][1] / Profile.Voyages.number).toFixed(2) + '%</em></p>')
-//				.appendTo('#dies-stats > li.' + death);
+			$('<p class="li_title death_text"><strong>' + Profile.Voyages.allDeathSorted[death][0] + '</strong></p>').appendTo('#' + deathID);
+//			$('<p class="li_title death_text"><strong>' + Profile.Voyages.allDeathSorted[death][0] + '</strong></p>').appendTo('#dies-stats > li.' + death);
 	}
-// ***************************************************************************************************************************
-// ***************************************************************************************************************************
-// ***************************************************************************************************************************
 }	// END FUNCTION - Profile.DisplayData
 
 Profile.Voyages.data = function() {
@@ -247,6 +236,59 @@ Profile.Voyages.data = function() {
 // ------------------------------------------------------- //
 }	// END FUNCTION - Profile.Voyages.data
 
+Profile.LinksDisplay = function() {
+	$('<div class="links"><ul class= shiplist></ul></div>').prependTo('li.stats');
+//	$('<div class="links"><ul class= shiplist></ul></div>').prependTo('li.charstat');
+	$('<div class="links"><ul class= shiplist></ul></div>').prependTo('li.diestats');
+	$('#cdTrips > table.summar > tbody > tr.cdTripEntry').each(function (index,elem) {
+	// ---------------------- LINKS : 1 : DAYS ---------------------- //
+		var link = $(this).children('td:eq(9)').find("a").attr('href');
+		if ( parseInt($(this).children('td:eq(1)').text()) == Profile.Voyages.maxDay ) {
+			$('<li><a class="ship" href="' + link + '"><img class="icon_char_ship" src="/img/icons/ui/' + 
+				$(this).children('td:eq(0)').text().trim().toLowerCase().replace(" ","") + '.png"> : #' + link.replace("/theEnd/", "") + '</a></li>')
+				.appendTo('#p_days > div ul.shiplist');
+		}
+	// ---------------------- LINKS : 7 : GLORY ---------------------- //
+		if ( parseInt($(this).children('td:eq(7)').text()) == Profile.Voyages.maxGlory ) {
+			$('<li><a class="ship" href="' + link + '"><img class="icon_char_ship" src="/img/icons/ui/' + 
+				$(this).children('td:eq(0)').text().trim().toLowerCase().replace(" ","") + '.png"> : #' + link.replace("/theEnd/", "") + '</a></li>')
+				.appendTo('#p_glory > div ul.shiplist');
+		}
+	// ---------------------- LINKS : 3 : RESEARCH ---------------------- //
+		if ( parseInt($(this).children('td:eq(3)').text()) == Profile.Voyages.maxResearch ) {
+			$('<li><a class="ship" href="' + link + '"><img class="icon_char_ship" src="/img/icons/ui/' + 
+				$(this).children('td:eq(0)').text().trim().toLowerCase().replace(" ","") + '.png"> : #' + link.replace("/theEnd/", "") + '</a></li>')
+				.appendTo('#p_research > div ul.shiplist');
+		}
+	// ---------------------- LINKS : 4 : PROJECTS ---------------------- //
+		if ( parseInt($(this).children('td:eq(4)').text()) == Profile.Voyages.maxProjects ) {
+			$('<li><a class="ship" href="' + link + '"><img class="icon_char_ship" src="/img/icons/ui/' + 
+				$(this).children('td:eq(0)').text().trim().toLowerCase().replace(" ","") + '.png"> : #' + link.replace("/theEnd/", "") + '</a></li>')
+				.appendTo('#p_projects > div ul.shiplist');
+		}
+	// ---------------------- LINKS : 5 : SCANNED ---------------------- //
+		if ( parseInt($(this).children('td:eq(5)').text()) == Profile.Voyages.maxPlanets ) {
+			$('<li><a class="ship" href="' + link + '"><img class="icon_char_ship" src="/img/icons/ui/' + 
+				$(this).children('td:eq(0)').text().trim().toLowerCase().replace(" ","") + '.png"> : #' + link.replace("/theEnd/", "") + '</a></li>')
+				.appendTo('#p_scanned > div ul.shiplist');
+		}
+	// ---------------------- LINKS : 2 : EXPLORATIONS ---------------------- //
+		if ( parseInt($(this).children('td:eq(2)').text()) == Profile.Voyages.maxExplo ) {
+			$('<li><a class="ship" href="' + link + '"><img class="icon_char_ship" src="/img/icons/ui/' + 
+				$(this).children('td:eq(0)').text().trim().toLowerCase().replace(" ","") + '.png"> : #' + link.replace("/theEnd/", "") + '</a></li>')
+				.appendTo('#p_explorations > div ul.shiplist');
+		}
+	// ---------------------- LINKS : 8 : DEATHS ---------------------- //
+		$('<li><a class="ship" href="' + link + '"><img class="icon_char_ship" src="/img/icons/ui/' + 
+			$(this).children('td:eq(0)').text().trim().toLowerCase().replace(" ","") + '.png"> : #' + link.replace("/theEnd/", "") + '</a></li>')
+			.appendTo('#' + $(this).children('td:eq(8)').text().replace(/\s/g, '') + ' > div ul.shiplist');
+	// ---------------------- LINKS : 0 : CHARACTERS ---------------------- //
+		$('<li><a class="ship" href="' + link + '"><img class="icon_char_ship" src="/img/icons/ui/' + 
+			$(this).children('td:eq(0)').text().trim().toLowerCase().replace(" ","") + '.png"> : #' + link.replace("/theEnd/", "") + '</a></li>')
+			.appendTo('#' + $(this).children('td:eq(0)').text().replace(/\s/g, '') + ' > div ul.shiplist');
+	});
+}	// END FUNCTION - Profile.LinksDisplay
+/*
 Profile.Links = function(dt, td_eq) {
 	Profile.Voyages.links = [];
     charac_in_ship = [];	// Added new array
@@ -261,11 +303,12 @@ Profile.Links = function(dt, td_eq) {
 		}
 	});
 }	// END FUNCTION - Profile.Links
-
+*/
 Profile.init = function() {
 	Profile.Voyages.data();
 	Profile.css();
 	Profile.DisplayData();
+	Profile.LinksDisplay();
 	$(document).ready(function() {
 		Profile.Stats.data();	// Extract and display cycles when document is ready
 	});
@@ -313,7 +356,7 @@ Profile.css = function() {
 			width : 80px; \
 			position : relative; \
 			left : -26px; \
-			top : 14px; \
+			top : 16px; \
 		} \
 		#ProfileData ul li.charstat { \
 			border-width : 1px; \
@@ -331,7 +374,7 @@ Profile.css = function() {
 			height : 95px; \
 		} \
 		#profile #ProfileData #dies-stats > li { \
-			height : 85px; \
+			height : 80px; \
 			vertical-align : bottom; \
 		} \
 		#ProfileData ul li.diestats { \
@@ -346,7 +389,7 @@ Profile.css = function() {
 			width : 80px; \
 			margin : 4px 4px 4px 4px; \
 			font-variant : small-caps; \
-			padding : 0 9px 9px 9px; \
+			padding : 5px 9px 9px 9px; \
 		} \
 		#ProfileData ul li.diestats:hover, \
 		#ProfileData ul li.stats:hover { \
@@ -365,14 +408,14 @@ Profile.css = function() {
 				-1px 0 2px black, \
 				-1px 1px 2px black, \
 				1px 1px 2px black; \
-			//letter-spacing : 1px; \
+//			letter-spacing : 1px; \
 			font-weight : 900; \
 			font-size : 13px; \
 		} \
 		.death_text { \
 			font-size : 12px; \
 			width : 76px; \
-			padding : 0 1px; \
+			padding : 0 2px; \
 		} \
 		.stroke { \
 			color : #ff4059; \
@@ -387,13 +430,16 @@ Profile.css = function() {
 				1px -1px 5px blue; \
 			font-weight : 600; \
 			font-size : 21px; \
-			padding-top : 5px; \
 		}\
 		#ProfileData ul li.diestats ul.shiplist, \
+		#ProfileData ul li.diestats div ul.shiplist, \
+		#ProfileData ul li.stats div ul.shiplist, \
 		#ProfileData ul li.stats ul.shiplist { \
 			display : none; \
 		}\
 		#ProfileData ul li.diestats ul.shiplist a.ship, \
+		#ProfileData ul li.diestats div ul.shiplist a.ship, \
+		#ProfileData ul li.stats div ul.shiplist a.ship, \
 		#ProfileData ul li.stats ul.shiplist a.ship { \
 			display : block; \
 			width : 85px; \
@@ -405,31 +451,41 @@ Profile.css = function() {
 			text-shadow : 1px 1px 5px #FFF; \
 		}\
 		#ProfileData ul li.diestats ul.shiplist a.ship img.icon_char_ship, \
+		#ProfileData ul li.diestats div ul.shiplist a.ship img.icon_char_ship, \
+		#ProfileData ul li.stats div ul.shiplist a.ship img.icon_char_ship, \
 		#ProfileData ul li.stats ul.shiplist a.ship img.icon_char_ship { \
-		//	vertical-align : initial; \
+//			vertical-align : initial; \
 			padding-bottom : 5px; \
 		}\
 		#ProfileData ul li.diestats ul.shiplist a.ship:hover, \
+		#ProfileData ul li.diestats div ul.shiplist a.ship:hover, \
+		#ProfileData ul li.stats div ul.shiplist a.ship:hover, \
 		#ProfileData ul li.stats ul.shiplist a.ship:hover { \
 			color : #ff4059; \
 			text-shadow : 1px 1px 0px #000; \
 		}\
 		#ProfileData ul li.diestats:hover > ul.shiplist, \
+		#ProfileData ul li.diestats:hover > div ul.shiplist, \
+		#ProfileData ul li.stats:hover > div ul.shiplist, \
 		#ProfileData ul li.stats:hover > ul.shiplist { \
 			display : block; \
 			position : relative; \
 			width : 100px; \
-		//	left : -10px; \
-		//	bottom : -125px; \
+//			left : -10px; \
+//			bottom : -125px; \
 			left : 85px; \
 			top : 0px; \
 			text-align : right; \
 			z-index : 50; \
-			height : 0px; \
+			max-height : 80px; \
+			overflow-x : hidden; \
+			overflow-y : auto; \
 			padding : 0px; \
 			border : 0px; \
 		}\
 		#ProfileData ul li.diestats ul.shiplist li, \
+		#ProfileData ul li.diestats div ul.shiplist li, \
+		#ProfileData ul li.stats div ul.shiplist li, \
 		#ProfileData ul li.stats ul.shiplist li{ \
 			text-align : left; \
 			margin : 0px; \
@@ -439,14 +495,15 @@ Profile.css = function() {
 			padding : 0px 5px 0 5px! important; \
 			border-width : 1px; \
 		}\
-		#ProfileData ul li.diestats ul.shiplist li {\
+		#ProfileData ul li.diestats ul.shiplist li, \
+		#ProfileData ul li.diestats div ul.shiplist li {\
 			border-color : #FBA6B0 #DF011C #DF0125 #DF011C; \
 			-moz-box-shadow : inset 0px 0px 4px #FB3939, 0px 0px 4px #FB3939, 0px 2px 4px #FB3939; \
 			-webkit-box-shadow : inset 0px 0px 4px #FB3939, 0px 0px 4px #FB3939, 0px 2px 4px #FB3939; \
 			box-shadow : inset 0px 0px 4px #FB3939, 0px 0px 4px #FB3939, 0px 2px 4px #FB3939; \
 			background-color : #FCC2C9; \
 		}\
-		#ProfileData ul li.stats ul.shiplist li {\
+		#ProfileData ul li.stats div ul.shiplist li {\
 			border-color : yellow orange orange orange; \
 			-moz-box-shadow : inset 0px 0px 4px goldenrod, 0px 0px 4px goldenrod, 0px 2px 4px goldenrod; \
 			-webkit-box-shadow : inset 0px 0px 4px goldenrod, 0px 0px 4px goldenrod, 0px 2px 4px goldenrod; \
@@ -454,6 +511,8 @@ Profile.css = function() {
 			background-color : #FCF5C2; \
 		}\
 		#ProfileData ul li.diestats ul.shiplist li:hover, \
+		#ProfileData ul li.diestats div ul.shiplist li:hover, \
+		#ProfileData ul li.stats div ul.shiplist li:hover, \
 		#ProfileData ul li.stats ul.shiplist li:hover{ \
 			background-color : #ECFFA2; \
 			border-color : #BCFFA2 #40E000 #49E000 #40E000; \
@@ -461,6 +520,22 @@ Profile.css = function() {
 			-webkit-box-shadow : inset 0px 0px 4px #56FF35, 0px 0px 4px #56FF35, 0px 2px 4px #56FF35; \
 			box-shadow : inset 0px 0px 4px #56FF35, 0px 0px 4px #56FF35, 0px 2px 4px #56FF35; \
 		}\
+		div.links { \
+			height : 0px; \
+		} \
+		div.links > ul::-webkit-scrollbar { \
+			width : 3px; \
+		} \
+		div.links > ul::-webkit-scrollbar-button { \
+			width : 0px; \
+			height : 0px; \
+		} \
+		div.links > ul::-webkit-scrollbar-thumb { \
+			background : #1A1B57; \
+		} \
+		div.links > ul::-webkit-scrollbar-track { \
+			background : #576077; \
+		} \
 	").appendTo("head");
 }	// END FUNCTION - Profile.css
 /*
