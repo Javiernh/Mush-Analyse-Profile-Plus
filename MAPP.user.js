@@ -10,7 +10,7 @@
 // @include	http://mush.twinoid.com/me*
 // @include	http://mush.vg/me*
 // @require	http://code.jquery.com/jquery-latest.js
-// @version		1.5.1b
+// @version		1.5.2b
 // ==/UserScript==
 /* jshint -W043 */
 
@@ -454,8 +454,8 @@ Profile.css = function() {
 		#ProfileData ul li.diestats div ul.shiplist a.ship img.icon_char_ship, \
 		#ProfileData ul li.stats div ul.shiplist a.ship img.icon_char_ship, \
 		#ProfileData ul li.stats ul.shiplist a.ship img.icon_char_ship { \
-//			vertical-align : initial; \
-			padding-bottom : 5px; \
+			position : relative; \
+			top : -3px; \
 		}\
 		#ProfileData ul li.diestats ul.shiplist a.ship:hover, \
 		#ProfileData ul li.diestats div ul.shiplist a.ship:hover, \
@@ -477,7 +477,7 @@ Profile.css = function() {
 			top : 0px; \
 			text-align : right; \
 			z-index : 50; \
-			max-height : 80px; \
+			max-height : 100px; \
 			overflow-x : hidden; \
 			overflow-y : auto; \
 			padding : 0px; \
