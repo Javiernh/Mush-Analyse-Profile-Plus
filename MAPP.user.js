@@ -317,6 +317,7 @@ MAPP.css = function() {
 	$("<style>").attr("type", "text/css").html("\
 		#mapptab { \
 			text-transform : none! important; \
+			background-image : url(\"http://imgup.motion-twin.com/twinoid/e/7/d2c11d5b_21696.jpg\"); \
 		} \
 		h4.ul_title { \
 			margin-bottom : 4px; \
