@@ -1,5 +1,5 @@
 // ==UserScript==
-// @name MAPP Beta
+// @name MAPP
 // @namespace Mush Analyse Profile Plus
 // @description Script Mush para los Perfiles (mejorado por Javiernh)
 // @/downloadURL https://raw.github.com/Javiernh/Mush-Analyse-Profile-Plus/release/MAPP.user.js
@@ -10,7 +10,7 @@
 // @include	http://mush.twinoid.com/me*
 // @include	http://mush.vg/me*
 // @require	http://code.jquery.com/jquery-latest.js
-// @version		1.6b
+// @version		2.0
 // ==/UserScript==
 /* jshint -W043 */
 
@@ -18,22 +18,62 @@ MAPP = {};
 MAPP.version = GM_info.script.version;
 MAPP.Title = GM_info.script.name;
 MAPP.domain = document.domain;
+MAPP.URL = document.URL;
 MAPP.MushURL = 'http://' + document.domain;
-MAPP.Stats = {};
-	MAPP.Stats.cycles = [];
-//	MAPP.Stats.maxDay = 0;
+MAPP.Path = location.pathname;
 
-MAPP.Stats.data = function() {
-	$('.tid_scrollContent:eq(1) > table tr').each(function() {
-		var c = $(this).children('td:eq(1)').children().text().search(/(ciclos|cycles)/i);
-		if (c !== -1) {
-			var charname = $(this).children('td:eq(0)').children().attr('src').replace(MAPP.MushURL + '/img/icons/ui/', '').replace('.png', '');
-			var cycles = $(this).children('td:eq(2)').text().replace('x', '');
-			MAPP.Stats.cycles[charname] = cycles;
-			$('#char-stats > li.' + charname + ' > div.bodychar').after('<p>' + MAPP.Cycles + ': ' + MAPP.Stats.cycles[charname] + '</p>');
-		}
-	});
-}	// END FUNCTION - MAPP.Stats.data
+MAPP.TxtVoyage = $('#cdTrips h3 .cornerright').text().toLowerCase();
+switch (MAPP.domain) {
+	case 'mush.twinoid.es':
+		MAPP.TxtFileTab = 'Ficha';
+		MAPP.TxtCycles = 'ciclos';
+		MAPP.Title1 = 'Estadísticas de viajes';
+		MAPP.Title2 = 'Estadísticas de personajes';
+		MAPP.Title3 = 'Estadísticas de muertes';
+		MAPP.TxtProject = $('#cdTrips > table.summar > tbody > tr:first > th:eq(4)').text().toLowerCase().split(' ')[0];
+		break;
+	case 'mush.twinoid.com':
+		MAPP.TxtFileTab = 'File';
+		MAPP.TxtCycles = 'cycles';
+		MAPP.Title1 = 'Voyages statistics';
+		MAPP.Title2 = 'Characters statistics';
+		MAPP.Title3 = 'Deaths statistics';
+		MAPP.TxtProject = $('#cdTrips > table.summar > tbody > tr:first > th:eq(4)').text().toLowerCase().split(' ')[1];
+		break;
+	default:
+		MAPP.TxtFileTab = 'Fiche';
+		MAPP.TxtCycles = 'cycles';
+		MAPP.Title1 = 'Statistiques de voyages';
+		MAPP.Title2 = 'Statistiques de personnages';
+		MAPP.Title3 = 'Statistiques de morts';
+		MAPP.TxtProject = $('#cdTrips > table.summar > tbody > tr:first > th:eq(4)').text().toLowerCase().split(' ')[0];
+}	// END SWITCH
+
+MAPP.GenTabProfile = function() {
+	var TxtProfileTab = $('#profiletab').text();
+	var mappTabAttr = " $(\'#cdTrips\').parent().hide(); $(\'.cdTabTgt\').hide(); $(\'#ProfileData\').show(); $(\'#profile\').show();";
+	mappTabAttr += " $(this).addClass(\'active\'); $(this).siblings().removeClass(\'active\'); _tid.onLoad(); return false";
+	var ProfileTabAttr = " $('.cdTabTgt').hide(); $('#ProfileData').hide(); $('#cdTrips').parent().show(); $('#profile').show();";
+	ProfileTabAttr += " $(this).addClass('active'); $(this).siblings().removeClass('active'); _tid.onLoad(); return false;";
+
+	if (MAPP.Path.search('/u/profile/') != -1) {
+		$('#maincontainer').attr('style', 'margin: 70px auto 0px;');
+		$('.cdTabTgt').before('<ul class="mtabs mapptabs"></ul>');	// Añadida clase "mapptabs" para colocar bien el menú.
+		$('<li id="profiletab" class="cdTab active">' + MAPP.TxtFileTab + '</li>').attr("onclick", ProfileTabAttr).appendTo('ul.mtabs');
+	}
+	else {
+		$('#profiletab').attr('onclick', ProfileTabAttr);
+	}
+	$('<li id="mapptab" class="newstab active">MAPP v' + MAPP.version + '</li>').attr('onclick', mappTabAttr).appendTo('ul.mtabs');
+};	// END FUNCTION - MAPP.GenTabProfile
+
+MAPP.IconDay = function(icon_day) {
+	var iconday = 'slow_cycle';		// Icono de reloj para los que no llegan a 5 días de duración.
+	var daytoicon = parseInt(icon_day/5)*5;
+	if (daytoicon == 25) { daytoicon = 20; }		// Corrección de ausencia del icono de 25 días.
+	if (daytoicon !== 0) { iconday = 'day'+ daytoicon; }
+	return iconday;
+};	// END FUNCTION - MAPP.IconDay
 
 MAPP.Voyages = {};
 	MAPP.Voyages.totalDay = 0;
@@ -52,113 +92,12 @@ MAPP.Voyages = {};
 	MAPP.Voyages.allCharacters = [];
 	MAPP.Voyages.quantity = 0 ;
 	MAPP.Voyages.links = [];
-	MAPP.Voyages.TxtVoyage = $('#cdTrips h3 .cornerright').text().toLowerCase();
 	MAPP.Voyages.TxtCharacter = $('#cdTrips > table.summar > tbody > tr:first > th:eq(0)').text();
 	MAPP.Voyages.TxtDays = $('#cdTrips > table.summar > tbody > tr:first > th:eq(1)').text().toLowerCase();
 	MAPP.Voyages.TxtGlory = $('#cdTrips > table.summar > tbody > tr:first > th:eq(7)').text().toLowerCase();
 	MAPP.Voyages.TxtResearch = $('#cdTrips > table.summar > tbody > tr:first > th:eq(3)').text().toLowerCase();
 	MAPP.Voyages.TxtPlanets = $('#cdTrips > table.summar > tbody > tr:first > th:eq(5)').text().toLowerCase().split(' ')[0];
 	MAPP.Voyages.TxtExplor = $('#cdTrips > table.summar > tbody > tr:first > th:eq(2)').text().toLowerCase();
-	MAPP.Voyages.number = 0;
-
-switch (MAPP.domain) {
-	case 'mush.twinoid.es':
-		MAPP.Cycles = 'ciclos';
-		MAPP.Title1 = 'Estadísticas de viajes';
-		MAPP.Title2 = 'Estadísticas de personajes';
-		MAPP.Title3 = 'Estadísticas de muertes';
-		MAPP.Voyages.TxtProject = $('#cdTrips > table.summar > tbody > tr:first > th:eq(4)').text().toLowerCase().split(' ')[0];
-		break;
-	case 'mush.twinoid.com':
-		MAPP.Cycles = 'cycles';
-		MAPP.Title1 = 'Voyages statistics';
-		MAPP.Title2 = 'Characters statistics';
-		MAPP.Title3 = 'Deaths statistics';
-		MAPP.Voyages.TxtProject = $('#cdTrips > table.summar > tbody > tr:first > th:eq(4)').text().toLowerCase().split(' ')[1];
-		break;
-	default:
-		MAPP.Cycles = 'cycles';
-		MAPP.Title1 = 'Statistiques de voyages';
-		MAPP.Title2 = 'Statistiques de personnages';
-		MAPP.Title3 = 'Statistiques de morts';
-		MAPP.Voyages.TxtProject = $('#cdTrips > table.summar > tbody > tr:first > th:eq(4)').text().toLowerCase().split(' ')[0];
-}	// END SWITCH
-
-MAPP.IconDay = function(icon_day) {
-	var iconday = 'slow_cycle';		// Icono de reloj para los que no llegan a 5 días de duración.
-	var daytoicon = parseInt(icon_day/5)*5;
-	if (daytoicon == 25) { daytoicon = 20; }		// Corrección de ausencia del icono de 25 días.
-	if (daytoicon !== 0) { iconday = 'day'+ daytoicon; }
-	return iconday;
-}	// END FUNCTION - MAPP.IconDay
-
-MAPP.DisplayData = function() {
-	$('#cdTrips').parent().hide();
-	$('<div id="ProfileData" class="awards twinstyle bgtablesummar"></div>').prependTo('#profile > div.column2 > div.data');
-	$('<h3>' + MAPP.Title + ' v' + MAPP.version + '</h3>').appendTo('#ProfileData');
-	$('<div class="butbg"><a href="#" onclick=" $(\'.bgtablesummar:first\').toggle(); $(\'#cdTrips\').parent().toggle();">' + MAPP.Title + ' v' + MAPP.version + '</a></div>').prependTo($('#cdTrips'));
-	$('<div class="butbg"><a href="#" onclick=" $(\'.bgtablesummar:first\').toggle();  $(\'#cdTrips\').parent().toggle();">' + MAPP.Voyages.TxtVoyage + '</a></div>').prependTo('#ProfileData');
-
-// ------------------------------ VOYAGES ------------------------------ //
-	$('<ul id="ships-stats"><h4 class="ul_title">' + MAPP.Title1 + '</h4></ul>').appendTo('#ProfileData');
-	// ------------------------- DAYS ------------------------- //
-		$('<li id="p_days" class="stats"></li>').appendTo('#ships-stats');
-//			.appendTo('#p_days');
-			$('<img src="/img/icons/ui/'+ MAPP.IconDay(MAPP.Voyages.maxDay) +'.png" style="width:26px; height:26px;"></br>').appendTo('#p_days');
-			$('<strong class="li_title">' + MAPP.Voyages.TxtDays + '</strong>').appendTo('#p_days');
-			$('<p style="padding-top: 3px;">max: ' + MAPP.Voyages.maxDay + '</p>').appendTo('#p_days');
-			$('<p>med: <em>' + (MAPP.Voyages.totalDay/MAPP.Voyages.number).toFixed(1) + '</em></p>').appendTo('#p_days');
-	// ------------------------- GLORY ------------------------- //
-		$('<li id="p_glory" class="stats"></li>').appendTo('#ships-stats');
-			$('<img src="/img/icons/ui/triumph.png" style="width:26px; height:26px;"></br>').appendTo('#p_glory');
-			$('<strong class="li_title">' + MAPP.Voyages.TxtGlory + '</strong>').appendTo('#p_glory');
-			$('<p style="padding-top: 3px;">max: ' + MAPP.Voyages.maxGlory + '</p>').appendTo('#p_glory');
-			$('<p>med: <em>' + (MAPP.Voyages.totalGlory/MAPP.Voyages.number).toFixed(1) + '</em></p>').appendTo('#p_glory');
-	// ------------------------- RESEARCH ------------------------- //
-		$('<li id="p_research" class="stats"></li>').appendTo('#ships-stats');
-			$('<img src="/img/icons/ui/microsc.png" style="width:26px; height:26px;"></br>').appendTo('#p_research');
-			$('<strong class="li_title">' + MAPP.Voyages.TxtResearch + '</strong>').appendTo('#p_research');
-			$('<p style="padding-top: 3px;">max: ' + MAPP.Voyages.maxResearch + '</p>').appendTo('#p_research');
-			$('<p>med: <em>' + (MAPP.Voyages.totalResearch/MAPP.Voyages.number).toFixed(1) + '</em></p>').appendTo('#p_research');
-	// ------------------------- PROJECTS ------------------------- //
-		$('<li id="p_projects" class="stats"></li>').appendTo('#ships-stats');
-			$('<img src="/img/icons/ui/conceptor.png" style="width:26px; height:26px;"></br>').appendTo('#p_projects');
-			$('<strong class="li_title">' + MAPP.Voyages.TxtProject + '</strong>').appendTo('#p_projects');
-			$('<p style="padding-top: 3px;">max: ' + MAPP.Voyages.maxProjects + '</p>').appendTo('#p_projects');
-			$('<p>med: <em>' + (MAPP.Voyages.totalProjects/MAPP.Voyages.number).toFixed(1) + '</em></p>').appendTo('#p_projects');
-	// ------------------------- PLANETS ------------------------- //
-		$('<li id="p_scanned" class="stats"></li>').appendTo('#ships-stats');
-			$('<img src="/img/icons/ui/planet.png" style="width:26px; height:26px;"></br>').appendTo('#p_scanned');
-			$('<strong class="li_title">' + MAPP.Voyages.TxtPlanets + '</strong>').appendTo('#p_scanned');
-			$('<p style="padding-top: 3px;">max: ' + MAPP.Voyages.maxPlanets + '</p>').appendTo('#p_scanned');
-			$('<p>med: <em>' + (MAPP.Voyages.totalPlanets/MAPP.Voyages.number).toFixed(1) + '</em></p>').appendTo('#p_scanned');
-	// ------------------------- EXPLORATIONS ------------------------- //
-		$('<li id="p_explorations" class="stats"></li>').appendTo('#ships-stats');
-			$('<img src="/img/icons/ui/survival.png" style="width:26px; height:26px;"></br>').appendTo('#p_explorations');
-			$('<strong class="li_title">' + MAPP.Voyages.TxtExplor + '</strong>').appendTo('#p_explorations');
-			$('<p style="padding-top: 3px;">max: ' + MAPP.Voyages.maxExplo + '</p>').appendTo('#p_explorations');
-			$('<p>med: <em>' + (MAPP.Voyages.totalExplo/MAPP.Voyages.number).toFixed(1) + '</em></p>').appendTo('#p_explorations');
-// ------------------------------ CHARACTERS ------------------------------ //
-	$('<ul id="char-stats"><h4 class="ul_title">' + MAPP.Title2 + '</h4></ul>').appendTo('#ProfileData');
-	for (var character in MAPP.Voyages.allCharSorted) {
-		var char = MAPP.Voyages.allCharSorted[character][1].toLowerCase().replace(' ', '');
-		$('<li class="charstats ' + char + '">').appendTo('#char-stats');
-			$('<div class="bodychar ' + MAPP.Voyages.allCharSorted[character][1].toLowerCase().replace(' ', '_') + '"></div>')
-				.appendTo('#char-stats > li.' + char);
-			$('<div><strong class="li_title character">' + MAPP.Voyages.allCharSorted[character][1] + '</strong></div>').appendTo('#char-stats > li.' + char + ' > div');
-			$('<p>' + MAPP.Voyages.TxtVoyage + ': ' + MAPP.Voyages.allCharSorted[character][0] + '</p>').appendTo('#char-stats > li.' + char);
-			$('<p><em>' + (100 * MAPP.Voyages.allCharSorted[character][0] / MAPP.Voyages.number).toFixed(2) + '%</em></p>').appendTo('#char-stats > li.' + char);
-		}
-// ------------------------------ DEATHS ------------------------------ //
-	$('<ul id="dies-stats"><h4 class="ul_title">' + MAPP.Title3 + '</h4></ul>').appendTo('#ProfileData');
-	for(var death in MAPP.Voyages.allDeathSorted) {
-		var deathID = MAPP.Voyages.allDeathSorted[death][0].replace(/(\s|\u0027|\u002E)/g, '');
-		$('<li id="' + deathID + '" class="diestats ' + death + '">').appendTo('#dies-stats');
-			$('<p class="stroke">' + MAPP.Voyages.allDeathSorted[death][1] + '</p>').appendTo('#dies-stats > li.' + death);
-			$('<p class="li_title death_text"><strong>' + MAPP.Voyages.allDeathSorted[death][0] + '</strong></p>').appendTo('#' + deathID);
-//			$('<p class="li_title death_text"><strong>' + MAPP.Voyages.allDeathSorted[death][0] + '</strong></p>').appendTo('#dies-stats > li.' + death);
-	}
-}	// END FUNCTION - MAPP.DisplayData
 
 MAPP.Voyages.data = function() {
 	MAPP.Voyages.links = [];
@@ -166,7 +105,7 @@ MAPP.Voyages.data = function() {
     icon_char_ship = [];	// Added new array
 	$('#cdTrips > table.summar > tbody > tr.cdTripEntry').each(function(index,elem) {
 	// 0:character, 1:days, 2:explorations, 3:research, 4:projects, 5:scanned, 6:titles, 7:glory, 8:death, 9:ship
-		MAPP.Voyages.number++;
+		MAPP.Voyages.quantity++;
 	// ------------------ 0: CHARACTER ------------------ //
 		var character = $(this).children('td:eq(0)').children('span.charname').text();
 		if(MAPP.Voyages.allCharacters[character] > 0) {
@@ -213,7 +152,6 @@ MAPP.Voyages.data = function() {
 		MAPP.Voyages.totalGlory += parseInt(glory);
 	// ------------------ 8: DEATH ------------------ //
 		var death = $(this).children('td:eq(8)').text();
-		MAPP.Voyages.quantity++;
 		if (MAPP.Voyages.allDeaths[death] > 0) {
 			MAPP.Voyages.allDeaths[death]++;
 		}
@@ -240,7 +178,86 @@ MAPP.Voyages.data = function() {
 	}
 	MAPP.Voyages.allDeathSorted.sort(function(a,b){return b[1] - a[1];});
 // ------------------------------------------------------- //
-}	// END FUNCTION - MAPP.Voyages.data
+};	// END FUNCTION - MAPP.Voyages.data
+
+MAPP.DisplayData = function() {
+	$('<div id="ProfileData" class="awards twinstyle bgtablesummar"></div>').hide().prependTo('#profile > div.column2 > div.data');
+	$('<h3>Total' + MAPP.TxtVoyage + ' : ' + MAPP.Voyages.quantity + '</h3>').appendTo('#ProfileData');
+// ------------------------------ VOYAGES ------------------------------ //
+	$('<ul id="ships-stats"><h4 class="ul_title">' + MAPP.Title1 + '</h4></ul>').appendTo('#ProfileData');
+	// ------------------------- DAYS ------------------------- //
+		$('<li id="p_days" class="stats"></li>').appendTo('#ships-stats');
+			$('<img src="/img/icons/ui/'+ MAPP.IconDay(MAPP.Voyages.maxDay) +'.png" style="width:26px; height:26px;"></br>').appendTo('#p_days');
+			$('<strong class="li_title">' + MAPP.Voyages.TxtDays + '</strong>').appendTo('#p_days');
+			$('<p style="padding-top: 3px;">max: ' + MAPP.Voyages.maxDay + '</p>').appendTo('#p_days');
+			$('<p>med: <em>' + (MAPP.Voyages.totalDay/MAPP.Voyages.quantity).toFixed(1) + '</em></p>').appendTo('#p_days');
+	// ------------------------- GLORY ------------------------- //
+		$('<li id="p_glory" class="stats"></li>').appendTo('#ships-stats');
+			$('<img src="/img/icons/ui/triumph.png" style="width:26px; height:26px;"></br>').appendTo('#p_glory');
+			$('<strong class="li_title">' + MAPP.Voyages.TxtGlory + '</strong>').appendTo('#p_glory');
+			$('<p style="padding-top: 3px;">max: ' + MAPP.Voyages.maxGlory + '</p>').appendTo('#p_glory');
+			$('<p>med: <em>' + (MAPP.Voyages.totalGlory/MAPP.Voyages.quantity).toFixed(1) + '</em></p>').appendTo('#p_glory');
+	// ------------------------- RESEARCH ------------------------- //
+		$('<li id="p_research" class="stats"></li>').appendTo('#ships-stats');
+			$('<img src="/img/icons/ui/microsc.png" style="width:26px; height:26px;"></br>').appendTo('#p_research');
+			$('<strong class="li_title">' + MAPP.Voyages.TxtResearch + '</strong>').appendTo('#p_research');
+			$('<p style="padding-top: 3px;">max: ' + MAPP.Voyages.maxResearch + '</p>').appendTo('#p_research');
+			$('<p>med: <em>' + (MAPP.Voyages.totalResearch/MAPP.Voyages.quantity).toFixed(1) + '</em></p>').appendTo('#p_research');
+	// ------------------------- PROJECTS ------------------------- //
+		$('<li id="p_projects" class="stats"></li>').appendTo('#ships-stats');
+			$('<img src="/img/icons/ui/conceptor.png" style="width:26px; height:26px;"></br>').appendTo('#p_projects');
+			$('<strong class="li_title">' + MAPP.TxtProject + '</strong>').appendTo('#p_projects');
+			$('<p style="padding-top: 3px;">max: ' + MAPP.Voyages.maxProjects + '</p>').appendTo('#p_projects');
+			$('<p>med: <em>' + (MAPP.Voyages.totalProjects/MAPP.Voyages.quantity).toFixed(1) + '</em></p>').appendTo('#p_projects');
+	// ------------------------- PLANETS ------------------------- //
+		$('<li id="p_scanned" class="stats"></li>').appendTo('#ships-stats');
+			$('<img src="/img/icons/ui/planet.png" style="width:26px; height:26px;"></br>').appendTo('#p_scanned');
+			$('<strong class="li_title">' + MAPP.Voyages.TxtPlanets + '</strong>').appendTo('#p_scanned');
+			$('<p style="padding-top: 3px;">max: ' + MAPP.Voyages.maxPlanets + '</p>').appendTo('#p_scanned');
+			$('<p>med: <em>' + (MAPP.Voyages.totalPlanets/MAPP.Voyages.quantity).toFixed(1) + '</em></p>').appendTo('#p_scanned');
+	// ------------------------- EXPLORATIONS ------------------------- //
+		$('<li id="p_explorations" class="stats"></li>').appendTo('#ships-stats');
+			$('<img src="/img/icons/ui/survival.png" style="width:26px; height:26px;"></br>').appendTo('#p_explorations');
+			$('<strong class="li_title">' + MAPP.Voyages.TxtExplor + '</strong>').appendTo('#p_explorations');
+			$('<p style="padding-top: 3px;">max: ' + MAPP.Voyages.maxExplo + '</p>').appendTo('#p_explorations');
+			$('<p>med: <em>' + (MAPP.Voyages.totalExplo/MAPP.Voyages.quantity).toFixed(1) + '</em></p>').appendTo('#p_explorations');
+// ------------------------------ CHARACTERS ------------------------------ //
+	$('<ul id="char-stats"><h4 class="ul_title">' + MAPP.Title2 + '</h4></ul>').appendTo('#ProfileData');
+	for (var character in MAPP.Voyages.allCharSorted) {
+		var char = MAPP.Voyages.allCharSorted[character][1].toLowerCase().replace(' ', '');
+		$('<li class="charstats ' + char + '">').appendTo('#char-stats');
+			$('<div class="bodychar ' + MAPP.Voyages.allCharSorted[character][1].toLowerCase().replace(' ', '_') + '"></div>')
+				.appendTo('#char-stats > li.' + char);
+			$('<div><strong class="li_title character">' + MAPP.Voyages.allCharSorted[character][1] + '</strong></div>').appendTo('#char-stats > li.' + char + ' > div');
+			$('<p>' + MAPP.TxtCycles + ': ---</p>').appendTo('#char-stats > li.' + char);
+			$('<p>' + MAPP.TxtVoyage + ': ' + MAPP.Voyages.allCharSorted[character][0] + '</p>').appendTo('#char-stats > li.' + char);
+			$('<p><em>' + (100 * MAPP.Voyages.allCharSorted[character][0] / MAPP.Voyages.quantity).toFixed(2) + '%</em></p>').appendTo('#char-stats > li.' + char);
+		}
+// ------------------------------ DEATHS ------------------------------ //
+	$('<ul id="dies-stats"><h4 class="ul_title">' + MAPP.Title3 + '</h4></ul>').appendTo('#ProfileData');
+	for(var death in MAPP.Voyages.allDeathSorted) {
+		var deathID = MAPP.Voyages.allDeathSorted[death][0].replace(/(\s|\u0027|\u002E)/g, '');
+		$('<li id="' + deathID + '" class="diestats ' + death + '">').appendTo('#dies-stats');
+			$('<p class="stroke">' + MAPP.Voyages.allDeathSorted[death][1] + '</p>').appendTo('#dies-stats > li.' + death);
+			$('<p class="li_title death_text"><strong>' + MAPP.Voyages.allDeathSorted[death][0] + '</strong></p>').appendTo('#' + deathID);
+	}
+};	// END FUNCTION - MAPP.DisplayData
+
+MAPP.Stats = {};
+	MAPP.Stats.cycles = [];
+//	MAPP.Stats.maxDay = 0;
+
+MAPP.Stats.data = function() {
+	$('.tid_scrollContent:eq(1) > table tr').each(function() {
+		var c = $(this).children('td:eq(1)').children().text().search(/(ciclos|cycles)/i);
+		if (c !== -1) {
+			var charname = $(this).children('td:eq(0)').children().attr('src').replace(MAPP.MushURL + '/img/icons/ui/', '').replace('.png', '');
+			var cycles = $(this).children('td:eq(2)').text().replace('x', '');
+			MAPP.Stats.cycles[charname] = cycles;
+			$('#char-stats > li.' + charname + ' > p:first').replaceWith('<p>' + MAPP.TxtCycles + ': ' + MAPP.Stats.cycles[charname] + '</p>');
+		}
+	});
+};	// END FUNCTION - MAPP.Stats.data
 
 MAPP.LinksDisplay = function() {
 	$('<div class="links"><ul class= shiplist></ul></div>').prependTo('li.stats');
@@ -291,25 +308,16 @@ MAPP.LinksDisplay = function() {
 	// ---------------------- LINKS : 0 : CHARACTERS ---------------------- //
 		$('<li><a class="ship" href="' + link + '"><img class="icon_char_ship" src="/img/icons/ui/' + 
 		MAPP.IconDay($(this).children('td:eq(1)').text()) + '.png" style="width:16px; height:16px;"> : #' + link.replace("/theEnd/", "") + '</a></li>')
-//		$('<li><a class="ship" href="' + link + '"><img class="icon_char_ship" src="/img/icons/ui/' + 
-//			$(this).children('td:eq(0)').text().trim().toLowerCase().replace(" ","") + '.png"> : #' + link.replace("/theEnd/", "") + '</a></li>')
 			.appendTo('li.' + $(this).children('td:eq(0)').text().trim().toLowerCase().replace(/(\s|\u0027|\u002E)/g, '') + ' > div ul.shiplist');
 	});
 	
-}	// END FUNCTION - MAPP.LinksDisplay
-
-MAPP.init = function() {
-	MAPP.Voyages.data();
-	MAPP.css();
-	MAPP.DisplayData();
-	MAPP.LinksDisplay();
-	$(document).ready(function() {
-		MAPP.Stats.data();	// Extract and display cycles when document is ready
-	});
-}	// END FUNCTION - MAPP.init
+};	// END FUNCTION - MAPP.LinksDisplay
 
 MAPP.css = function() {
 	$("<style>").attr("type", "text/css").html("\
+		#mapptab { \
+			text-transform : none! important; \
+		} \
 		h4.ul_title { \
 			margin-bottom : 4px; \
 			margin-top : 2px; \
@@ -403,7 +411,6 @@ MAPP.css = function() {
 				-1px 0 2px black, \
 				-1px 1px 2px black, \
 				1px 1px 2px black; \
-//			letter-spacing : 1px; \
 			font-weight : 900; \
 			font-size : 13px; \
 		} \
@@ -532,14 +539,17 @@ MAPP.css = function() {
 			background : #576077; \
 		} \
 	").appendTo("head");
-}	// END FUNCTION - MAPP.css
-/*
-first = 0;	NShips = 0;
-MAPP.Analyse = {};
-MAPP.Analyse.init = function(n) {
-	if(isNaN(n) || n === null) { n = 0; }
-	$('#ProfileData').remove();
-	MAPP.AddTable(n);
-}
-*/
+};	// END FUNCTION - MAPP.css
+
+MAPP.init = function() {
+	MAPP.GenTabProfile();
+	MAPP.Voyages.data();
+	MAPP.css();
+	MAPP.DisplayData();
+	MAPP.LinksDisplay();
+	$(window).load(function() {
+		MAPP.Stats.data();	// Extract and display cycles when document is ready
+	});
+};	// END FUNCTION - MAPP.init
+
 MAPP.init();
