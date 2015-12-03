@@ -1,525 +1,556 @@
 // ==UserScript==
-// @name	Mush Analyse Profile Plus
+// @name	MAPP
 // @namespace	Mush Analyse Profile Plus
-// @description	Player profile Analyser (based on Mush Analyse Profile by Scipion)
-// @include	http://mush.twinoid.es/u/profile/*
-// @include	http://mush.twinoid.com/u/profile/*
+// @description	Script Mush para los Perfiles (mejorado por Javiernh)
+// @downloadURL	https://raw.github.com/Javiernh/Mush-Analyse-Profile-Plus/Release/MAPP.user.js
+// @include	http://mush.twinoid.*/u/profile/*
 // @include	http://mush.vg/u/profile/*
-// @include	http://mush.twinoid.es/me*
-// @include	http://mush.twinoid.com/me*
+// @include	http://mush.twinoid.*/me*
 // @include	http://mush.vg/me*
-// @author	Scipion - http://mush.vg/u/profile/332
-// @author	Javiernh - http://mush.twinoid.es/u/profile/21696
-// @downloadURL	https://raw.github.com/Javiernh/Mush-Analyse-Profile-Plus/release/MAPP.user.js
-// @version	1.2.1
+// @require	http://code.jquery.com/jquery-latest.js
+// @version	2.0
 // ==/UserScript==
+/* jshint -W043 */
 
-var $ = unsafeWindow.jQuery;
+MAPP = {};
+MAPP.version = GM_info.script.version;
+MAPP.Title = GM_info.script.name;
+MAPP.domain = document.domain;
+MAPP.URL = document.URL;
+MAPP.MushURL = 'http://' + document.domain;
+MAPP.Path = location.pathname;
 
-var scriptVersion = GM_info.script.version;
+MAPP.TxtVoyage = $('#cdTrips h3 .cornerright').text().toLowerCase();
+switch (MAPP.domain) {
+	case 'mush.twinoid.es':
+		MAPP.TxtFileTab = 'Ficha';
+		MAPP.TxtCycles = 'ciclos';
+		MAPP.Title1 = 'Estadísticas de viajes';
+		MAPP.Title2 = 'Estadísticas de personajes';
+		MAPP.Title3 = 'Estadísticas de muertes';
+		MAPP.TxtProject = $('#cdTrips > table.summar > tbody > tr:first > th:eq(4)').text().toLowerCase().split(' ')[0];
+		break;
+	case 'mush.twinoid.com':
+		MAPP.TxtFileTab = 'File';
+		MAPP.TxtCycles = 'cycles';
+		MAPP.Title1 = 'Voyages statistics';
+		MAPP.Title2 = 'Characters statistics';
+		MAPP.Title3 = 'Deaths statistics';
+		MAPP.TxtProject = $('#cdTrips > table.summar > tbody > tr:first > th:eq(4)').text().toLowerCase().split(' ')[1];
+		break;
+	default:
+		MAPP.TxtFileTab = 'Fiche';
+		MAPP.TxtCycles = 'cycles';
+		MAPP.Title1 = 'Statistiques de voyages';
+		MAPP.Title2 = 'Statistiques de personnages';
+		MAPP.Title3 = 'Statistiques de morts';
+		MAPP.TxtProject = $('#cdTrips > table.summar > tbody > tr:first > th:eq(4)').text().toLowerCase().split(' ')[0];
+}	// END SWITCH
 
-function addGlobalStyle(string) {
-        if(/microsoft/i.test(navigator.appName) && 
-!/opera/i.test(navigator.userAgent)){
-            document.createStyleSheet().cssText=string;
-        }
-        else {
-            var ele=document.createElement('link');
-            ele.rel='stylesheet';
-            ele.type='text/css';
-            ele.href='data:text/css;charset=utf-8,'+escape(string);
-            document.getElementsByTagName('head')[0].appendChild(ele);
-        }
-}
+MAPP.GenTabProfile = function() {
+	var TxtProfileTab = $('#profiletab').text();
+	var mappTabAttr = " $(\'#cdTrips\').parent().hide(); $(\'.cdTabTgt\').hide(); $(\'#ProfileData\').show(); $(\'#profile\').show();";
+	mappTabAttr += " $(this).addClass(\'active\'); $(this).siblings().removeClass(\'active\'); _tid.onLoad(); return false";
+	var ProfileTabAttr = " $('.cdTabTgt').hide(); $('#ProfileData').hide(); $('#cdTrips').parent().show(); $('#profile').show();";
+	ProfileTabAttr += " $(this).addClass('active'); $(this).siblings().removeClass('active'); _tid.onLoad(); return false;";
 
-addGlobalStyle('\
-.nshipinput	{ width: 35px; height: 16px; padding-right: 3px; text-align: right; background: transparent; cursor: pointer; \
-			border: 1px inset; border-color: #4e5162; font-size: 15px; } \
-.nshipinput:hover { border: 1px inset; border-color: white; color: lime; } \
-.nshipinput:focus { background-color: #17195B; border: 1px inset; border-color: cyan; } \
-.bodychar { \
-	position: relative;\
-	opacity: 1;\
-	width: 28px;\
-	height: 44px;\
-	background: url("http://mush.twinoid.es/img/art/char.png") no-repeat;\
-	z-index: 4;\
-}\
-#profile #AnalyseProfile_Result > ul, ul.tabletitle { \
-	padding: 0px 0px 15px 0px \
-} \
-#AnalyseProfile_Result ul li.stats { \
-	border-width : 1px; \
-	border-color : yellow orange orange orange; \
-	-moz-box-shadow : inset 0px 0px 4px goldenrod, 0px 0px 4px goldenrod, 0px 2px 4px goldenrod; \
-	-webkit-box-shadow : inset 0px 0px 4px goldenrod, 0px 0px 4px goldenrod, 0px 2px 4px goldenrod; \
-	box-shadow : inset 0px 0px 4px goldenrod, 0px 0px 4px goldenrod, 0px 2px 4px goldenrod; \
-	background-color: #FCF5C2; \
-	color : #090a61; \
-	font-size:100%; \
-	width:80px; \
-	padding: 4px 0px 15px 0px \
-	margin:4px 4px 4px 4px; \
-	font-variant:small-caps; \
-} \
-#AnalyseProfile_Result ul li.charstat { \
-	border-width : 1px; \
-	border-color : #A6EEFB #01c3df #01c3df #01c3df; \
-	-moz-box-shadow : inset 0px 0px 4px #3965fb, 0px 0px 4px #3965fb, 0px 2px 4px #3965fb; \
-	-webkit-box-shadow : inset 0px 0px 4px #3965fb, 0px 0px 4px #3965fb, 0px 2px 4px #3965fb; \
-	box-shadow : inset 0px 0px 4px #3965fb, 0px 0px 4px #3965fb, 0px 2px 4px #3965fb; \
-	background-color : #c2f3fc; \
-	color : #090a61; \
-	font-size:100%; \
-	width:80px; \
-	margin:4px 4px 4px 4px; \
-	font-variant:small-caps; \
-	padding: 6px 9px 9px 9px \
-} \
-#profile #AnalyseProfile_Result #dies-stats > li { \
-	height:115px; \
-	vertical-align: bottom; \
-} \
-#AnalyseProfile_Result ul li.diestats { \
-	border-width : 1px; \
-	border-color : #FBA6B0 #DF011C #DF0125 #DF011C; \
-	-moz-box-shadow : inset 0px 0px 4px #FB3939, 0px 0px 4px #FB3939, 0px 2px 4px #FB3939; \
-	-webkit-box-shadow : inset 0px 0px 4px #FB3939, 0px 0px 4px #FB3939, 0px 2px 4px #FB3939; \
-	box-shadow : inset 0px 0px 4px #FB3939, 0px 0px 4px #FB3939, 0px 2px 4px #FB3939; \
-	background-color: #FCC2C9; \
-	color : #090a61; \
-	font-size:100%; \
-	width:80px; \
-	margin:4px 4px 4px 4px; \
-	font-variant:small-caps; \
-	padding: 0 9px 9px 9px \
-} \
-#AnalyseProfile_Result ul li.diestats:hover, \
-#AnalyseProfile_Result ul li.stats:hover { \
-	background-color: #ECFFA2; \
-	border-color : #BCFFA2 #40E000 #49E000 #40E000; \
-	-moz-box-shadow : inset 0px 0px 4px #56FF35, 0px 0px 4px #56FF35, 0px 2px 4px #56FF35; \
-	-webkit-box-shadow : inset 0px 0px 4px #56FF35, 0px 0px 4px #56FF35, 0px 2px 4px #56FF35; \
-	box-shadow : inset 0px 0px 4px #56FF35, 0px 0px 4px #56FF35, 0px 2px 4px #56FF35; \
-}\
-.stroke { \
-	color: #ff4059; \
-	text-shadow: \
-		-1px -1px 0 blue, \
-		1px -1px 0 blue, \
-		-1px 1px 0 blue, \
-		1px 1px 0 blue; \
-	font-weight: 900; \
-	font-size:26px; \
-}\
-#AnalyseProfile_Result ul li.diestats ul.shiplist, \
-#AnalyseProfile_Result ul li.stats ul.shiplist { \
-	display: none; \
-}\
-#AnalyseProfile_Result ul li.diestats ul.shiplist a.ship, \
-#AnalyseProfile_Result ul li.stats ul.shiplist a.ship { \
-	display: block; \
-	width: 85px; \
-	height: 18px; \
-	font-size: 13px; \
-	text-decoration: none! important;\
-	font-variant: normal; \
-	color : #090a61; \
-	text-shadow: 1px 1px 5px #FFF;\
-}\
-#AnalyseProfile_Result ul li.diestats ul.shiplist a.ship img.icon_char_ship, \
-#AnalyseProfile_Result ul li.stats ul.shiplist a.ship img.icon_char_ship { \
-//	vertical-align: initial;\
-	padding-bottom: 5px;\
-}\
-#AnalyseProfile_Result ul li.diestats ul.shiplist a.ship:hover, \
-#AnalyseProfile_Result ul li.stats ul.shiplist a.ship:hover { \
-//	color: #ff4059; \
-//	text-shadow: 1px 1px 0px #000;\
-}\
-#AnalyseProfile_Result ul li.diestats:hover > ul.shiplist, \
-#AnalyseProfile_Result ul li.stats:hover > ul.shiplist {\
-	display: block;\
-	position: relative;\
-	width: 100px;\
-//	left: -10px;\
-//	bottom: -125px;\
-	left: 85px;\
-	top: 0px;\
-	text-align: right;\
-	z-index: 50;\
-	height: 0px;\
-	padding: 0px;\
-	border: 0px;\
-}\
-#AnalyseProfile_Result ul li.diestats ul.shiplist li, \
-#AnalyseProfile_Result ul li.stats ul.shiplist li{\
-	text-align: left;\
-	margin: 0px;\
-	display: block! important;\
-	width: 85px;\
-	height: auto;\
-	padding: 0px 5px 0 5px! important;\
-	border-width : 1px; \
-}\
-#AnalyseProfile_Result ul li.diestats ul.shiplist li {\
-	border-color : #FBA6B0 #DF011C #DF0125 #DF011C; \
-	-moz-box-shadow : inset 0px 0px 4px #FB3939, 0px 0px 4px #FB3939, 0px 2px 4px #FB3939; \
-	-webkit-box-shadow : inset 0px 0px 4px #FB3939, 0px 0px 4px #FB3939, 0px 2px 4px #FB3939; \
-	box-shadow : inset 0px 0px 4px #FB3939, 0px 0px 4px #FB3939, 0px 2px 4px #FB3939; \
-	background-color: #FCC2C9; \
-}\
-#AnalyseProfile_Result ul li.stats ul.shiplist li {\
-	border-color : yellow orange orange orange; \
-	-moz-box-shadow : inset 0px 0px 4px goldenrod, 0px 0px 4px goldenrod, 0px 2px 4px goldenrod; \
-	-webkit-box-shadow : inset 0px 0px 4px goldenrod, 0px 0px 4px goldenrod, 0px 2px 4px goldenrod; \
-	box-shadow : inset 0px 0px 4px goldenrod, 0px 0px 4px goldenrod, 0px 2px 4px goldenrod; \
-	background-color: #FCF5C2; \
-}\
-#AnalyseProfile_Result ul li.diestats ul.shiplist li:hover, \
-#AnalyseProfile_Result ul li.stats ul.shiplist li:hover{\
-	background-color: #ECFFA2; \
-	border-color : #BCFFA2 #40E000 #49E000 #40E000; \
-	-moz-box-shadow : inset 0px 0px 4px #56FF35, 0px 0px 4px #56FF35, 0px 2px 4px #56FF35; \
-	-webkit-box-shadow : inset 0px 0px 4px #56FF35, 0px 0px 4px #56FF35, 0px 2px 4px #56FF35; \
-	box-shadow : inset 0px 0px 4px #56FF35, 0px 0px 4px #56FF35, 0px 2px 4px #56FF35; \
-}\
-');
-
-function charaToClassChar(str) {
-	str = str.toLowerCase();
-	str = str.replace(' ', '_');
-	
-	return str;
-}
-
-first = 0;	NShips = 0;
-function Analyse_AddTable(n) {
-	var infos = Analyse_Analyse(n);
-	var iconday = 'slow_cycle';
-	var daytoicon = parseInt(infos['maxDay']/5)*5;
-	if (daytoicon != 0) { iconday = 'day'+daytoicon; }
-	var tabHtml = '<div id="AnalyseProfile_Result" class="awards twinstyle"> \
-			<h3><div class="cornerright"> \
-				Mush Analyse Profile Plus v' + scriptVersion + ' - \
-				Saltar <input id="firstShip" class="nshipinput" type="text" tabindex="1" \
-				maxlength="4" value='+ first +'> naves recientes - \
-				Naves analizadas : <input onfocus="this.select();" id="nShip" class="nshipinput" type="text" tabindex="1" \
-				maxlength="4" value='+ (infos['nbrGames']) +'> (0 para todas)\
-				</div></h3>';
-	tabHtml	+=	'<ul id="ships-stats">';
-	// Ship Days
-	tabHtml +=	'<li class="stats">';
-	tabHtml += '<ul class= shiplist>';
-	Return_Ship_Links(infos['maxDay'], 1);
-	for(var link in shipsnumbers) {
-		tabHtml += '<li><a class="ship" href="/theEnd/'+shipsnumbers[link]+'"><img class="icon_char_ship" src="/img/icons/ui/'+ icon_char_ship[link] +'.png"> : #'+ shipsnumbers[link] +'</a></li>';		// Added charac icon
+	if (MAPP.Path.search('/u/profile/') != -1) {
+		$('#maincontainer').attr('style', 'margin: 70px auto 0px;');
+		$('.cdTabTgt').before('<ul class="mtabs mapptabs"></ul>');	// Añadida clase "mapptabs" para colocar bien el menú.
+		$('<li id="profiletab" class="cdTab active">' + MAPP.TxtFileTab + '</li>').attr("onclick", ProfileTabAttr).appendTo('ul.mtabs');
 	}
-	tabHtml += '</ul>';
-	tabHtml	+= '<img src="/img/icons/ui/'+iconday+'.png" style="width:26px; height:26px;"><strong><br>Días Nave</strong> \
-				<p style="width:80px;">Max: ' + infos['maxDay'] + '</p> \
-				<p style="width:80px;">Med: <em>' + (infos['totalDay']/infos['nbrGames']).toFixed(1) + '</em></p> \
-				<p style="width:80px; color:#17195B; font-weight:bold;">Tot: ' + infos['totalDay'] + '</p> \
-			</li>';
-	// Triumph
-	tabHtml +=	'<li class="stats">';
-	tabHtml += '<ul class= shiplist>';
-	Return_Ship_Links(infos['maxTriumph'], 7);
-	for(var link in shipsnumbers) {
-		tabHtml += '<li><a class="ship" href="/theEnd/'+shipsnumbers[link]+'"><img class="icon_char_ship" src="/img/icons/ui/'+ icon_char_ship[link] +'.png"> : #'+ shipsnumbers[link] +'</a></li>';		// Added charac icon
+	else {
+		$('#profiletab').attr('onclick', ProfileTabAttr);
 	}
-	tabHtml += '</ul>';
-	tabHtml	+= '<img src="/img/icons/ui/triumph.png" style="width:26px; height:26px;"><strong><br>Gloria</strong> \
-				<p style="width:80px;">Max: ' + infos['maxTriumph'] + '</p> \
-				<p style="width:80px;">Med: <em>' + (infos['totalTriumph']/infos['nbrGames']).toFixed(1) + '</em></p> \
-				<p style="width:80px; color:#17195B; font-weight:bold;">Tot: ' + infos['totalTriumph'] + '</p> \
-			</li>';
-	// Researches
-	tabHtml +=	'<li class="stats">';
-	tabHtml += '<ul class= shiplist>';
-	Return_Ship_Links(infos['maxSearch'], 3);
-	for(var link in shipsnumbers) {
-		tabHtml += '<li><a class="ship" href="/theEnd/'+shipsnumbers[link]+'"><img class="icon_char_ship" src="/img/icons/ui/'+ icon_char_ship[link] +'.png"> : #'+ shipsnumbers[link] +'</a></li>';		// Added charac icon
-	}
-	tabHtml += '</ul>';
-	tabHtml	+= '<img src="/img/icons/ui/microsc.png" style="width:26px; height:26px;"><strong><br>Investigaciones</strong> \
-				<p style="width:80px;">Max: ' + infos['maxSearch'] + '</p> \
-				<p style="width:80px;">Med: <em>' + (infos['totalSearch']/infos['nbrGames']).toFixed(1) + '</em></p> \
-				<p style="width:80px; color:#17195B; font-weight:bold;">Tot: ' + infos['totalSearch'] + '</p> \
-			</li>';
-	// Projects
-	tabHtml +=	'<li class="stats">';
-	tabHtml += '<ul class= shiplist>';
-	Return_Ship_Links(infos['maxProjects'], 4);
-	for(var link in shipsnumbers) {
-		tabHtml += '<li><a class="ship" href="/theEnd/'+shipsnumbers[link]+'"><img class="icon_char_ship" src="/img/icons/ui/'+ icon_char_ship[link] +'.png"> : #'+ shipsnumbers[link] +'</a></li>';		// Added charac icon
-	}
-	tabHtml += '</ul>';
-	tabHtml += '<img src="/img/icons/ui/conceptor.png" style="width:26px; height:26px;"><strong><br>Proyectos</strong> \
-				<p style="width:80px;">Max: ' + infos['maxProjects'] + '</p> \
-				<p style="width:80px;">Med: <em>' + (infos['totalProjects']/infos['nbrGames']).toFixed(1) + '</em></p> \
-				<p style="width:80px; color:#17195B; font-weight:bold;">Tot: ' + infos['totalProjects'] + '</p> \
-			</li>';
-	// Planets
-	tabHtml +=	'<li class="stats">';
-	tabHtml += '<ul class= shiplist>';
-	Return_Ship_Links(infos['maxPlanetsScan'], 5);
-	for(var link in shipsnumbers) {
-		tabHtml += '<li><a class="ship" href="/theEnd/'+shipsnumbers[link]+'"><img class="icon_char_ship" src="/img/icons/ui/'+ icon_char_ship[link] +'.png"> : #'+ shipsnumbers[link] +'</a></li>';		// Added charac icon
-	}
-	tabHtml += '</ul>';
-	tabHtml	+= '<img src="/img/icons/ui/planet.png" style="width:26px; height:26px;"><strong><br>Planetas</strong> \
-				<p style="width:80px;">Max: ' + infos['maxPlanetsScan'] + '</p> \
-				<p style="width:80px;">Med: <em>' + (infos['totalPlanetsScan']/infos['nbrGames']).toFixed(1) + '</em></p> \
-				<p style="width:80px; color:#17195B; font-weight:bold;">Tot: ' + infos['totalPlanetsScan'] + '</p> \
-			</li>';
-	// Expeditions
-	tabHtml +=	'<li class="stats">';
-	tabHtml += '<ul class= shiplist>';
-	Return_Ship_Links(infos['maxExplo'], 2);
-	for(var link in shipsnumbers) {
-		tabHtml += '<li><a class="ship" href="/theEnd/'+shipsnumbers[link]+'"><img class="icon_char_ship" src="/img/icons/ui/'+ icon_char_ship[link] +'.png"> : #'+ shipsnumbers[link] +'</a></li>';		// Added charac icon
-	}
-	tabHtml += '</ul>';
-	tabHtml	+= '<img src="/img/icons/ui/survival.png" style="width:26px; height:26px;"><strong><br>Exploraciones</strong> \
-				<p style="width:80px;">Max: ' + infos['maxExplo'] + '</p> \
-				<p style="width:80px;">Med: <em>' + (infos['totalExplo']/infos['nbrGames']).toFixed(1) + '</em></p> \
-				<p style="width:80px; color:#17195B; font-weight:bold;">Tot: ' + infos['totalExplo'] + '</p> \
-			</li>';
+	$('<li id="mapptab" class="newstab active">MAPP v' + MAPP.version + '</li>').attr('onclick', mappTabAttr).appendTo('ul.mtabs');
+};	// END FUNCTION - MAPP.GenTabProfile
 
-	// Stats notice
-	tabHtml +=	'<p style="font-size: 80%;">¹ Valores referentes a la nave; \
-				salvo la <strong>Gloria</strong>, que pertenece al jugador.</p>';
-	tabHtml +=	'</ul>';
+MAPP.IconDay = function(icon_day) {
+	var iconday = 'slow_cycle';		// Icono de reloj para los que no llegan a 5 días de duración.
+	var daytoicon = parseInt(icon_day/5)*5;
+	if (daytoicon == 25) { daytoicon = 20; }		// Corrección de ausencia del icono de 25 días.
+	if (daytoicon !== 0) { iconday = 'day'+ daytoicon; }
+	return iconday;
+};	// END FUNCTION - MAPP.IconDay
 
-	// CHARACTER STATS
-	tabHtml +=	'<ul id="char-stats"><ul class="tabletitle">ESTADÍSTICAS DE PERSONAJES</ul>';
-	for(var character in infos['charaSorted']) {
-		tabHtml += '<li class="charstat" style="font-size:100%; width:80px; font-variant:small-caps;"> \
-				<img class="bodychar ' + charaToClassChar(infos['charaSorted'][character][1]) + '" src="/img/design/pixel.gif" > \
-				<strong><br>' + infos['charaSorted'][character][1] + '</strong> \
-				<p style="width:80px;">Naves: ' + infos['charaSorted'][character][0] + '</p> \
-				<p style="width:80px;"><em>' + (100*infos['charaSorted'][character][0]/infos['nbrGames']).toFixed(2) + ' %</em></p> \
-			</li>';
-	}
-	tabHtml +=	'</ul>';
-	// End Character Stats
+MAPP.Voyages = {};
+	MAPP.Voyages.totalDay = 0;
+	MAPP.Voyages.maxDay = 0;
+	MAPP.Voyages.totalResearch = 0;
+	MAPP.Voyages.maxResearch = 0;
+	MAPP.Voyages.totalProjects = 0;
+	MAPP.Voyages.maxProjects = 0;
+	MAPP.Voyages.totalPlanets = 0;
+	MAPP.Voyages.maxPlanets = 0;
+	MAPP.Voyages.totalExplo = 0;
+	MAPP.Voyages.maxExplo = 0;
+	MAPP.Voyages.totalGlory = 0;
+	MAPP.Voyages.maxGlory = 0;
+	MAPP.Voyages.allDeaths = [];
+	MAPP.Voyages.allCharacters = [];
+	MAPP.Voyages.quantity = 0 ;
+	MAPP.Voyages.links = [];
+	MAPP.Voyages.TxtCharacter = $('#cdTrips > table.summar > tbody > tr:first > th:eq(0)').text();
+	MAPP.Voyages.TxtDays = $('#cdTrips > table.summar > tbody > tr:first > th:eq(1)').text().toLowerCase();
+	MAPP.Voyages.TxtGlory = $('#cdTrips > table.summar > tbody > tr:first > th:eq(7)').text().toLowerCase();
+	MAPP.Voyages.TxtResearch = $('#cdTrips > table.summar > tbody > tr:first > th:eq(3)').text().toLowerCase();
+	MAPP.Voyages.TxtPlanets = $('#cdTrips > table.summar > tbody > tr:first > th:eq(5)').text().toLowerCase().split(' ')[0];
+	MAPP.Voyages.TxtExplor = $('#cdTrips > table.summar > tbody > tr:first > th:eq(2)').text().toLowerCase();
 
-	// DIES STATS
-	tabHtml +=	'<ul id="dies-stats"><ul class="tabletitle">ESTADÍSTICAS DE MUERTES</ul>';
-	for(var death in infos['deathSorted']) {
-		tabHtml += '<li class="diestats">';
-		tabHtml += '<ul class= shiplist>';
-		Return_Ship_Links(infos['deathSorted'][death][0], 8);
-		for(var link in shipsnumbers) {
-            tabHtml += '<li><a class="ship" href="/theEnd/'+shipsnumbers[link]+'"><img class="icon_char_ship" src="/img/icons/ui/'+ icon_char_ship[link] +'.png"> : #'+ shipsnumbers[link] +'</a></li>';		// Added charac icon
-		}
-		tabHtml += '</ul>';
-		tabHtml += '<p class="stroke">' + infos['deathSorted'][death][1] + '</p> \
-				<strong>' + infos['deathSorted'][death][0] + '</strong> \
-				<p style="width:80px;"><em>' + (100*infos['deathSorted'][death][1]/infos['nbrGames']).toFixed(2) + ' %</em></p>';
-/*		tabHtml += '<ul class= shiplist>';
-		Return_Ship_Links(infos['deathSorted'][death][0], 8);
-		for(var link in shipsnumbers) {
-			tabHtml += '<li><a class="ship" href="/theEnd/'+shipsnumbers[link]+'">Nave - '+shipsnumbers[link]+'</a></li>';
-		}
-		tabHtml += '</ul>';
-*/		tabHtml += '</li>';
-	}
-	tabHtml +=	'</ul>';
-	// End Dies Stats
-
-	tabHtml += '</div>';
-
-	$('#profile > div.column2 > div.data > .bgtablesummar:last').after(tabHtml);
-
-	$('#firstShip').keyup(function( event ) {
-        if (event.which == 13 || event.keyCode == 13) {
-			first = document.getElementById('firstShip').value;		//console.log(first);
-			document.getElementById('nShip').focus();
-        }
-        return false;
-	});
-	
-	$('#nShip').keyup(function( event ) {
-        if (event.which == 13 || event.keyCode == 13) {
-			first = document.getElementById('firstShip').value;		//console.log(first);
-			NShips = document.getElementById('nShip').value;		//console.log(n);
-			Analyse_Init(NShips);
-        }
-        return false;
-	});
-}
-
-function Return_Ship_Links(dt, td_eq) {
-	shipsnumbers = [];
+MAPP.Voyages.data = function() {
+	MAPP.Voyages.links = [];
     charac_in_ship = [];	// Added new array
     icon_char_ship = [];	// Added new array
-	$('#cdTrips > table.summar > tbody > tr.cdTripEntry').each(function(index,elem){
-		var comparator = $(this).children('td:eq('+ td_eq +')').text();
-        if (td_eq != 8) { comparator = parseInt(comparator); }
-		if ((index >= first) && (first+NShips > index || NShips == 0) && (comparator == dt)) {
-			charac_in_ship[charac_in_ship.length] = $(this).children('td:eq(0)').text().trim();	// Added charac name array
-			icon_char_ship[icon_char_ship.length] = $(this).children('td:eq(0)').text().trim().toLowerCase().replace(" ","");	// Added charac name array
-			shipsnumbers[shipsnumbers.length] = $(this).children('td:eq(9)').find("a").attr('href').replace("/theEnd/", "");
+	$('#cdTrips > table.summar > tbody > tr.cdTripEntry').each(function(index,elem) {
+	// 0:character, 1:days, 2:explorations, 3:research, 4:projects, 5:scanned, 6:titles, 7:glory, 8:death, 9:ship
+		MAPP.Voyages.quantity++;
+	// ------------------ 0: CHARACTER ------------------ //
+		var character = $(this).children('td:eq(0)').children('span.charname').text();
+		if(MAPP.Voyages.allCharacters[character] > 0) {
+			MAPP.Voyages.allCharacters[character]++;
 		}
-	});
-}
-
-function Analyse_Analyse(n) {
-	var infos = new Array();
-	infos['totalDay'] = 0;
-	infos['maxDay'] = 0;
-	infos['minDay'] = -1;
-	infos['totalSearch'] = 0;
-	infos['maxSearch'] = 0;
-	infos['minSearch'] = -1;
-	infos['totalProjects'] = 0;
-	infos['maxProjects'] = 0;
-	infos['minProjects'] = -1;
-	infos['totalPlanetsScan'] = 0;
-	infos['maxPlanetsScan'] = 0;
-	infos['minPlanetsScan'] = -1;
-	infos['totalExplo'] = 0;
-	infos['maxExplo'] = 0;
-	infos['minExplo'] = -1;
-	infos['totalTriumph'] = 0;
-	infos['maxTriumph'] = 0;
-	infos['minTriumph'] = -1;
-	infos['allDeaths'] = new Array();
-	infos['allCharacters'] = new Array();
-
-	infos['nbrGames'] = 0 ; // Ships number
-	infos['nbrGamesBeta'] = 0; // Beta ship number
-
-	TotalShip = 0;
-	
-	$('#cdTrips > table.summar > tbody > tr.cdTripEntry').each(function(index,elem){
-		// character, day, explo, search, projets, scan, titles, triumph, death, ship
+		else {
+			MAPP.Voyages.allCharacters[character] = 1;
+		}
+	// ------------------ 1: DAYS ------------------ //
+		var day = $(this).children('td:eq(1)').text();
+		if (MAPP.Voyages.maxDay < parseInt(day)) {
+			MAPP.Voyages.maxDay = parseInt(day);
+		}
+		MAPP.Voyages.totalDay += parseInt(day);
+	// ------------------ 2: EXPLORATIONS ------------------ //
+		var explo = $(this).children('td:eq(2)').text();
+		if (MAPP.Voyages.maxExplo < parseInt(explo)) {
+			MAPP.Voyages.maxExplo = parseInt(explo);
+		}
+		MAPP.Voyages.totalExplo += parseInt(explo);
+	// ------------------ 3: RESEARCH ------------------ //
+		var research = $(this).children('td:eq(3)').text();
+		if (MAPP.Voyages.maxResearch < parseInt(research)) {
+			MAPP.Voyages.maxResearch = parseInt(research);
+		}
+		MAPP.Voyages.totalResearch += parseInt(research);
+	// ------------------ 4: PROJECTS ------------------ //
+		var projects = $(this).children('td:eq(4)').text();
+		if (MAPP.Voyages.maxProjects < parseInt(projects)) {
+			MAPP.Voyages.maxProjects = parseInt(projects);
+		}
+		MAPP.Voyages.totalProjects += parseInt(projects);
+	// ------------------ 5: SCANNED ------------------ //
+		var scanned = $(this).children('td:eq(5)').text();
+		if (MAPP.Voyages.maxPlanets < parseInt(scanned)) {
+			MAPP.Voyages.maxPlanets = parseInt(scanned);
+		}
+		MAPP.Voyages.totalPlanets += parseInt(scanned);
+	// ------------------ 7: GLORY ------------------ //
+		var glory = $(this).children('td:eq(7)').text();
+		if (MAPP.Voyages.maxGlory < parseInt(glory)) {
+			MAPP.Voyages.maxGlory = parseInt(glory);
+		}
+		MAPP.Voyages.totalGlory += parseInt(glory);
+	// ------------------ 8: DEATH ------------------ //
 		var death = $(this).children('td:eq(8)').text();
-
-		TotalShip++;
-
-		if((index >= first && infos['nbrGames'] < n) || (index >= first && n == 0))
-		{
-			if(death != 'No hay ayuda disponible')
-			{
-				infos['nbrGames']++;
-				
-				if(infos['allDeaths'][death] > 0)
-				{
-					infos['allDeaths'][death]++;
-				}
-				else
-				{
-					infos['allDeaths'][death] = 1;
-				}
-
-				var character = $(this).children('td:eq(0)').children('span.charname').text();
-
-				if(infos['allCharacters'][character] > 0)
-				{
-					infos['allCharacters'][character]++;
-				}
-				else
-				{
-					infos['allCharacters'][character] = 1;
-				}
-/*
-				if (infos['max'] < parseInt()) {
-					infos['max'] = parseInt();
-				}
-                		if ((infos['min'] > parseInt()) || (infos['min'] == -1)) {
-					infos['min'] = parseInt();
-                		}
-*/
-				var day = $(this).children('td:eq(1)').text();
-				if (infos['maxDay'] < parseInt(day)) {
-					infos['maxDay'] = parseInt(day);
-				}
-				if ((infos['minDay'] > parseInt(day))||(infos['minDay'] == -1)) {
-					infos['minDay'] = parseInt(day);
-				}
-				infos['totalDay'] += parseInt(day);
-				
-				var explo = $(this).children('td:eq(2)').text();
-				if (infos['maxExplo'] < parseInt(explo)) {
-					infos['maxExplo'] = parseInt(explo);
-				}
-				if ((infos['minExplo'] > parseInt(explo)) || (infos['minExplo'] == -1)) {
-					infos['minExplo'] = parseInt(explo);
-				}
-				infos['totalExplo'] += parseInt(explo);
-
-				var search = $(this).children('td:eq(3)').text();
-				if (infos['maxSearch'] < parseInt(search)) {
-					infos['maxSearch'] = parseInt(search);
-				}
-				if ((infos['minSearch'] > parseInt(search)) || (infos['minSearch'] == -1)) {
-					infos['minSearch'] = parseInt(search);
-				}
-				infos['totalSearch'] += parseInt(search);
-
-				var projets = $(this).children('td:eq(4)').text();
-				if (infos['maxProjects'] < parseInt(projets)) {
-					infos['maxProjects'] = parseInt(projets);
-				}
-				if ((infos['minProjects'] > parseInt(projets)) || (infos['minProjects'] == -1)) {
-					infos['minProjects'] = parseInt(projets);
-				}
-				infos['totalProjects'] += parseInt(projets);
-
-				var scan = $(this).children('td:eq(5)').text();
-				if (infos['maxPlanetsScan'] < parseInt(scan)) {
-					infos['maxPlanetsScan'] = parseInt(scan);
-				}
-				if ((infos['minPlanetsScan'] > parseInt(scan)) || (infos['minPlanetsScan'] == -1)) {
-					infos['minPlanetsScan'] = parseInt(scan);
-				}
-				infos['totalPlanetsScan'] += parseInt(scan);
-
-				var triumph = $(this).children('td:eq(7)').text();
-				if (infos['maxTriumph'] < parseInt(triumph)) {
-					infos['maxTriumph'] = parseInt(triumph);
-				}
-				if ((infos['minTriumph'] > parseInt(triumph)) || (infos['minTriumph'] == -1)) {
-					infos['minTriumph'] = parseInt(triumph);
-				}
-				infos['totalTriumph'] += parseInt(triumph);
-			}
-			else
-			{
-				infos['nbrGamesBeta']++;
-			}
+		if (MAPP.Voyages.allDeaths[death] > 0) {
+			MAPP.Voyages.allDeaths[death]++;
 		}
-
-	});
-
-	// Sort characters & deaths
-	infos['charaSorted'] = [];
+		else {
+			MAPP.Voyages.allDeaths[death] = 1;
+		}
+	// ----------------------------------------------------- //
+	});	// END EACH FUNCTION - Extracting voyages data
+// ------------------ SORTING CHARACTERS ------------------ //
+	MAPP.Voyages.allCharSorted = [];
 	var i = 0;
-	for(var character in infos['allCharacters']) {
-		infos['charaSorted'][i] = [infos['allCharacters'][character], character];
+	for(var character in MAPP.Voyages.allCharacters) {
+		var char = "http://mush.twinoid.es/img/icons/ui/" + character.toLowerCase().replace(" ", "") + ".png";
+		MAPP.Voyages.allCharSorted[i] = [MAPP.Voyages.allCharacters[character], character];		// [#voyages, character]
 		i++;
 	}
-
-	infos['charaSorted'].sort(function(a,b){return b[0] - a[0]});
-
-	infos['deathSorted'] = [];
-	var i = 0;
-	for(var death in infos['allDeaths']) {
-		infos['deathSorted'][i] = [death, infos['allDeaths'][death]];
-		i++;		// console.log(infos['deathSorted'][death]);
+	MAPP.Voyages.allCharSorted.sort(function(a,b){return b[0] - a[0];});
+// ------------------ SORTING DEATHS ------------------ //
+	MAPP.Voyages.allDeathSorted = [];
+	var j = 0;
+	for(var death in MAPP.Voyages.allDeaths) {
+		MAPP.Voyages.allDeathSorted[j] = [death, MAPP.Voyages.allDeaths[death]];
+		j++;
 	}
-	infos['deathSorted'].sort(function(a,b){return b[1] - a[1]});
+	MAPP.Voyages.allDeathSorted.sort(function(a,b){return b[1] - a[1];});
+// ------------------------------------------------------- //
+};	// END FUNCTION - MAPP.Voyages.data
 
-	return infos;
-}
+MAPP.DisplayData = function() {
+	$('<div id="ProfileData" class="awards twinstyle bgtablesummar"></div>').hide().prependTo('#profile > div.column2 > div.data');
+	$('<h3>Total' + MAPP.TxtVoyage + ' : ' + MAPP.Voyages.quantity + '</h3>').appendTo('#ProfileData');
+// ------------------------------ VOYAGES ------------------------------ //
+	$('<ul id="ships-stats"><h4 class="ul_title">' + MAPP.Title1 + '</h4></ul>').appendTo('#ProfileData');
+	if ($('#cdTrips > table.summar > tbody > tr.cdTripEntry').length > 0) {
+	// ------------------------- DAYS ------------------------- //
+		$('<li id="p_days" class="stats"></li>').appendTo('#ships-stats');
+			$('<img src="/img/icons/ui/'+ MAPP.IconDay(MAPP.Voyages.maxDay) +'.png" style="width:26px; height:26px;"></br>').appendTo('#p_days');
+			$('<strong class="li_title">' + MAPP.Voyages.TxtDays + '</strong>').appendTo('#p_days');
+			$('<p style="padding-top: 3px;">max: ' + MAPP.Voyages.maxDay + '</p>').appendTo('#p_days');
+			$('<p>med: <em>' + (MAPP.Voyages.totalDay/MAPP.Voyages.quantity).toFixed(1) + '</em></p>').appendTo('#p_days');
+	// ------------------------- GLORY ------------------------- //
+		$('<li id="p_glory" class="stats"></li>').appendTo('#ships-stats');
+			$('<img src="/img/icons/ui/triumph.png" style="width:26px; height:26px;"></br>').appendTo('#p_glory');
+			$('<strong class="li_title">' + MAPP.Voyages.TxtGlory + '</strong>').appendTo('#p_glory');
+			$('<p style="padding-top: 3px;">max: ' + MAPP.Voyages.maxGlory + '</p>').appendTo('#p_glory');
+			$('<p>med: <em>' + (MAPP.Voyages.totalGlory/MAPP.Voyages.quantity).toFixed(1) + '</em></p>').appendTo('#p_glory');
+	// ------------------------- RESEARCH ------------------------- //
+		$('<li id="p_research" class="stats"></li>').appendTo('#ships-stats');
+			$('<img src="/img/icons/ui/microsc.png" style="width:26px; height:26px;"></br>').appendTo('#p_research');
+			$('<strong class="li_title">' + MAPP.Voyages.TxtResearch + '</strong>').appendTo('#p_research');
+			$('<p style="padding-top: 3px;">max: ' + MAPP.Voyages.maxResearch + '</p>').appendTo('#p_research');
+			$('<p>med: <em>' + (MAPP.Voyages.totalResearch/MAPP.Voyages.quantity).toFixed(1) + '</em></p>').appendTo('#p_research');
+	// ------------------------- PROJECTS ------------------------- //
+		$('<li id="p_projects" class="stats"></li>').appendTo('#ships-stats');
+			$('<img src="/img/icons/ui/conceptor.png" style="width:26px; height:26px;"></br>').appendTo('#p_projects');
+			$('<strong class="li_title">' + MAPP.TxtProject + '</strong>').appendTo('#p_projects');
+			$('<p style="padding-top: 3px;">max: ' + MAPP.Voyages.maxProjects + '</p>').appendTo('#p_projects');
+			$('<p>med: <em>' + (MAPP.Voyages.totalProjects/MAPP.Voyages.quantity).toFixed(1) + '</em></p>').appendTo('#p_projects');
+	// ------------------------- PLANETS ------------------------- //
+		$('<li id="p_scanned" class="stats"></li>').appendTo('#ships-stats');
+			$('<img src="/img/icons/ui/planet.png" style="width:26px; height:26px;"></br>').appendTo('#p_scanned');
+			$('<strong class="li_title">' + MAPP.Voyages.TxtPlanets + '</strong>').appendTo('#p_scanned');
+			$('<p style="padding-top: 3px;">max: ' + MAPP.Voyages.maxPlanets + '</p>').appendTo('#p_scanned');
+			$('<p>med: <em>' + (MAPP.Voyages.totalPlanets/MAPP.Voyages.quantity).toFixed(1) + '</em></p>').appendTo('#p_scanned');
+	// ------------------------- EXPLORATIONS ------------------------- //
+		$('<li id="p_explorations" class="stats"></li>').appendTo('#ships-stats');
+			$('<img src="/img/icons/ui/survival.png" style="width:26px; height:26px;"></br>').appendTo('#p_explorations');
+			$('<strong class="li_title">' + MAPP.Voyages.TxtExplor + '</strong>').appendTo('#p_explorations');
+			$('<p style="padding-top: 3px;">max: ' + MAPP.Voyages.maxExplo + '</p>').appendTo('#p_explorations');
+			$('<p>med: <em>' + (MAPP.Voyages.totalExplo/MAPP.Voyages.quantity).toFixed(1) + '</em></p>').appendTo('#p_explorations');
+	}
+// ------------------------------ CHARACTERS ------------------------------ //
+	$('<ul id="char-stats"><h4 class="ul_title">' + MAPP.Title2 + '</h4></ul>').appendTo('#ProfileData');
+	for (var character in MAPP.Voyages.allCharSorted) {
+		var char = MAPP.Voyages.allCharSorted[character][1].toLowerCase().replace(' ', '');
+		$('<li class="charstats ' + char + '">').appendTo('#char-stats');
+			$('<div class="bodychar ' + MAPP.Voyages.allCharSorted[character][1].toLowerCase().replace(' ', '_') + '"></div>')
+				.appendTo('#char-stats > li.' + char);
+			$('<div><strong class="li_title character">' + MAPP.Voyages.allCharSorted[character][1] + '</strong></div>').appendTo('#char-stats > li.' + char + ' > div');
+			$('<p>' + MAPP.TxtCycles + ': ---</p>').appendTo('#char-stats > li.' + char);
+			$('<p>' + MAPP.TxtVoyage + ': ' + MAPP.Voyages.allCharSorted[character][0] + '</p>').appendTo('#char-stats > li.' + char);
+			$('<p><em>' + (100 * MAPP.Voyages.allCharSorted[character][0] / MAPP.Voyages.quantity).toFixed(2) + '%</em></p>').appendTo('#char-stats > li.' + char);
+		}
+// ------------------------------ DEATHS ------------------------------ //
+	$('<ul id="dies-stats"><h4 class="ul_title">' + MAPP.Title3 + '</h4></ul>').appendTo('#ProfileData');
+	for(var death in MAPP.Voyages.allDeathSorted) {
+		var deathID = MAPP.Voyages.allDeathSorted[death][0].replace(/(\s|\u0027|\u002E)/g, '');
+		$('<li id="' + deathID + '" class="diestats ' + death + '">').appendTo('#dies-stats');
+			$('<p class="stroke">' + MAPP.Voyages.allDeathSorted[death][1] + '</p>').appendTo('#dies-stats > li.' + death);
+			$('<p class="li_title death_text"><strong>' + MAPP.Voyages.allDeathSorted[death][0] + '</strong></p>').appendTo('#' + deathID);
+	}
+};	// END FUNCTION - MAPP.DisplayData
 
-function Analyse_Init(n) {
-	if(isNaN(n) || n === null) { n = 0; }
-	$('#AnalyseProfile_Result').remove();
-	Analyse_AddTable(n);	//alert('Test');
-}
+MAPP.Stats = {};
+	MAPP.Stats.cycles = [];
+//	MAPP.Stats.maxDay = 0;
 
-Analyse_Init(0);
+MAPP.Stats.data = function() {
+	$('.tid_scrollContent:eq(1) > table tr').each(function() {
+		var c = $(this).children('td:eq(1)').children().text().search(/(ciclos|cycles)/i);
+		if (c !== -1) {
+			var charname = $(this).children('td:eq(0)').children().attr('src').replace(MAPP.MushURL + '/img/icons/ui/', '').replace('.png', '');
+			var cycles = $(this).children('td:eq(2)').text().replace('x', '');
+			MAPP.Stats.cycles[charname] = cycles;
+			$('#char-stats > li.' + charname + ' > p:first').replaceWith('<p>' + MAPP.TxtCycles + ': ' + MAPP.Stats.cycles[charname] + '</p>');
+		}
+	});
+};	// END FUNCTION - MAPP.Stats.data
+
+MAPP.LinksDisplay = function() {
+	$('<div class="links"><ul class= shiplist></ul></div>').prependTo('li.stats');
+	$('<div class="links"><ul class= shiplist></ul></div>').prependTo('li.charstats');
+	$('<div class="links"><ul class= shiplist></ul></div>').prependTo('li.diestats');
+	$('#cdTrips > table.summar > tbody > tr.cdTripEntry').each(function (index,elem) {
+	// ---------------------- LINKS : 1 : DAYS ---------------------- //
+		var link = $(this).children('td:eq(9)').find("a").attr('href');
+		if ( parseInt($(this).children('td:eq(1)').text()) == MAPP.Voyages.maxDay ) {
+			$('<li><a class="ship" href="' + link + '"><img class="icon_char_ship" src="/img/icons/ui/' + 
+				$(this).children('td:eq(0)').text().trim().toLowerCase().replace(" ","") + '.png"> : #' + link.replace("/theEnd/", "") + '</a></li>')
+				.appendTo('#p_days > div ul.shiplist');
+		}
+	// ---------------------- LINKS : 7 : GLORY ---------------------- //
+		if ( parseInt($(this).children('td:eq(7)').text()) == MAPP.Voyages.maxGlory ) {
+			$('<li><a class="ship" href="' + link + '"><img class="icon_char_ship" src="/img/icons/ui/' + 
+				$(this).children('td:eq(0)').text().trim().toLowerCase().replace(" ","") + '.png"> : #' + link.replace("/theEnd/", "") + '</a></li>')
+				.appendTo('#p_glory > div ul.shiplist');
+		}
+	// ---------------------- LINKS : 3 : RESEARCH ---------------------- //
+		if ( parseInt($(this).children('td:eq(3)').text()) == MAPP.Voyages.maxResearch ) {
+			$('<li><a class="ship" href="' + link + '"><img class="icon_char_ship" src="/img/icons/ui/' + 
+				$(this).children('td:eq(0)').text().trim().toLowerCase().replace(" ","") + '.png"> : #' + link.replace("/theEnd/", "") + '</a></li>')
+				.appendTo('#p_research > div ul.shiplist');
+		}
+	// ---------------------- LINKS : 4 : PROJECTS ---------------------- //
+		if ( parseInt($(this).children('td:eq(4)').text()) == MAPP.Voyages.maxProjects ) {
+			$('<li><a class="ship" href="' + link + '"><img class="icon_char_ship" src="/img/icons/ui/' + 
+				$(this).children('td:eq(0)').text().trim().toLowerCase().replace(" ","") + '.png"> : #' + link.replace("/theEnd/", "") + '</a></li>')
+				.appendTo('#p_projects > div ul.shiplist');
+		}
+	// ---------------------- LINKS : 5 : SCANNED ---------------------- //
+		if ( parseInt($(this).children('td:eq(5)').text()) == MAPP.Voyages.maxPlanets ) {
+			$('<li><a class="ship" href="' + link + '"><img class="icon_char_ship" src="/img/icons/ui/' + 
+				$(this).children('td:eq(0)').text().trim().toLowerCase().replace(" ","") + '.png"> : #' + link.replace("/theEnd/", "") + '</a></li>')
+				.appendTo('#p_scanned > div ul.shiplist');
+		}
+	// ---------------------- LINKS : 2 : EXPLORATIONS ---------------------- //
+		if ( parseInt($(this).children('td:eq(2)').text()) == MAPP.Voyages.maxExplo ) {
+			$('<li><a class="ship" href="' + link + '"><img class="icon_char_ship" src="/img/icons/ui/' + 
+				$(this).children('td:eq(0)').text().trim().toLowerCase().replace(" ","") + '.png"> : #' + link.replace("/theEnd/", "") + '</a></li>')
+				.appendTo('#p_explorations > div ul.shiplist');
+		}
+	// ---------------------- LINKS : 8 : DEATHS ---------------------- //
+		$('<li><a class="ship" href="' + link + '"><img class="icon_char_ship" src="/img/icons/ui/' + 
+			$(this).children('td:eq(0)').text().trim().toLowerCase().replace(" ","") + '.png"> : #' + link.replace("/theEnd/", "") + '</a></li>')
+			.appendTo('#' + $(this).children('td:eq(8)').text().replace(/(\s|\u0027|\u002E)/g, '') + ' > div ul.shiplist');
+	// ---------------------- LINKS : 0 : CHARACTERS ---------------------- //
+		$('<li><a class="ship" href="' + link + '"><img class="icon_char_ship" src="/img/icons/ui/' + 
+		MAPP.IconDay($(this).children('td:eq(1)').text()) + '.png" style="width:16px; height:16px;"> : #' + link.replace("/theEnd/", "") + '</a></li>')
+			.appendTo('li.' + $(this).children('td:eq(0)').text().trim().toLowerCase().replace(/(\s|\u0027|\u002E)/g, '') + ' > div ul.shiplist');
+	});
+	
+};	// END FUNCTION - MAPP.LinksDisplay
+
+MAPP.css = function() {
+	$("<style>").attr("type", "text/css").html("\
+		#mapptab { \
+			text-transform : none! important; \
+			background-image : url(\"http://imgup.motion-twin.com/twinoid/e/7/d2c11d5b_21696.jpg\"); \
+		} \
+		h4.ul_title { \
+			margin-bottom : 4px; \
+			margin-top : 2px; \
+		} \
+		.nshipinput	{ width : 35px; height : 16px; padding-right : 3px; text-align : right; background : transparent; cursor : pointer; \
+					border: 1px inset; border-color : #4e5162; font-size : 15px; color : #FEB500; } \
+		.nshipinput:hover { border : 1px inset; border-color : white; color : white; } \
+		.nshipinput:focus { background-color : #FE7D00; border : 1px inset; border-color : #FEB500; color : white; } \
+		.bodychar { \
+			position : relative; \
+			opacity : 1; \
+			width : 28px; \
+			height : 44px; \
+			background : url('http://mush.twinoid.es/img/art/char.png') no-repeat; \
+			z-index : 4; \
+		}\
+		#profile #ProfileData > ul, ul.tabletitle { \
+			padding : 0px 0px 15px 0px; \
+		} \
+		#ProfileData ul li.stats { \
+			border-width : 1px; \
+			border-color : yellow orange orange orange; \
+			-moz-box-shadow : inset 0px 0px 4px goldenrod, 0px 0px 4px goldenrod, 0px 2px 4px goldenrod; \
+			-webkit-box-shadow : inset 0px 0px 4px goldenrod, 0px 0px 4px goldenrod, 0px 2px 4px goldenrod; \
+			box-shadow : inset 0px 0px 4px goldenrod, 0px 0px 4px goldenrod, 0px 2px 4px goldenrod; \
+			background-color : #FCF5C2; \
+			color : #090a61; \
+			font-size : 100%; \
+			width : 80px; \
+			padding : 9px 9px 9px 9px; \
+			margin : 4px 4px 4px 4px; \
+			font-variant : small-caps; \
+		} \
+		#ProfileData ul li.charstats > div { \
+			margin : 0 26px; \
+		} \
+		#ProfileData ul li.charstats > div > div { \
+			width : 80px; \
+			position : relative; \
+			left : -26px; \
+			top : 16px; \
+		} \
+		#ProfileData ul li.charstats { \
+			border-width : 1px; \
+			border-color : #A6EEFB #01c3df #01c3df #01c3df; \
+			-moz-box-shadow : inset 0px 0px 4px #3965fb, 0px 0px 4px #3965fb, 0px 2px 4px #3965fb; \
+			-webkit-box-shadow : inset 0px 0px 4px #3965fb, 0px 0px 4px #3965fb, 0px 2px 4px #3965fb; \
+			box-shadow : inset 0px 0px 4px #3965fb, 0px 0px 4px #3965fb, 0px 2px 4px #3965fb; \
+			background-color : #c2f3fc; \
+			color : #090a61; \
+			font-size : 100%; \
+			width : 80px; \
+			margin : 4px 4px 4px 4px; \
+			font-variant : small-caps; \
+			padding : 6px 9px 6px 9px; \
+			height : 95px; \
+		} \
+		#profile #ProfileData #dies-stats > li { \
+			height : 80px; \
+			vertical-align : bottom; \
+		} \
+		#ProfileData ul li.diestats { \
+			border-width : 1px; \
+			border-color : #FBA6B0 #DF011C #DF0125 #DF011C; \
+			-moz-box-shadow : inset 0px 0px 4px #FB3939, 0px 0px 4px #FB3939, 0px 2px 4px #FB3939; \
+			-webkit-box-shadow : inset 0px 0px 4px #FB3939, 0px 0px 4px #FB3939, 0px 2px 4px #FB3939; \
+			box-shadow : inset 0px 0px 4px #FB3939, 0px 0px 4px #FB3939, 0px 2px 4px #FB3939; \
+			background-color : #FCC2C9; \
+			color : #090a61; \
+			font-size : 100%; \
+			width : 80px; \
+			margin : 4px 4px 4px 4px; \
+			font-variant : small-caps; \
+			padding : 5px 9px 9px 9px; \
+		} \
+		#ProfileData ul li.diestats:hover, \
+		#ProfileData ul li.charstats:hover, \
+		#ProfileData ul li.stats:hover { \
+			background-color : #ECFFA2; \
+			border-color : #BCFFA2 #40E000 #49E000 #40E000; \
+			-moz-box-shadow : inset 0px 0px 4px #56FF35, 0px 0px 4px #56FF35, 0px 2px 4px #56FF35; \
+			-webkit-box-shadow : inset 0px 0px 4px #56FF35, 0px 0px 4px #56FF35, 0px 2px 4px #56FF35; \
+			box-shadow : inset 0px 0px 4px #56FF35, 0px 0px 4px #56FF35, 0px 2px 4px #56FF35; \
+		} \
+		.li_title { \
+			color : #fff; \
+			text-shadow : \
+				-1px -1px 2px black, \
+				1px -1px 2px black, \
+				1px 0 2px black, \
+				-1px 0 2px black, \
+				-1px 1px 2px black, \
+				1px 1px 2px black; \
+			font-weight : 900; \
+			font-size : 13px; \
+		} \
+		.death_text { \
+			font-size : 12px; \
+			width : 76px; \
+			padding : 0 2px; \
+		} \
+		.stroke { \
+			color : #ff4059; \
+			text-shadow : \
+				-1px -1px 5px blue, \
+				-1px 0px 5px blue, \
+				-1px 1px 5px blue, \
+				0px 1px 5px blue, \
+				0px -1px 5px blue, \
+				1px 1px 5px blue, \
+				1px 0px 5px blue, \
+				1px -1px 5px blue; \
+			font-weight : 600; \
+			font-size : 21px; \
+		}\
+		#ProfileData ul li.diestats div ul.shiplist, \
+		#ProfileData ul li.charstats div ul.shiplist, \
+		#ProfileData ul li.stats div ul.shiplist { \
+			display : none; \
+		}\
+		#ProfileData ul li.diestats div ul.shiplist a.ship, \
+		#ProfileData ul li.charstats div ul.shiplist a.ship, \
+		#ProfileData ul li.stats div ul.shiplist a.ship { \
+			display : block; \
+			width : 85px; \
+			height : 18px; \
+			font-size : 13px; \
+			text-decoration : none! important; \
+			font-variant : normal; \
+			color : #090a61; \
+			text-shadow : 1px 1px 5px #FFF; \
+		}\
+		#ProfileData ul li.diestats div ul.shiplist a.ship img.icon_char_ship, \
+		#ProfileData ul li.charstats div ul.shiplist a.ship img.icon_char_ship, \
+		#ProfileData ul li.stats div ul.shiplist a.ship img.icon_char_ship { \
+			position : relative; \
+			top : -3px; \
+		}\
+		#ProfileData ul li.diestats div ul.shiplist a.ship:hover, \
+		#ProfileData ul li.charstats div ul.shiplist a.ship:hover, \
+		#ProfileData ul li.stats div ul.shiplist a.ship:hover { \
+			color : #ff4059; \
+			text-shadow : 1px 1px 0px #000; \
+		}\
+		#ProfileData ul li.diestats:hover > div ul.shiplist, \
+		#ProfileData ul li.charstats:hover > div ul.shiplist, \
+		#ProfileData ul li.stats:hover > div ul.shiplist { \
+			display : block; \
+			position : relative; \
+			width : 102px; \
+			left : 85px; \
+			top : 0px; \
+			text-align : right; \
+			z-index : 50; \
+			max-height : 100px; \
+			overflow-x : hidden; \
+			overflow-y : auto; \
+			padding : 0px; \
+			border : 0px; \
+		}\
+		#ProfileData ul li.charstats:hover > div ul.shiplist { \
+			left : 60px; \
+		} \
+		#ProfileData ul li.diestats div ul.shiplist li, \
+		#ProfileData ul li.charstats div ul.shiplist li, \
+		#ProfileData ul li.stats div ul.shiplist li{ \
+			text-align : left; \
+			margin : 0px; \
+			display : block! important; \
+			width : 85px; \
+			height : auto; \
+			padding : 0px 5px 0 5px! important; \
+			border-width : 1px; \
+		}\
+		#ProfileData ul li.diestats div ul.shiplist li { \
+			border-color : #FBA6B0 #DF011C #DF0125 #DF011C; \
+			-moz-box-shadow : inset 0px 0px 4px #FB3939, 0px 0px 4px #FB3939, 0px 2px 4px #FB3939; \
+			-webkit-box-shadow : inset 0px 0px 4px #FB3939, 0px 0px 4px #FB3939, 0px 2px 4px #FB3939; \
+			box-shadow : inset 0px 0px 4px #FB3939, 0px 0px 4px #FB3939, 0px 2px 4px #FB3939; \
+			background-color : #FCC2C9; \
+		}\
+		#ProfileData ul li.charstats div ul.shiplist li { \
+			border-color : #A6EEFB #01c3df #01c3df #01c3df; \
+			-moz-box-shadow : inset 0px 0px 4px #3965fb, 0px 0px 4px #3965fb, 0px 2px 4px #3965fb; \
+			-webkit-box-shadow : inset 0px 0px 4px #3965fb, 0px 0px 4px #3965fb, 0px 2px 4px #3965fb; \
+			box-shadow : inset 0px 0px 4px #3965fb, 0px 0px 4px #3965fb, 0px 2px 4px #3965fb; \
+			background-color : #c2f3fc; \
+		}\
+		#ProfileData ul li.stats div ul.shiplist li { \
+			border-color : yellow orange orange orange; \
+			-moz-box-shadow : inset 0px 0px 4px goldenrod, 0px 0px 4px goldenrod, 0px 2px 4px goldenrod; \
+			-webkit-box-shadow : inset 0px 0px 4px goldenrod, 0px 0px 4px goldenrod, 0px 2px 4px goldenrod; \
+			box-shadow : inset 0px 0px 4px goldenrod, 0px 0px 4px goldenrod, 0px 2px 4px goldenrod; \
+			background-color : #FCF5C2; \
+		}\
+		#ProfileData ul li.diestats div ul.shiplist li:hover, \
+		#ProfileData ul li.charstats div ul.shiplist li:hover, \
+		#ProfileData ul li.stats div ul.shiplist li:hover { \
+			background-color : #ECFFA2; \
+			border-color : #BCFFA2 #40E000 #49E000 #40E000; \
+			-moz-box-shadow : inset 0px 0px 4px #56FF35, 0px 0px 4px #56FF35, 0px 2px 4px #56FF35; \
+			-webkit-box-shadow : inset 0px 0px 4px #56FF35, 0px 0px 4px #56FF35, 0px 2px 4px #56FF35; \
+			box-shadow : inset 0px 0px 4px #56FF35, 0px 0px 4px #56FF35, 0px 2px 4px #56FF35; \
+		}\
+		div.links { \
+			height : 0px; \
+		} \
+		div.links > ul::-webkit-scrollbar { \
+			width : 3px; \
+		} \
+		div.links > ul::-webkit-scrollbar-button { \
+			width : 0px; \
+			height : 0px; \
+		} \
+		div.links > ul::-webkit-scrollbar-thumb { \
+			background : #1A1B57; \
+		} \
+		div.links > ul::-webkit-scrollbar-track { \
+			background : #576077; \
+		} \
+	").appendTo("head");
+};	// END FUNCTION - MAPP.css
+
+MAPP.init = function() {
+	MAPP.GenTabProfile();
+	MAPP.Voyages.data();
+	MAPP.css();
+	MAPP.DisplayData();
+	MAPP.LinksDisplay();
+	$(window).load(function() {
+		MAPP.Stats.data();	// Extract and display cycles when document is ready
+	});
+};	// END FUNCTION - MAPP.init
+
+MAPP.init();
