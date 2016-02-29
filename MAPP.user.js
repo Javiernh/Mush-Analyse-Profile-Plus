@@ -1,16 +1,14 @@
 // ==UserScript==
-// @name MAPP
-// @namespace Mush Analyse Profile Plus
-// @description Script Mush para los Perfiles (mejorado por Javiernh)
-// @/downloadURL https://raw.github.com/Javiernh/Mush-Analyse-Profile-Plus/release/MAPP.user.js
-// @include	http://mush.twinoid.es/u/profile/*
-// @include	http://mush.twinoid.com/u/profile/*
+// @name	MAPP
+// @namespace	Mush Analyse Profile Plus
+// @description	Script Mush para los Perfiles (mejorado por Javiernh)
+// @downloadURL	https://raw.github.com/Javiernh/Mush-Analyse-Profile-Plus/Release/MAPP.user.js
+// @include	http://mush.twinoid.*/u/profile/*
 // @include	http://mush.vg/u/profile/*
-// @include	http://mush.twinoid.es/me*
-// @include	http://mush.twinoid.com/me*
+// @include	http://mush.twinoid.*/me*
 // @include	http://mush.vg/me*
 // @require	http://code.jquery.com/jquery-latest.js
-// @version		2.0
+// @version	2.1b
 // ==/UserScript==
 /* jshint -W043 */
 
@@ -30,6 +28,8 @@ switch (MAPP.domain) {
 		MAPP.Title1 = 'Estadísticas de viajes';
 		MAPP.Title2 = 'Estadísticas de personajes';
 		MAPP.Title3 = 'Estadísticas de muertes';
+		MAPP.Title4 = 'Ciclos Mush/Humano';
+		MAPP.TxtHuman = 'Humano';
 		MAPP.TxtProject = $('#cdTrips > table.summar > tbody > tr:first > th:eq(4)').text().toLowerCase().split(' ')[0];
 		break;
 	case 'mush.twinoid.com':
@@ -38,6 +38,8 @@ switch (MAPP.domain) {
 		MAPP.Title1 = 'Voyages statistics';
 		MAPP.Title2 = 'Characters statistics';
 		MAPP.Title3 = 'Deaths statistics';
+		MAPP.Title4 = 'Mush/Human cycles';
+		MAPP.TxtHuman = 'Human';
 		MAPP.TxtProject = $('#cdTrips > table.summar > tbody > tr:first > th:eq(4)').text().toLowerCase().split(' ')[1];
 		break;
 	default:
@@ -46,26 +48,28 @@ switch (MAPP.domain) {
 		MAPP.Title1 = 'Statistiques de voyages';
 		MAPP.Title2 = 'Statistiques de personnages';
 		MAPP.Title3 = 'Statistiques de morts';
+		MAPP.Title4 = 'Cycles Mush/Humain';
+		MAPP.TxtHuman = 'Humain';
 		MAPP.TxtProject = $('#cdTrips > table.summar > tbody > tr:first > th:eq(4)').text().toLowerCase().split(' ')[0];
 }	// END SWITCH
 
-MAPP.GenTabProfile = function() {
+MAPP.GenTab = function() {
 	var TxtProfileTab = $('#profiletab').text();
-	var mappTabAttr = " $(\'#cdTrips\').parent().hide(); $(\'.cdTabTgt\').hide(); $(\'#ProfileData\').show(); $(\'#profile\').show();";
+	var mappTabAttr = " $(\'.cdTabTgt\').hide(); $(\'#mapp\').show(); MAPP.onclickTab();";
 	mappTabAttr += " $(this).addClass(\'active\'); $(this).siblings().removeClass(\'active\'); _tid.onLoad(); return false";
-	var ProfileTabAttr = " $('.cdTabTgt').hide(); $('#ProfileData').hide(); $('#cdTrips').parent().show(); $('#profile').show();";
-	ProfileTabAttr += " $(this).addClass('active'); $(this).siblings().removeClass('active'); _tid.onLoad(); return false;";
+	var ProfileTabAttr = " $('.cdTabTgt').hide(); $('#profile').show(); $(this).addClass('active');";
+	ProfileTabAttr += " $(this).siblings().removeClass('active'); _tid.onLoad(); return false;";
 
 	if (MAPP.Path.search('/u/profile/') != -1) {
 		$('#maincontainer').attr('style', 'margin: 70px auto 0px;');
-		$('.cdTabTgt').before('<ul class="mtabs mapptabs"></ul>');	// Añadida clase "mapptabs" para colocar bien el menú.
+		$('<ul></ul>').addClass('mtabs mapptabs').insertBefore('.cdTabTgt');	// Añadida clase "mapptabs" para colocar bien el menú.
 		$('<li id="profiletab" class="cdTab active">' + MAPP.TxtFileTab + '</li>').attr("onclick", ProfileTabAttr).appendTo('ul.mtabs');
 	}
 	else {
 		$('#profiletab').attr('onclick', ProfileTabAttr);
 	}
 	$('<li id="mapptab" class="newstab active">MAPP v' + MAPP.version + '</li>').attr('onclick', mappTabAttr).appendTo('ul.mtabs');
-};	// END FUNCTION - MAPP.GenTabProfile
+};	// END FUNCTION - MAPP.GenTab
 
 MAPP.IconDay = function(icon_day) {
 	var iconday = 'slow_cycle';		// Icono de reloj para los que no llegan a 5 días de duración.
@@ -101,8 +105,8 @@ MAPP.Voyages = {};
 
 MAPP.Voyages.data = function() {
 	MAPP.Voyages.links = [];
-    charac_in_ship = [];	// Added new array
-    icon_char_ship = [];	// Added new array
+	charac_in_ship = [];
+	icon_char_ship = [];
 	$('#cdTrips > table.summar > tbody > tr.cdTripEntry').each(function(index,elem) {
 	// 0:character, 1:days, 2:explorations, 3:research, 4:projects, 5:scanned, 6:titles, 7:glory, 8:death, 9:ship
 		MAPP.Voyages.quantity++;
@@ -180,52 +184,67 @@ MAPP.Voyages.data = function() {
 // ------------------------------------------------------- //
 };	// END FUNCTION - MAPP.Voyages.data
 
-MAPP.DisplayData = function() {
-	$('<div id="ProfileData" class="awards twinstyle bgtablesummar"></div>').hide().prependTo('#profile > div.column2 > div.data');
-	$('<h3>Total' + MAPP.TxtVoyage + ' : ' + MAPP.Voyages.quantity + '</h3>').appendTo('#ProfileData');
+MAPP.onclickTab = function() {
+	if($('#mapp .empty_tid').length === 0) {
+		$('#profile .empty_tid').clone().prependTo('#mapp .column');
+		$('#mapp div, #mapp span').removeClass('tid_editable').removeAttr('onedit ondblclick title');
+		$('#mapp img.tid_editIcon, #mapp .tid_headerRight > div:first').remove();
+	}
+	// ***************************************** MESSAGE MANAGER ***************************************** //
+	MM.addButton();
+	// ***************************************** MESSAGE MANAGER ***************************************** //
+	MAPP.Stats.data();
+};	// END FUNCTION - MAPP.onclickTab
+
+MAPP.addVoyages = function() {
 // ------------------------------ VOYAGES ------------------------------ //
-	$('<ul id="ships-stats"><h4 class="ul_title">' + MAPP.Title1 + '</h4></ul>').appendTo('#ProfileData');
+	$('<ul id="ships-stats"><h4 class="ul_title">' + MAPP.Title1 + '</h4></ul>').appendTo('#mappdata');
+	if ($('#cdTrips > table.summar > tbody > tr.cdTripEntry').length > 0) {
 	// ------------------------- DAYS ------------------------- //
-		$('<li id="p_days" class="stats"></li>').appendTo('#ships-stats');
+		$('<li id="p_days" class="goldstat"></li>').appendTo('#ships-stats');
 			$('<img src="/img/icons/ui/'+ MAPP.IconDay(MAPP.Voyages.maxDay) +'.png" style="width:26px; height:26px;"></br>').appendTo('#p_days');
 			$('<strong class="li_title">' + MAPP.Voyages.TxtDays + '</strong>').appendTo('#p_days');
 			$('<p style="padding-top: 3px;">max: ' + MAPP.Voyages.maxDay + '</p>').appendTo('#p_days');
 			$('<p>med: <em>' + (MAPP.Voyages.totalDay/MAPP.Voyages.quantity).toFixed(1) + '</em></p>').appendTo('#p_days');
 	// ------------------------- GLORY ------------------------- //
-		$('<li id="p_glory" class="stats"></li>').appendTo('#ships-stats');
+		$('<li id="p_glory" class="goldstat"></li>').appendTo('#ships-stats');
 			$('<img src="/img/icons/ui/triumph.png" style="width:26px; height:26px;"></br>').appendTo('#p_glory');
 			$('<strong class="li_title">' + MAPP.Voyages.TxtGlory + '</strong>').appendTo('#p_glory');
 			$('<p style="padding-top: 3px;">max: ' + MAPP.Voyages.maxGlory + '</p>').appendTo('#p_glory');
 			$('<p>med: <em>' + (MAPP.Voyages.totalGlory/MAPP.Voyages.quantity).toFixed(1) + '</em></p>').appendTo('#p_glory');
 	// ------------------------- RESEARCH ------------------------- //
-		$('<li id="p_research" class="stats"></li>').appendTo('#ships-stats');
+		$('<li id="p_research" class="goldstat"></li>').appendTo('#ships-stats');
 			$('<img src="/img/icons/ui/microsc.png" style="width:26px; height:26px;"></br>').appendTo('#p_research');
 			$('<strong class="li_title">' + MAPP.Voyages.TxtResearch + '</strong>').appendTo('#p_research');
 			$('<p style="padding-top: 3px;">max: ' + MAPP.Voyages.maxResearch + '</p>').appendTo('#p_research');
 			$('<p>med: <em>' + (MAPP.Voyages.totalResearch/MAPP.Voyages.quantity).toFixed(1) + '</em></p>').appendTo('#p_research');
 	// ------------------------- PROJECTS ------------------------- //
-		$('<li id="p_projects" class="stats"></li>').appendTo('#ships-stats');
+		$('<li id="p_projects" class="goldstat"></li>').appendTo('#ships-stats');
 			$('<img src="/img/icons/ui/conceptor.png" style="width:26px; height:26px;"></br>').appendTo('#p_projects');
 			$('<strong class="li_title">' + MAPP.TxtProject + '</strong>').appendTo('#p_projects');
 			$('<p style="padding-top: 3px;">max: ' + MAPP.Voyages.maxProjects + '</p>').appendTo('#p_projects');
 			$('<p>med: <em>' + (MAPP.Voyages.totalProjects/MAPP.Voyages.quantity).toFixed(1) + '</em></p>').appendTo('#p_projects');
 	// ------------------------- PLANETS ------------------------- //
-		$('<li id="p_scanned" class="stats"></li>').appendTo('#ships-stats');
+		$('<li id="p_scanned" class="goldstat"></li>').appendTo('#ships-stats');
 			$('<img src="/img/icons/ui/planet.png" style="width:26px; height:26px;"></br>').appendTo('#p_scanned');
 			$('<strong class="li_title">' + MAPP.Voyages.TxtPlanets + '</strong>').appendTo('#p_scanned');
 			$('<p style="padding-top: 3px;">max: ' + MAPP.Voyages.maxPlanets + '</p>').appendTo('#p_scanned');
 			$('<p>med: <em>' + (MAPP.Voyages.totalPlanets/MAPP.Voyages.quantity).toFixed(1) + '</em></p>').appendTo('#p_scanned');
 	// ------------------------- EXPLORATIONS ------------------------- //
-		$('<li id="p_explorations" class="stats"></li>').appendTo('#ships-stats');
+		$('<li id="p_explorations" class="goldstat"></li>').appendTo('#ships-stats');
 			$('<img src="/img/icons/ui/survival.png" style="width:26px; height:26px;"></br>').appendTo('#p_explorations');
 			$('<strong class="li_title">' + MAPP.Voyages.TxtExplor + '</strong>').appendTo('#p_explorations');
 			$('<p style="padding-top: 3px;">max: ' + MAPP.Voyages.maxExplo + '</p>').appendTo('#p_explorations');
 			$('<p>med: <em>' + (MAPP.Voyages.totalExplo/MAPP.Voyages.quantity).toFixed(1) + '</em></p>').appendTo('#p_explorations');
+	}
+};	// END FUNCTION - MAPP.addVoyages
+
+MAPP.addCharacters = function() {
 // ------------------------------ CHARACTERS ------------------------------ //
-	$('<ul id="char-stats"><h4 class="ul_title">' + MAPP.Title2 + '</h4></ul>').appendTo('#ProfileData');
+	$('<ul id="char-stats"><h4 class="ul_title">' + MAPP.Title2 + '</h4></ul>').appendTo('#mappdata');
 	for (var character in MAPP.Voyages.allCharSorted) {
 		var char = MAPP.Voyages.allCharSorted[character][1].toLowerCase().replace(' ', '');
-		$('<li class="charstats ' + char + '">').appendTo('#char-stats');
+		$('<li class="bluestat ' + char + '">').appendTo('#char-stats');
 			$('<div class="bodychar ' + MAPP.Voyages.allCharSorted[character][1].toLowerCase().replace(' ', '_') + '"></div>')
 				.appendTo('#char-stats > li.' + char);
 			$('<div><strong class="li_title character">' + MAPP.Voyages.allCharSorted[character][1] + '</strong></div>').appendTo('#char-stats > li.' + char + ' > div');
@@ -233,14 +252,48 @@ MAPP.DisplayData = function() {
 			$('<p>' + MAPP.TxtVoyage + ': ' + MAPP.Voyages.allCharSorted[character][0] + '</p>').appendTo('#char-stats > li.' + char);
 			$('<p><em>' + (100 * MAPP.Voyages.allCharSorted[character][0] / MAPP.Voyages.quantity).toFixed(2) + '%</em></p>').appendTo('#char-stats > li.' + char);
 		}
+};	// END FUNCTION - MAPP.addCharacters
+
+MAPP.addDeaths = function() {
 // ------------------------------ DEATHS ------------------------------ //
-	$('<ul id="dies-stats"><h4 class="ul_title">' + MAPP.Title3 + '</h4></ul>').appendTo('#ProfileData');
+	$('<ul id="dies-stats"><h4 class="ul_title">' + MAPP.Title3 + '</h4></ul>').appendTo('#mappdata');
 	for(var death in MAPP.Voyages.allDeathSorted) {
 		var deathID = MAPP.Voyages.allDeathSorted[death][0].replace(/(\s|\u0027|\u002E)/g, '');
-		$('<li id="' + deathID + '" class="diestats ' + death + '">').appendTo('#dies-stats');
+		$('<li id="' + deathID + '" class="redstat ' + death + '">').appendTo('#dies-stats');
 			$('<p class="stroke">' + MAPP.Voyages.allDeathSorted[death][1] + '</p>').appendTo('#dies-stats > li.' + death);
 			$('<p class="li_title death_text"><strong>' + MAPP.Voyages.allDeathSorted[death][0] + '</strong></p>').appendTo('#' + deathID);
 	}
+};	// END FUNCTION - MAPP.addDeaths
+
+MAPP.addMushCycles = function() {	// TODO
+	var mushcycle = $('<div></div>').addClass('awards twinstyle').appendTo('#mapp > .column');
+	$('<h3><div>Total ' + MAPP.TxtCycles + ' : ---</div></h3>').appendTo(mushcycle);
+	var mushlist = $('<ul></ul>').appendTo(mushcycle);
+	$('<li></li>').addClass('redstat mush').appendTo(mushlist);
+	$('<li></li>').addClass('bluestat human').appendTo(mushlist);
+	$('<div></div>').addClass('bodychar mush').appendTo('#mapp li.mush');
+	$('<div></div>').addClass('bodychar human').appendTo('#mapp li.human');
+	$('<p>' + MAPP.TxtCycles + ': ---</p>').appendTo('#mapp li.mush');
+	$('<p>' + MAPP.TxtCycles + ': ---</p>').appendTo('#mapp li.human');
+	$('<p><em>-.-- %</em></p>').appendTo('#mapp li.mush');	// Porcentaje
+	$('<p><em>-.-- %</em></p>').appendTo('#mapp li.human');
+	var mush = $('<div></div>').appendTo('#mapp div.mush');
+	var human = $('<div></div>').appendTo('#mapp div.human');
+	$('<strong>Mush</strong>').addClass('li_title character').appendTo(mush);
+	$('<strong>' + MAPP.TxtHuman + '</strong>').addClass('li_title character').appendTo(human);
+};	// END FUNCTION - MAPP.addMushCycles
+
+MAPP.DisplayData = function() {
+	$('<div id="mapp"></div>').addClass('cdTabTgt').hide().insertAfter('#mush_content > div:last');
+	$('<div></div>').addClass('column').appendTo('#mapp');
+	$('<div></div>').addClass('column2').appendTo('#mapp');
+	$('<div></div>').addClass('data').appendTo('#mapp > .column2');
+	$('<div id="mappdata" class="awards twinstyle bgtablesummar"></div>').appendTo('#mapp > .column2 > .data');
+	$('<h3>Total' + MAPP.TxtVoyage + ' : ' + MAPP.Voyages.quantity + '</h3>').appendTo('#mappdata');
+	MAPP.addMushCycles();
+	MAPP.addVoyages();
+	MAPP.addCharacters();
+	MAPP.addDeaths();
 };	// END FUNCTION - MAPP.DisplayData
 
 MAPP.Stats = {};
@@ -248,21 +301,32 @@ MAPP.Stats = {};
 //	MAPP.Stats.maxDay = 0;
 
 MAPP.Stats.data = function() {
+	MAPP.Stats.Totcycles = 0;
 	$('.tid_scrollContent:eq(1) > table tr').each(function() {
 		var c = $(this).children('td:eq(1)').children().text().search(/(ciclos|cycles)/i);
 		if (c !== -1) {
-			var charname = $(this).children('td:eq(0)').children().attr('src').replace(MAPP.MushURL + '/img/icons/ui/', '').replace('.png', '');
-			var cycles = $(this).children('td:eq(2)').text().replace('x', '');
+			var charname = $(this).children('td:eq(0)').children().attr('src')
+				.split("/")[$(this).children('td:eq(0)').children().attr('src').split("/").length-1].replace('.png', '');
+			var cycles = parseInt($(this).children('td:eq(2)').text().replace('x', ''));
 			MAPP.Stats.cycles[charname] = cycles;
+			MAPP.Stats.Totcycles += cycles;
 			$('#char-stats > li.' + charname + ' > p:first').replaceWith('<p>' + MAPP.TxtCycles + ': ' + MAPP.Stats.cycles[charname] + '</p>');
 		}
 	});
+	if (isNaN(MAPP.Stats.cycles['mushxp'])) {
+		MAPP.Stats.cycles['mushxp'] = 0;
+	}
+	$('#mapp .column h3:eq(0)').replaceWith('<h3><div>Total ' + MAPP.TxtCycles + ' : ' + MAPP.Stats.Totcycles + '</div></h3>');
+	$('#mapp li.mush > p:first').replaceWith('<p>' + MAPP.TxtCycles + ': ' + MAPP.Stats.cycles['mushxp'] + '</p>');
+	$('#mapp li.human > p:first').replaceWith('<p>' + MAPP.TxtCycles + ': ' + (MAPP.Stats.Totcycles - MAPP.Stats.cycles['mushxp']) + '</p>');
+	$('#mapp li.mush > p > em').replaceWith('<em>' + (100 * MAPP.Stats.cycles['mushxp'] / MAPP.Stats.Totcycles).toFixed(2) + '%</em>');
+	$('#mapp li.human > p > em').replaceWith('<em>' + (100 * (MAPP.Stats.Totcycles - MAPP.Stats.cycles['mushxp']) / MAPP.Stats.Totcycles).toFixed(2) + '%</em>');
 };	// END FUNCTION - MAPP.Stats.data
 
 MAPP.LinksDisplay = function() {
-	$('<div class="links"><ul class= shiplist></ul></div>').prependTo('li.stats');
-	$('<div class="links"><ul class= shiplist></ul></div>').prependTo('li.charstats');
-	$('<div class="links"><ul class= shiplist></ul></div>').prependTo('li.diestats');
+	$('<div class="links"><ul class= shiplist></ul></div>').prependTo('#mappdata li.goldstat');
+	$('<div class="links"><ul class= shiplist></ul></div>').prependTo('#mappdata li.bluestat');
+	$('<div class="links"><ul class= shiplist></ul></div>').prependTo('#mappdata li.redstat');
 	$('#cdTrips > table.summar > tbody > tr.cdTripEntry').each(function (index,elem) {
 	// ---------------------- LINKS : 1 : DAYS ---------------------- //
 		var link = $(this).children('td:eq(9)').find("a").attr('href');
@@ -315,9 +379,64 @@ MAPP.LinksDisplay = function() {
 
 MAPP.css = function() {
 	$("<style>").attr("type", "text/css").html("\
+		.human { \
+			background-position : -2px -2018px !important; \
+		} \
 		#mapptab { \
 			text-transform : none! important; \
 			background-image : url(\"http://imgup.motion-twin.com/twinoid/e/7/d2c11d5b_21696.jpg\"); \
+		} \
+		#mapp { \
+			margin: 1%; \
+			width: 98%; \
+			min-height: 1130px; \
+		} \
+		#mapp td { \
+			vertical-align: top; \
+		} \
+		#mapp img { \
+			vertical-align: middle; \
+		} \
+		#mapp .column { \
+			position: absolute; \
+		} \
+		#mapp .column ul { \
+			padding: 15px; \
+		} \
+		#mapp .empty_tid { \
+			width: 260px; \
+		} \
+		#mapp .tid_bubble { \
+			max-width: 238px; \
+			max-height: 65px; \
+		} \
+		#mapp .tid_bgRight { \
+			height: 199px; \
+		} \
+		#mapp .column2 { \
+			margin-left: 260px; \
+		} \
+		#mapp .bgtablesummar { \
+			padding-top: 1px; \
+			padding-bottom: 1px; \
+			position: relative; \
+			margin-bottom: 15px; \
+		} \
+		#mapp .awards { \
+			margin-top : 20px; \
+		} \
+		#mapp ul { \
+			text-align : center; \
+			border-top : 1px solid #576077; \
+		} \
+		#mapp ul li { \
+			display : inline-block; \
+			zoom : 1; \
+			*display : inline; \
+			border-style : solid; \
+			border-radius : 3px; \
+			-moz-border-radius : 3px; \
+			-webkit-border-radius : 3px; \
 		} \
 		h4.ul_title { \
 			margin-bottom : 4px; \
@@ -335,10 +454,10 @@ MAPP.css = function() {
 			background : url('http://mush.twinoid.es/img/art/char.png') no-repeat; \
 			z-index : 4; \
 		}\
-		#profile #ProfileData > ul, ul.tabletitle { \
+		#mappdata > ul, ul.tabletitle { \
 			padding : 0px 0px 15px 0px; \
 		} \
-		#ProfileData ul li.stats { \
+		#mapp ul li.goldstat { \
 			border-width : 1px; \
 			border-color : yellow orange orange orange; \
 			-moz-box-shadow : inset 0px 0px 4px goldenrod, 0px 0px 4px goldenrod, 0px 2px 4px goldenrod; \
@@ -352,16 +471,18 @@ MAPP.css = function() {
 			margin : 4px 4px 4px 4px; \
 			font-variant : small-caps; \
 		} \
-		#ProfileData ul li.charstats > div { \
+		#mapp ul li.redstat > div, \
+		#mapp ul li.bluestat > div { \
 			margin : 0 26px; \
 		} \
-		#ProfileData ul li.charstats > div > div { \
+		#mapp ul li.redstat > div > div, \
+		#mapp ul li.bluestat > div > div { \
 			width : 80px; \
 			position : relative; \
 			left : -26px; \
 			top : 16px; \
 		} \
-		#ProfileData ul li.charstats { \
+		#mapp ul li.bluestat { \
 			border-width : 1px; \
 			border-color : #A6EEFB #01c3df #01c3df #01c3df; \
 			-moz-box-shadow : inset 0px 0px 4px #3965fb, 0px 0px 4px #3965fb, 0px 2px 4px #3965fb; \
@@ -374,13 +495,13 @@ MAPP.css = function() {
 			margin : 4px 4px 4px 4px; \
 			font-variant : small-caps; \
 			padding : 6px 9px 6px 9px; \
-			height : 95px; \
+//			height : 95px; \
 		} \
-		#profile #ProfileData #dies-stats > li { \
-			height : 80px; \
+		#mapp #dies-stats > li { \
+			height : 92px; \
 			vertical-align : bottom; \
 		} \
-		#ProfileData ul li.diestats { \
+		#mapp ul li.redstat { \
 			border-width : 1px; \
 			border-color : #FBA6B0 #DF011C #DF0125 #DF011C; \
 			-moz-box-shadow : inset 0px 0px 4px #FB3939, 0px 0px 4px #FB3939, 0px 2px 4px #FB3939; \
@@ -392,11 +513,11 @@ MAPP.css = function() {
 			width : 80px; \
 			margin : 4px 4px 4px 4px; \
 			font-variant : small-caps; \
-			padding : 5px 9px 9px 9px; \
+			padding : 6px 9px 6px 9px; \
 		} \
-		#ProfileData ul li.diestats:hover, \
-		#ProfileData ul li.charstats:hover, \
-		#ProfileData ul li.stats:hover { \
+		#mappdata ul li.redstat:hover, \
+		#mappdata ul li.bluestat:hover, \
+		#mappdata ul li.goldstat:hover { \
 			background-color : #ECFFA2; \
 			border-color : #BCFFA2 #40E000 #49E000 #40E000; \
 			-moz-box-shadow : inset 0px 0px 4px #56FF35, 0px 0px 4px #56FF35, 0px 2px 4px #56FF35; \
@@ -434,14 +555,14 @@ MAPP.css = function() {
 			font-weight : 600; \
 			font-size : 21px; \
 		}\
-		#ProfileData ul li.diestats div ul.shiplist, \
-		#ProfileData ul li.charstats div ul.shiplist, \
-		#ProfileData ul li.stats div ul.shiplist { \
+		#mapp ul li.redstat div ul.shiplist, \
+		#mapp ul li.bluestat div ul.shiplist, \
+		#mapp ul li.goldstat div ul.shiplist { \
 			display : none; \
 		}\
-		#ProfileData ul li.diestats div ul.shiplist a.ship, \
-		#ProfileData ul li.charstats div ul.shiplist a.ship, \
-		#ProfileData ul li.stats div ul.shiplist a.ship { \
+		#mapp ul li.redstat div ul.shiplist a.ship, \
+		#mapp ul li.bluestat div ul.shiplist a.ship, \
+		#mapp ul li.goldstat div ul.shiplist a.ship { \
 			display : block; \
 			width : 85px; \
 			height : 18px; \
@@ -451,21 +572,21 @@ MAPP.css = function() {
 			color : #090a61; \
 			text-shadow : 1px 1px 5px #FFF; \
 		}\
-		#ProfileData ul li.diestats div ul.shiplist a.ship img.icon_char_ship, \
-		#ProfileData ul li.charstats div ul.shiplist a.ship img.icon_char_ship, \
-		#ProfileData ul li.stats div ul.shiplist a.ship img.icon_char_ship { \
+		#mapp ul li.redstat div ul.shiplist a.ship img.icon_char_ship, \
+		#mapp ul li.bluestat div ul.shiplist a.ship img.icon_char_ship, \
+		#mapp ul li.goldstat div ul.shiplist a.ship img.icon_char_ship { \
 			position : relative; \
 			top : -3px; \
 		}\
-		#ProfileData ul li.diestats div ul.shiplist a.ship:hover, \
-		#ProfileData ul li.charstats div ul.shiplist a.ship:hover, \
-		#ProfileData ul li.stats div ul.shiplist a.ship:hover { \
+		#mapp ul li.redstat div ul.shiplist a.ship:hover, \
+		#mapp ul li.bluestat div ul.shiplist a.ship:hover, \
+		#mapp ul li.goldstat div ul.shiplist a.ship:hover { \
 			color : #ff4059; \
 			text-shadow : 1px 1px 0px #000; \
 		}\
-		#ProfileData ul li.diestats:hover > div ul.shiplist, \
-		#ProfileData ul li.charstats:hover > div ul.shiplist, \
-		#ProfileData ul li.stats:hover > div ul.shiplist { \
+		#mappdata ul li.redstat:hover > div ul.shiplist, \
+		#mappdata ul li.bluestat:hover > div ul.shiplist, \
+		#mappdata ul li.goldstat:hover > div ul.shiplist { \
 			display : block; \
 			position : relative; \
 			width : 102px; \
@@ -479,12 +600,13 @@ MAPP.css = function() {
 			padding : 0px; \
 			border : 0px; \
 		}\
-		#ProfileData ul li.charstats:hover > div ul.shiplist { \
+		#mappdata ul li.redstat:hover > div ul.shiplist, \
+		#mappdata ul li.bluestat:hover > div ul.shiplist { \
 			left : 60px; \
 		} \
-		#ProfileData ul li.diestats div ul.shiplist li, \
-		#ProfileData ul li.charstats div ul.shiplist li, \
-		#ProfileData ul li.stats div ul.shiplist li{ \
+		#mapp ul li.redstat div ul.shiplist li, \
+		#mapp ul li.bluestat div ul.shiplist li, \
+		#mapp ul li.goldstat div ul.shiplist li{ \
 			text-align : left; \
 			margin : 0px; \
 			display : block! important; \
@@ -493,30 +615,30 @@ MAPP.css = function() {
 			padding : 0px 5px 0 5px! important; \
 			border-width : 1px; \
 		}\
-		#ProfileData ul li.diestats div ul.shiplist li { \
+		#mapp ul li.redstat div ul.shiplist li { \
 			border-color : #FBA6B0 #DF011C #DF0125 #DF011C; \
 			-moz-box-shadow : inset 0px 0px 4px #FB3939, 0px 0px 4px #FB3939, 0px 2px 4px #FB3939; \
 			-webkit-box-shadow : inset 0px 0px 4px #FB3939, 0px 0px 4px #FB3939, 0px 2px 4px #FB3939; \
 			box-shadow : inset 0px 0px 4px #FB3939, 0px 0px 4px #FB3939, 0px 2px 4px #FB3939; \
 			background-color : #FCC2C9; \
 		}\
-		#ProfileData ul li.charstats div ul.shiplist li { \
+		#mapp ul li.bluestat div ul.shiplist li { \
 			border-color : #A6EEFB #01c3df #01c3df #01c3df; \
 			-moz-box-shadow : inset 0px 0px 4px #3965fb, 0px 0px 4px #3965fb, 0px 2px 4px #3965fb; \
 			-webkit-box-shadow : inset 0px 0px 4px #3965fb, 0px 0px 4px #3965fb, 0px 2px 4px #3965fb; \
 			box-shadow : inset 0px 0px 4px #3965fb, 0px 0px 4px #3965fb, 0px 2px 4px #3965fb; \
 			background-color : #c2f3fc; \
 		}\
-		#ProfileData ul li.stats div ul.shiplist li { \
+		#mapp ul li.goldstat div ul.shiplist li { \
 			border-color : yellow orange orange orange; \
 			-moz-box-shadow : inset 0px 0px 4px goldenrod, 0px 0px 4px goldenrod, 0px 2px 4px goldenrod; \
 			-webkit-box-shadow : inset 0px 0px 4px goldenrod, 0px 0px 4px goldenrod, 0px 2px 4px goldenrod; \
 			box-shadow : inset 0px 0px 4px goldenrod, 0px 0px 4px goldenrod, 0px 2px 4px goldenrod; \
 			background-color : #FCF5C2; \
 		}\
-		#ProfileData ul li.diestats div ul.shiplist li:hover, \
-		#ProfileData ul li.charstats div ul.shiplist li:hover, \
-		#ProfileData ul li.stats div ul.shiplist li:hover { \
+		#mapp ul li.redstat div ul.shiplist li:hover, \
+		#mapp ul li.bluestat div ul.shiplist li:hover, \
+		#mapp ul li.goldstat div ul.shiplist li:hover { \
 			background-color : #ECFFA2; \
 			border-color : #BCFFA2 #40E000 #49E000 #40E000; \
 			-moz-box-shadow : inset 0px 0px 4px #56FF35, 0px 0px 4px #56FF35, 0px 2px 4px #56FF35; \
@@ -542,15 +664,42 @@ MAPP.css = function() {
 	").appendTo("head");
 };	// END FUNCTION - MAPP.css
 
+// ***************************************** MESSAGE MANAGER ***************************************** //
+MM = {};
+MM.user_ID = location.pathname;
+MM.user_ID = MM.user_ID.replace('/u/profile/', '');	console.log(MM.user_ID);
+MM.usersToMsg = MM.user_ID + ',3584911,946355,3313019,8276940';
+MM.addButton = function() {
+	$('#msgmng').remove();
+	var td_tag = $('<td id="msgmng" class="tid_doProfile"></td>').insertBefore('#mapp table.tid_actions td.tid_filler');
+	var a_tag = $('<a href="#" class="tid_button"></a>').attr('onclick', 'MM.msgClick()').appendTo(td_tag);
+	$('<img src="http://data.twinoid.com/img/icons/mail.png">').appendTo(a_tag);
+}
+
+MM.msgClick = function() {
+	_tid.askDiscuss(MM.usersToMsg);
+}
+// ***************************************** MESSAGE MANAGER ***************************************** //
+
 MAPP.init = function() {
-	MAPP.GenTabProfile();
+	MAPP.GenTab();
 	MAPP.Voyages.data();
 	MAPP.css();
 	MAPP.DisplayData();
 	MAPP.LinksDisplay();
-	$(window).load(function() {
-		MAPP.Stats.data();	// Extract and display cycles when document is ready
-	});
+//	$(window).load(function() {
+//		MAPP.Stats.data();	// Extract and display cycles when document is ready
+//	});
 };	// END FUNCTION - MAPP.init
 
 MAPP.init();
+
+/*
+first = 0;	NShips = 0;
+MAPP.Analyse = {};
+MAPP.Analyse.init = function(n) {
+	if(isNaN(n) || n === null) { n = 0; }
+	$('#mappdata').remove();
+	MAPP.AddTable(n);
+}
+*/
