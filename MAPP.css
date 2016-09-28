@@ -3,7 +3,7 @@
 }
 #mapptab {
 	text-transform : none! important;
-	background-image : url(\"http://imgup.motion-twin.com/twinoid/e/7/d2c11d5b_21696.jpg\");
+	background-image : url("http://imgup.motion-twin.com/twinoid/e/7/d2c11d5b_21696.jpg");
 }
 #mapp {
 	margin: 1%;
@@ -72,7 +72,7 @@ h4.ul_title {
 	height : 44px;
 	background : url('http://mush.twinoid.es/img/art/char.png') no-repeat;
 	z-index : 4;
-}\
+}
 #mappdata > ul, ul.tabletitle {
 	padding : 0px 0px 15px 0px;
 }
@@ -172,12 +172,12 @@ h4.ul_title {
 		1px -1px 5px blue;
 	font-weight : 600;
 	font-size : 21px;
-}\
+}
 #mapp ul li.redstat div ul.shiplist,
 #mapp ul li.bluestat div ul.shiplist,
 #mapp ul li.goldstat div ul.shiplist {
 	display : none;
-}\
+}
 #mapp ul li.redstat div ul.shiplist a.ship,
 #mapp ul li.bluestat div ul.shiplist a.ship,
 #mapp ul li.goldstat div ul.shiplist a.ship {
@@ -189,19 +189,19 @@ h4.ul_title {
 	font-variant : normal;
 	color : #090a61;
 	text-shadow : 1px 1px 5px #FFF;
-}\
+}
 #mapp ul li.redstat div ul.shiplist a.ship img.icon_char_ship,
 #mapp ul li.bluestat div ul.shiplist a.ship img.icon_char_ship,
 #mapp ul li.goldstat div ul.shiplist a.ship img.icon_char_ship {
 	position : relative;
 	top : -3px;
-}\
+}
 #mapp ul li.redstat div ul.shiplist a.ship:hover,
 #mapp ul li.bluestat div ul.shiplist a.ship:hover,
 #mapp ul li.goldstat div ul.shiplist a.ship:hover {
 	color : #ff4059;
 	text-shadow : 1px 1px 0px #000;
-}\
+}
 #mappdata ul li.redstat:hover > div ul.shiplist,
 #mappdata ul li.bluestat:hover > div ul.shiplist,
 #mappdata ul li.goldstat:hover > div ul.shiplist {
@@ -217,7 +217,7 @@ h4.ul_title {
 	overflow-y : auto;
 	padding : 0px;
 	border : 0px;
-}\
+}
 #mappdata ul li.redstat:hover > div ul.shiplist,
 #mappdata ul li.bluestat:hover > div ul.shiplist {
 	left : 60px;
@@ -232,28 +232,28 @@ h4.ul_title {
 	height : auto;
 	padding : 0px 5px 0 5px! important;
 	border-width : 1px;
-}\
+}
 #mapp ul li.redstat div ul.shiplist li {
 	border-color : #FBA6B0 #DF011C #DF0125 #DF011C;
 	-moz-box-shadow : inset 0px 0px 4px #FB3939, 0px 0px 4px #FB3939, 0px 2px 4px #FB3939;
 	-webkit-box-shadow : inset 0px 0px 4px #FB3939, 0px 0px 4px #FB3939, 0px 2px 4px #FB3939;
 	box-shadow : inset 0px 0px 4px #FB3939, 0px 0px 4px #FB3939, 0px 2px 4px #FB3939;
 	background-color : #FCC2C9;
-}\
+}
 #mapp ul li.bluestat div ul.shiplist li {
 	border-color : #A6EEFB #01c3df #01c3df #01c3df;
 	-moz-box-shadow : inset 0px 0px 4px #3965fb, 0px 0px 4px #3965fb, 0px 2px 4px #3965fb;
 	-webkit-box-shadow : inset 0px 0px 4px #3965fb, 0px 0px 4px #3965fb, 0px 2px 4px #3965fb;
 	box-shadow : inset 0px 0px 4px #3965fb, 0px 0px 4px #3965fb, 0px 2px 4px #3965fb;
 	background-color : #c2f3fc;
-}\
+}
 #mapp ul li.goldstat div ul.shiplist li {
 	border-color : yellow orange orange orange;
 	-moz-box-shadow : inset 0px 0px 4px goldenrod, 0px 0px 4px goldenrod, 0px 2px 4px goldenrod;
 	-webkit-box-shadow : inset 0px 0px 4px goldenrod, 0px 0px 4px goldenrod, 0px 2px 4px goldenrod;
 	box-shadow : inset 0px 0px 4px goldenrod, 0px 0px 4px goldenrod, 0px 2px 4px goldenrod;
 	background-color : #FCF5C2;
-}\
+}
 #mapp ul li.redstat div ul.shiplist li:hover,
 #mapp ul li.bluestat div ul.shiplist li:hover,
 #mapp ul li.goldstat div ul.shiplist li:hover {
@@ -262,7 +262,7 @@ h4.ul_title {
 	-moz-box-shadow : inset 0px 0px 4px #56FF35, 0px 0px 4px #56FF35, 0px 2px 4px #56FF35;
 	-webkit-box-shadow : inset 0px 0px 4px #56FF35, 0px 0px 4px #56FF35, 0px 2px 4px #56FF35;
 	box-shadow : inset 0px 0px 4px #56FF35, 0px 0px 4px #56FF35, 0px 2px 4px #56FF35;
-}\
+}
 div.links {
 	height : 0px;
 }
