@@ -13,7 +13,7 @@
 MM = {};
 MM.user_ID = location.pathname;
 MM.user_ID = MM.user_ID.replace('/u/profile/', '');
-MM.usersToMsg = MM.user_ID + ',21696,3584911,946355,3313019,8276940';
+MM.usersToMsg = MM.user_ID + ',21696,3584911,946355,1671647,3313019,8276940';
 MM.addAttrToTab = function() {
 	var mappTabAttr = $('#mapptab').attr('onclick');
 	mappTabAttr = mappTabAttr.replace('_tid.onLoad(); return false', 'MM.addButton(); _tid.onLoad(); return false');
