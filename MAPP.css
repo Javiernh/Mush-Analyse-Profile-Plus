@@ -2,7 +2,7 @@
 	background-position : -2px -2018px !important;
 }
 #maptab {
-	text-transform : none! important;
+	text-transform : none !important;
 	background-image : url("http://imgup.motion-twin.com/twinoid/e/7/d2c11d5b_21696.jpg");
 }
 #map {
@@ -185,7 +185,7 @@ h4.ul_title {
 	width : 85px;
 	height : 18px;
 	font-size : 13px;
-	text-decoration : none! important;
+	text-decoration : none !important;
 	font-variant : normal;
 	color : #090a61;
 	text-shadow : 1px 1px 5px #FFF;
@@ -227,10 +227,10 @@ h4.ul_title {
 #map ul li.goldstat div ul.shiplist li{
 	text-align : left;
 	margin : 0px;
-	display : block! important;
+	display : block !important;
 	width : 85px;
 	height : auto;
-	padding : 0px 5px 0 5px! important;
+	padding : 0px 5px 0 5px !important;
 	border-width : 1px;
 }
 #map ul li.redstat div ul.shiplist li {
@@ -262,6 +262,12 @@ h4.ul_title {
 	-moz-box-shadow : inset 0px 0px 4px #56FF35, 0px 0px 4px #56FF35, 0px 2px 4px #56FF35;
 	-webkit-box-shadow : inset 0px 0px 4px #56FF35, 0px 0px 4px #56FF35, 0px 2px 4px #56FF35;
 	box-shadow : inset 0px 0px 4px #56FF35, 0px 0px 4px #56FF35, 0px 2px 4px #56FF35;
+}
+mask {
+	margin-left: -36px;
+}
+opt_act {
+	margin-left: -20px !important;
 }
 div.links {
 	height : 0px;
