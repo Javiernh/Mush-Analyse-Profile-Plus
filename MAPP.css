@@ -263,11 +263,11 @@ h4.ul_title {
 	-webkit-box-shadow : inset 0px 0px 4px #56FF35, 0px 0px 4px #56FF35, 0px 2px 4px #56FF35;
 	box-shadow : inset 0px 0px 4px #56FF35, 0px 0px 4px #56FF35, 0px 2px 4px #56FF35;
 }
-mask {
-	margin-left: -36px;
+.mask {
+	margin-left: -32px;
 }
-opt_act {
-	margin-left: -20px !important;
+.opt_act {
+	margin-left: -18px !important;
 }
 div.links {
 	height : 0px;
