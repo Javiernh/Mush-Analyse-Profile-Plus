@@ -1,0 +1,16 @@
+{
+	"lng": "fr",
+	"resources": {
+		"fr": {
+			"translation": {
+				"file": "Fiche",
+				"boxtitles": {
+					"setfiltr": "Paramètres et filtres",
+					"shipstat": "Statistiques de voyages",
+					"charstat": "Statistiques de personnages",
+					"deadstat": "Statistiques de morts"
+				}
+			}
+		}
+	}
+}
