@@ -4,12 +4,10 @@
 		"en": {
 			"translation": {
 				"file": "File",
-				"boxtitles": {
-					"setfiltr": "Settings and filters",
-					"shipstat": "Voyages statistics",
-					"charstat": "Characters statistics",
-					"deadstat": "Deaths statistics"
-				}
+				"setfiltr": "Settings and filters",
+				"shipstat": "Voyages statistics",
+				"charstat": "Characters statistics",
+				"deadstat": "Deaths statistics"
 			}
 		}
 	}
