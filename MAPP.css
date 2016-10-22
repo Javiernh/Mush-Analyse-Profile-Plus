@@ -291,16 +291,6 @@ div.links > ul::-webkit-scrollbar-track {
 	background : #576077;
 }
 /* Slider CSS */
-#map .compframe {
-	width: 280px;
-	height: 33px;
-	background: transparent url("/img/design/xp_completion.png") no-repeat left top;
-	padding-left: 10px;
-	padding-top: 1px;
-	display: inline-block;
-	zoom: 1;
-	vertical-align: top;
-}
 #map .ui-widget-content {
 	border: none !important;
 	background: none !important;
@@ -311,4 +301,14 @@ div.links > ul::-webkit-scrollbar-track {
 	width: 262px !important;
 	height: 17px !important;
 	margin-left: 3px;
+}
+.compframe {
+	width: 280px;
+	height: 33px;
+	background: transparent url("/img/design/xp_completion.png") no-repeat left top;
+	padding-left: 10px;
+	padding-top: 1px;
+	display: inline-block;
+	zoom: 1;
+	vertical-align: top;
 }
