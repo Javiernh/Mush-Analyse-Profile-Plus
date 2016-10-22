@@ -307,6 +307,8 @@ div.links > ul::-webkit-scrollbar-track {
 	background: transparent url("/img/design/xp_completion_fill.png") no-repeat left top;
 	height: 17px !important;
 	margin-left: 3px;
+	font-size: .8em;
+	padding-top: .3em;
 }
 #map .compframe {
 	width: 290px;
