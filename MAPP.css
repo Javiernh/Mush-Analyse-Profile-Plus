@@ -298,11 +298,10 @@ div.links > ul::-webkit-scrollbar-track {
 }
 #map .ui-slider-range {
 	background: transparent url("/img/design/xp_completion_fill.png") no-repeat left top;
-	width: 262px !important;
 	height: 17px !important;
 	margin-left: 3px;
 }
-.compframe {
+#map .compframe {
 	width: 280px;
 	height: 33px;
 	background: transparent url("/img/design/xp_completion.png") no-repeat left top;
