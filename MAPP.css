@@ -296,16 +296,22 @@ div.links > ul::-webkit-scrollbar-track {
 	background: none !important;
 	color: #fff;
 }
+#map .map-slider {
+	display: inline-block;
+	width: 90%;
+	height: 17px;
+	margin-top: 3px;
+	margin-left: 10px;
+}
 #map .ui-slider-range {
 	background: transparent url("/img/design/xp_completion_fill.png") no-repeat left top;
 	height: 17px !important;
 	margin-left: 3px;
 }
 #map .compframe {
-	width: 280px;
-	height: 33px;
+	width: 290px;
+	height: 34px;
 	background: transparent url("/img/design/xp_completion.png") no-repeat left top;
-	padding-left: 10px;
 	padding-top: 1px;
 	display: inline-block;
 	zoom: 1;
