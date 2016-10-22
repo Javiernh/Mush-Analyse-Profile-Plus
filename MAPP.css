@@ -291,7 +291,7 @@ div.links > ul::-webkit-scrollbar-track {
 	background : #576077;
 }
 /* Slider CSS */
-#map .xpcompletion .compframe {
+#map .compframe {
 	width: 280px;
 	height: 33px;
 	background: transparent url("/img/design/xp_completion.png") no-repeat left top;
