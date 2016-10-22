@@ -304,29 +304,29 @@ div.links > ul::-webkit-scrollbar-track {
 	margin-left: 10px;
 }
 #map .ui-slider-range {
-	background: transparent url("/img/design/xp_completion_fill.png") no-repeat left top;
-	height: 17px !important;
-	margin-left: 4px;
+	background: transparent url("/img/design/xp_completion_fill.png") no-repeat center top;
+/*	height: 17px !important;
+*/	margin-left: 4px;
 	font-size: .8em;
 	padding-top: .3em;
 }
-#map .map-handle-*{
+#map [class^=map-handle-]{
 	width: 25px !important;
 	border: none !important;
 	height: 15px !important;
-	margin-left: -20px !important;
+/*	margin-left: -20px !important;
 	margin: 0 0 0 -20px !important;
-	padding-top: 1.5em;
+*/	padding-top: 1.5em;
 	background: none !important;
 	top: 0 !important;
 }
 #map .map-handle-left{
-	margin-left: -20px !important;
-	text-align: right;
+/*	margin-left: -20px !important;
+*/	text-align: right;
 }
 #map .map-handle-right{
-	margin-left: -20px !important;
-	text-align: left;
+/*	margin-left: -20px !important;
+*/	text-align: left;
 }
 #map .compframe {
 	width: 290px;
