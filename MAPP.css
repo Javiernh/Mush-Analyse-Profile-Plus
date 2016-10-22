@@ -1,14 +1,22 @@
-.human {
-	background-position : -2px -2018px !important;
-}
+/* Tab */
 #maptab {
 	text-transform : none !important;
-	background-image : url("http://imgup.motion-twin.com/twinoid/e/7/d2c11d5b_21696.jpg");
+	background-image : url("/img/design/gold_tab.png");
 }
+
+/* Structure */
 #map {
 	margin: 1%;
 	width: 98%;
 	min-height: 1130px;
+}
+#map .column2 {
+	margin-left: 260px;
+}
+
+/* Box */
+.human {
+	background-position : -2px -2018px !important;
 }
 #map td {
 	vertical-align: top;
@@ -31,9 +39,6 @@
 }
 #map .tid_bgRight {
 	height: 199px;
-}
-#map .column2 {
-	margin-left: 260px;
 }
 #map .bgtablesummar {
 	padding-top: 1px;
@@ -263,11 +268,11 @@ h4.ul_title {
 	-webkit-box-shadow : inset 0px 0px 4px #56FF35, 0px 0px 4px #56FF35, 0px 2px 4px #56FF35;
 	box-shadow : inset 0px 0px 4px #56FF35, 0px 0px 4px #56FF35, 0px 2px 4px #56FF35;
 }
-img.mask {
+.mask {
 	margin-left: -32px;
 }
-img.opt_act {
-	margin-left: -18px;
+.opt_act {
+	margin-left: -18px !important;
 }
 div.links {
 	height : 0px;
@@ -284,4 +289,26 @@ div.links > ul::-webkit-scrollbar-thumb {
 }
 div.links > ul::-webkit-scrollbar-track {
 	background : #576077;
+}
+/* Slider CSS */
+#map .xpcompletion .compframe {
+	width: 280px;
+	height: 33px;
+	background: transparent url("/img/design/xp_completion.png") no-repeat left top;
+	padding-left: 10px;
+	padding-top: 1px;
+	display: inline-block;
+	zoom: 1;
+	vertical-align: top;
+}
+#map .ui-widget-content {
+	border: none !important;
+	background: none !important;
+	color: #fff;
+}
+#map .ui-slider-range {
+	background: transparent url("/img/design/xp_completion_fill.png") no-repeat left top;
+	width: 262px !important;
+	height: 17px !important;
+	margin-left: 3px;
 }
