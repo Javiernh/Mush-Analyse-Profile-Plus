@@ -311,22 +311,19 @@ div.links > ul::-webkit-scrollbar-track {
 	padding-top: .3em;
 }
 #map [class^=map-handle-]{
+	color: white;
 	width: 25px !important;
 	border: none !important;
-	height: 15px !important;
-/*	margin-left: -20px !important;
-	margin: 0 0 0 -20px !important;
-*/	padding-top: 1.5em;
+	padding-top: 1.9em;
 	background: none !important;
-	top: 0 !important;
 }
 #map .map-handle-left{
-/*	margin-left: -20px !important;
-*/	text-align: right;
+	margin-left: -20px !important;
+	text-align: right;
 }
 #map .map-handle-right{
-/*	margin-left: -20px !important;
-*/	text-align: left;
+	margin-left: 0px !important;
+	text-align: left;
 }
 #map .compframe {
 	width: 290px;
