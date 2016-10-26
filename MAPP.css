@@ -304,7 +304,7 @@ div.links > ul::-webkit-scrollbar-track {
 	margin-left: 10px;
 }
 #map .ui-slider-range {
-	background: transparent url("/img/design/xp_completion_fill.png") no-repeat center top;
+	background: transparent url("https://res.cloudinary.com/javiernh/image/upload/map/xp_completion_fill.png") no-repeat center top;
 /*	height: 17px !important;
 */	margin-left: 4px;
 	font-size: .8em;
@@ -328,7 +328,7 @@ div.links > ul::-webkit-scrollbar-track {
 #map .compframe {
 	width: 290px;
 	height: 34px;
-	background: transparent url("/img/design/xp_completion.png") no-repeat left top;
+	background: transparent url("https://res.cloudinary.com/javiernh/image/upload/map/xp_completion.png") no-repeat left top;
 	padding-top: 1px;
 	display: inline-block;
 	zoom: 1;
