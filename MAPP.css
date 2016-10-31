@@ -25,9 +25,9 @@
 #mapp .empty_tid {
 	width: 260px;
 }
-#mapp .tid_bubble {
-	max-width: 238px;
-	max-height: 65px;
+.tid_bubble {
+	max-width: 238px !important;
+	max-height: 65px !important;
 }
 #mapp .tid_bgRight {
 	height: 199px;
