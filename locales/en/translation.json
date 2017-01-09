@@ -7,7 +7,13 @@
 				"setfiltr": "Settings and filters",
 				"shipstat": "Voyages statistics",
 				"charstat": "Characters statistics",
-				"deadstat": "Deaths statistics"
+				"deadstat": "Deaths statistics",
+				"days": "days",
+				"explo": "explorations",
+				"rsrch": "research",
+				"proj": "projects",
+				"scann": "planets",
+				"glory": "glory"
 			}
 		}
 	}
