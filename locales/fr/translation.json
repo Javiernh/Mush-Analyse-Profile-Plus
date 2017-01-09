@@ -7,7 +7,13 @@
 				"setfiltr": "Paramètres et filtres",
 				"shipstat": "Statistiques de voyages",
 				"charstat": "Statistiques de personnages",
-				"deadstat": "Statistiques de morts"
+				"deadstat": "Statistiques de morts",
+				"days": "jours",
+				"explo": "explorations",
+				"rsrch": "recherches",
+				"proj": "projets",
+				"scann": "planètes",
+				"glory": "triomphe"
 			}
 		}
 	}
