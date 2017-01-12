@@ -14,7 +14,9 @@
 				"proj": "projects",
 				"scann": "planets",
 				"glory": "glory",
-				"average": "avg"
+				"average": "avg",
+				"cycles": "cycles: ",
+				"voyages": "voyages: "
 			}
 		}
 	}
