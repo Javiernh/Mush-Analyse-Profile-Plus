@@ -23,6 +23,7 @@
 }
 #map img {
 	vertical-align: middle;
+	height: 26px;
 }
 #map .column {
 	position: absolute;
@@ -95,11 +96,11 @@ h4.ul_title {
 	margin : 4px 4px 4px 4px;
 	font-variant : small-caps;
 }
-#map ul li.pinkmedal > div,
+#map ul li.rubymedal > div,
 #map ul li.bluemedal > div {
 	margin : 0 26px;
 }
-#map ul li.pinkmedal > div > div,
+#map ul li.rubymedal > div > div,
 #map ul li.bluemedal > div > div {
 	width : 80px;
 	position : relative;
@@ -124,7 +125,7 @@ h4.ul_title {
 	height : 92px;
 	vertical-align : bottom;
 }
-#map ul li.pinkmedal {
+#map ul li.rubymedal {
 	border-width : 1px;
 	border-color : #FBA6B0 #DF011C #DF0125 #DF011C;
 	-moz-box-shadow : inset 0px 0px 4px #FB3939, 0px 0px 4px #FB3939, 0px 2px 4px #FB3939;
@@ -138,7 +139,7 @@ h4.ul_title {
 	font-variant : small-caps;
 	padding : 6px 9px 6px 9px;
 }
-#mapdata ul li.pinkmedal:hover,
+#mapdata ul li.rubymedal:hover,
 #mapdata ul li.bluemedal:hover,
 #mapdata ul li.goldmedal:hover {
 	background-color : #ECFFA2;
@@ -178,12 +179,12 @@ h4.ul_title {
 	font-weight : 600;
 	font-size : 21px;
 }
-#map ul li.pinkmedal div ul.shiplist,
+#map ul li.rubymedal div ul.shiplist,
 #map ul li.bluemedal div ul.shiplist,
 #map ul li.goldmedal div ul.shiplist {
 	display : none;
 }
-#map ul li.pinkmedal div ul.shiplist a.ship,
+#map ul li.rubymedal div ul.shiplist a.ship,
 #map ul li.bluemedal div ul.shiplist a.ship,
 #map ul li.goldmedal div ul.shiplist a.ship {
 	display : block;
@@ -195,19 +196,19 @@ h4.ul_title {
 	color : #090a61;
 	text-shadow : 1px 1px 5px #FFF;
 }
-#map ul li.pinkmedal div ul.shiplist a.ship img.icon_char_ship,
+#map ul li.rubymedal div ul.shiplist a.ship img.icon_char_ship,
 #map ul li.bluemedal div ul.shiplist a.ship img.icon_char_ship,
 #map ul li.goldmedal div ul.shiplist a.ship img.icon_char_ship {
 	position : relative;
 	top : -3px;
 }
-#map ul li.pinkmedal div ul.shiplist a.ship:hover,
+#map ul li.rubymedal div ul.shiplist a.ship:hover,
 #map ul li.bluemedal div ul.shiplist a.ship:hover,
 #map ul li.goldmedal div ul.shiplist a.ship:hover {
 	color : #ff4059;
 	text-shadow : 1px 1px 0px #000;
 }
-#mapdata ul li.pinkmedal:hover > div ul.shiplist,
+#mapdata ul li.rubymedal:hover > div ul.shiplist,
 #mapdata ul li.bluemedal:hover > div ul.shiplist,
 #mapdata ul li.goldmedal:hover > div ul.shiplist {
 	display : block;
@@ -223,11 +224,11 @@ h4.ul_title {
 	padding : 0px;
 	border : 0px;
 }
-#mapdata ul li.pinkmedal:hover > div ul.shiplist,
+#mapdata ul li.rubymedal:hover > div ul.shiplist,
 #mapdata ul li.bluemedal:hover > div ul.shiplist {
 	left : 60px;
 }
-#map ul li.pinkmedal div ul.shiplist li,
+#map ul li.rubymedal div ul.shiplist li,
 #map ul li.bluemedal div ul.shiplist li,
 #map ul li.goldmedal div ul.shiplist li{
 	text-align : left;
@@ -238,7 +239,7 @@ h4.ul_title {
 	padding : 0px 5px 0 5px !important;
 	border-width : 1px;
 }
-#map ul li.pinkmedal div ul.shiplist li {
+#map ul li.rubymedal div ul.shiplist li {
 	border-color : #FBA6B0 #DF011C #DF0125 #DF011C;
 	-moz-box-shadow : inset 0px 0px 4px #FB3939, 0px 0px 4px #FB3939, 0px 2px 4px #FB3939;
 	-webkit-box-shadow : inset 0px 0px 4px #FB3939, 0px 0px 4px #FB3939, 0px 2px 4px #FB3939;
@@ -259,7 +260,7 @@ h4.ul_title {
 	box-shadow : inset 0px 0px 4px goldenrod, 0px 0px 4px goldenrod, 0px 2px 4px goldenrod;
 	background-color : #FCF5C2;
 }
-#map ul li.pinkmedal div ul.shiplist li:hover,
+#map ul li.rubymedal div ul.shiplist li:hover,
 #map ul li.bluemedal div ul.shiplist li:hover,
 #map ul li.goldmedal div ul.shiplist li:hover {
 	background-color : #ECFFA2;
