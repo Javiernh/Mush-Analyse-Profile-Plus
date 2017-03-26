@@ -15,6 +15,9 @@
 }
 
 /* Box */
+#map .boxContent  {
+	padding: 10px;
+}
 .human {
 	background-position: -2px -2018px !important;
 }
