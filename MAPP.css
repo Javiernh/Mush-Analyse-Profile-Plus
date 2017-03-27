@@ -28,12 +28,16 @@
 	margin-left: calc( 50% - 13px );
 }
 
+#map .yesnoblock {
+	cursor: pointer;
+}
+
 #map .yesnoblock > .mask {
 	margin-left: -48px;
 }
 
 #map .yesnoblock > .opt_act {
-    margin-left: -26px !important;
+	margin-left: -26px;
 }
 
 .human {
