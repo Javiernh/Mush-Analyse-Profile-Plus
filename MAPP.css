@@ -18,6 +18,24 @@
 #map .boxContent  {
 	padding: 10px;
 }
+
+#map .confLine {
+	width: 49px;
+	display: inline-block;
+}
+
+#map .confLine > img {
+	margin-left: calc( 50% - 13px );
+}
+
+#map .yesnoblock > .mask {
+	margin-left: -48px;
+}
+
+#map .yesnoblock > .opt_act {
+    margin-left: -26px !important;
+}
+
 .human {
 	background-position: -2px -2018px !important;
 }
@@ -55,7 +73,6 @@
 }
 #map ul {
 	text-align: center;
-	margin: 10px 0px 5px 0px;
 }
 #map ul li {
 	display: inline-block;
@@ -261,12 +278,6 @@ h4.ul_title {
 	-moz-box-shadow: inset 0px 0px 4px #56FF35, 0px 0px 4px #56FF35, 0px 2px 4px #56FF35;
 	-webkit-box-shadow: inset 0px 0px 4px #56FF35, 0px 0px 4px #56FF35, 0px 2px 4px #56FF35;
 	box-shadow: inset 0px 0px 4px #56FF35, 0px 0px 4px #56FF35, 0px 2px 4px #56FF35;
-}
-.mask {
-	margin-left: -32px;
-}
-.opt_act {
-	margin-left: -18px !important;
 }
 div.links {
 	height: 0px;
