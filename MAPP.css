@@ -82,6 +82,7 @@
 	-webkit-box-shadow: inset 0px 0px 4px #3965fb, 0px 0px 4px #3965fb, 0px 2px 4px #3965fb;
 	box-shadow: inset 0px 0px 4px #3965fb, 0px 0px 4px #3965fb, 0px 2px 4px #3965fb;
 	background-color: #c2f3fc;
+	height: 95px;
 }
 #map .bluemedal .bodychar {
 	margin-left: calc( 50% - 14px );
