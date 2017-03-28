@@ -1,14 +1,12 @@
 /* Tab */
 #maptab {
 	text-transform: none !important;
-/*	background-image: url("/img/design/gold_tab.png");*/
 }
 
 /* Structure */
 #map {
 	margin: 1%;
 	width: 98%;
-/*	min-height: 1130px;/**/
 }
 #map .column2 {
 	margin-left: 260px;
@@ -18,37 +16,111 @@
 #map .boxContent  {
 	padding: 10px;
 }
-
 #map .confLine {
 	width: 49px;
 	display: inline-block;
 }
-
 #map .confLine > img {
 	margin-left: calc( 50% - 13px );
 }
-
 #map .yesnoblock {
 	cursor: pointer;
 }
-
 #map .yesnoblock > .mask {
 	margin-left: -48px;
 }
-
 #map .yesnoblock > .opt_act {
 	margin-left: -26px;
 }
 
+/* Medals */
+#map ul {
+	text-align: center;
+}
+#map img {
+	vertical-align: middle;
+	height: 26px;
+}
+#map [class$="medal"] {
+	border-width: 2px;
+	display: inline-block;
+	zoom: 1;
+	border-style: solid;
+	border-radius: 3px;
+	-moz-border-radius: 3px;
+	-webkit-border-radius: 3px;
+	color: #090a61;
+	font-size: 100%;
+	width: 90px;
+	padding: 6px 9px 6px 9px;
+	margin: 4px 4px 4px 4px;
+	font-variant: small-caps;
+	vertical-align: bottom;
+}
+#map [class$="medal"]:hover {
+	background-color: #ECFFA2;
+	border-color: #BCFFA2 #40E000 #49E000 #40E000;
+	-moz-box-shadow: inset 0px 0px 4px #56FF35, 0px 0px 4px #56FF35, 0px 2px 4px #56FF35;
+	-webkit-box-shadow: inset 0px 0px 4px #56FF35, 0px 0px 4px #56FF35, 0px 2px 4px #56FF35;
+	box-shadow: inset 0px 0px 4px #56FF35, 0px 0px 4px #56FF35, 0px 2px 4px #56FF35;
+}
+
+/* Gold Medal */
+#map .goldmedal {
+	border-color: yellow orange orange orange;
+	-moz-box-shadow: inset 0px 0px 4px goldenrod, 0px 0px 4px goldenrod, 0px 2px 4px goldenrod;
+	-webkit-box-shadow: inset 0px 0px 4px goldenrod, 0px 0px 4px goldenrod, 0px 2px 4px goldenrod;
+	box-shadow: inset 0px 0px 4px goldenrod, 0px 0px 4px goldenrod, 0px 2px 4px goldenrod;
+	background-color: #FCF5C2;
+	padding: 9px 9px 9px 9px !important;
+}
+
+/* Blue Medal */
+#map .bluemedal {
+	border-color: #A6EEFB #01c3df #01c3df #01c3df;
+	-moz-box-shadow: inset 0px 0px 4px #3965fb, 0px 0px 4px #3965fb, 0px 2px 4px #3965fb;
+	-webkit-box-shadow: inset 0px 0px 4px #3965fb, 0px 0px 4px #3965fb, 0px 2px 4px #3965fb;
+	box-shadow: inset 0px 0px 4px #3965fb, 0px 0px 4px #3965fb, 0px 2px 4px #3965fb;
+	background-color: #c2f3fc;
+}
+#map .bluemedal .bodychar {
+	margin-left: calc( 50% - 14px );
+	position: relative;
+	opacity: 1;
+	width: 28px;
+	height: 44px;
+	background: url('http://mush.twinoid.es/img/art/char.png') no-repeat;
+	/*z-index: 4;*/
+}
+#map .bluemedal > div:nth-child(2) {
+	position: relative;
+	width: 90px;
+	top: -28px;
+	/*z-index: 4;*/
+}
+#map .bluemedal > div:nth-child(3) {
+	position: relative;
+	top: -17px;
+}
+
+/* Ruby Medal */
+#map .rubymedal {
+	border-color: #FBA6B0 #DF011C #DF0125 #DF011C;
+	-moz-box-shadow: inset 0px 0px 4px #FB3939, 0px 0px 4px #FB3939, 0px 2px 4px #FB3939;
+	-webkit-box-shadow: inset 0px 0px 4px #FB3939, 0px 0px 4px #FB3939, 0px 2px 4px #FB3939;
+	box-shadow: inset 0px 0px 4px #FB3939, 0px 0px 4px #FB3939, 0px 2px 4px #FB3939;
+	background-color: #FCC2C9;
+	height: 92px;
+}
+
+
+
+/* Anything */
 .human {
 	background-position: -2px -2018px !important;
 }
 #map td {
 	vertical-align: top;
-}
-#map img {
-	vertical-align: middle;
-	height: 26px;
 }
 #map .column {
 	position: absolute;
@@ -75,52 +147,10 @@
 #map .awards {
 	margin-top: 20px;
 }
-#map ul {
-	text-align: center;
-}
-#map ul li {
-	display: inline-block;
-	zoom: 1;
-	border-style: solid;
-	border-radius: 3px;
-	-moz-border-radius: 3px;
-	-webkit-border-radius: 3px;
-	color: #090a61;
-	font-size: 100%;
-	width: 80px;
-	padding: 6px 9px 6px 9px;
-	margin: 4px 4px 4px 4px;
-	font-variant: small-caps;
-	vertical-align: bottom;
-}
-h4.ul_title {
-	margin-bottom: 4px;
-	margin-top: 2px;
-}
 .nshipinput	{ width: 35px; height: 16px; padding-right: 3px; text-align: right; background: transparent; cursor: pointer;
 			border: 1px inset; border-color: #4e5162; font-size: 15px; color: #FEB500; }
 .nshipinput:hover { border: 1px inset; border-color: white; color: white; }
 .nshipinput:focus { background-color: #FE7D00; border: 1px inset; border-color: #FEB500; color: white; }
-.bodychar {
-	position: relative;
-	opacity: 1;
-	width: 28px;
-	height: 44px;
-	background: url('http://mush.twinoid.es/img/art/char.png') no-repeat;
-	z-index: 4;
-}
-#mapdata > ul, ul.tabletitle {
-	padding: 0px 0px 15px 0px;
-}
-#map ul li.goldmedal {
-	border-width: 1px;
-	border-color: yellow orange orange orange;
-	-moz-box-shadow: inset 0px 0px 4px goldenrod, 0px 0px 4px goldenrod, 0px 2px 4px goldenrod;
-	-webkit-box-shadow: inset 0px 0px 4px goldenrod, 0px 0px 4px goldenrod, 0px 2px 4px goldenrod;
-	box-shadow: inset 0px 0px 4px goldenrod, 0px 0px 4px goldenrod, 0px 2px 4px goldenrod;
-	background-color: #FCF5C2;
-	padding: 9px 9px 9px 9px !important;
-}
 #map ul li.rubymedal > div,
 #map ul li.bluemedal > div {
 	margin: 0 26px;
@@ -132,35 +162,9 @@ h4.ul_title {
 	left: -26px;
 	top: 16px;
 }
-#map ul li.bluemedal {
-	border-width: 1px;
-	border-color: #A6EEFB #01c3df #01c3df #01c3df;
-	-moz-box-shadow: inset 0px 0px 4px #3965fb, 0px 0px 4px #3965fb, 0px 2px 4px #3965fb;
-	-webkit-box-shadow: inset 0px 0px 4px #3965fb, 0px 0px 4px #3965fb, 0px 2px 4px #3965fb;
-	box-shadow: inset 0px 0px 4px #3965fb, 0px 0px 4px #3965fb, 0px 2px 4px #3965fb;
-	background-color: #c2f3fc;
-}
 #map #dies-stats > li {
 	height: 92px;
 	vertical-align: bottom;
-}
-#map ul li.rubymedal {
-	border-width: 1px;
-	border-color: #FBA6B0 #DF011C #DF0125 #DF011C;
-	-moz-box-shadow: inset 0px 0px 4px #FB3939, 0px 0px 4px #FB3939, 0px 2px 4px #FB3939;
-	-webkit-box-shadow: inset 0px 0px 4px #FB3939, 0px 0px 4px #FB3939, 0px 2px 4px #FB3939;
-	box-shadow: inset 0px 0px 4px #FB3939, 0px 0px 4px #FB3939, 0px 2px 4px #FB3939;
-	background-color: #FCC2C9;
-	height: 92px; /********************************************************************************************/
-}
-#mapdata ul li.rubymedal:hover,
-#mapdata ul li.bluemedal:hover,
-#mapdata ul li.goldmedal:hover {
-	background-color: #ECFFA2;
-	border-color: #BCFFA2 #40E000 #49E000 #40E000;
-	-moz-box-shadow: inset 0px 0px 4px #56FF35, 0px 0px 4px #56FF35, 0px 2px 4px #56FF35;
-	-webkit-box-shadow: inset 0px 0px 4px #56FF35, 0px 0px 4px #56FF35, 0px 2px 4px #56FF35;
-	box-shadow: inset 0px 0px 4px #56FF35, 0px 0px 4px #56FF35, 0px 2px 4px #56FF35;
 }
 .li_title {
 	color: #fff;
