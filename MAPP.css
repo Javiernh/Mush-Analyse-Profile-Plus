@@ -151,10 +151,6 @@
 			border: 1px inset; border-color: #4e5162; font-size: 15px; color: #FEB500; }
 .nshipinput:hover { border: 1px inset; border-color: white; color: white; }
 .nshipinput:focus { background-color: #FE7D00; border: 1px inset; border-color: #FEB500; color: white; }
-#map ul li.rubymedal > div,
-#map ul li.bluemedal > div {
-	margin: 0 26px;
-}
 #map ul li.rubymedal > div > div,
 #map ul li.bluemedal > div > div {
 	width: 80px;
