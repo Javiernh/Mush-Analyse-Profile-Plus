@@ -3,14 +3,19 @@
 	"resources": {
 		"es": {
 			"translation": {
-				"file": "Ficha",
+				"profile": "Ficha",
 				"setfiltr": "Ajustes y filtros",
 				"shipstat": "Estadísticas de viajes",
+				"shipstat_desc": "Muestra/oculta las estadísticas de las naves del perfil.",
 				"charstat": "Estadísticas de personajes",
+				"charstat_desc": "Muestra/oculta las estadísticas de los personajes usados.",
 				"deadstat": "Estadísticas de muertes",
+				"deadstat_desc": "Muestra/oculta las estadísticas de las muertes sufridas.",
+				"slider": "Viajes",
+				"slider_desc": "Selecciona la cantidad de naves a analizar. Puedes eliminar del análisis tanto las naves más recientes como las más antiguas.<br/><em>Haz click en cualquiera de los extremos de la barra y arrastra hasta la cantidad deseada.</em>",
 				"days": "días",
 				"explo": "exploraciones",
-				"rsrch": "investig.",
+				"rsrch": "investigaciones",
 				"proj": "proyectos",
 				"scann": "planetas",
 				"glory": "gloria",
