@@ -1,3 +1,7 @@
+.tid_bubble {
+	max-width: 238px !important;
+	max-height: 65px !important;
+}
 /* Tab */
 #maptab {
 	text-transform: none !important;
@@ -17,7 +21,7 @@
 #map .confLine {
 	width: 49px;
 	display: inline-block;
-	margin-left: calc( ( 100% - 49px * 4 ) / 5 );
+	margin-left: calc( ( 100% - 49px * 5 ) / 6 );
 }
 #map .confLine > img {
 	margin-left: calc( 50% - 13px );
@@ -35,9 +39,14 @@
 #map ul {
 	text-align: center;
 }
-#map img {
+#map .column2  img {
 	vertical-align: middle;
 	height: 26px;
+}
+#map [class$="medal"] p > img {
+	position: relative;
+	top: -3px;
+	height: 15px;
 }
 #map [class$="medal"] {
 	border-width: 2px;
@@ -78,7 +87,7 @@
 	-webkit-box-shadow: inset 0px 0px 4px #3965fb, 0px 0px 4px #3965fb, 0px 2px 4px #3965fb;
 	box-shadow: inset 0px 0px 4px #3965fb, 0px 0px 4px #3965fb, 0px 2px 4px #3965fb;
 	background-color: #c2f3fc;
-	height: 95px;
+	/*height: 95px;*/
 }
 #map .bluemedal .bodychar {
 	margin-left: calc( 50% - 14px );
@@ -91,13 +100,14 @@
 }
 #map .bluemedal > div:nth-child(2) {
 	position: relative;
-	width: 90px;
+	height: 0px;
+	/*width: 90px;*/
 	top: -28px;
 	/*z-index: 4;*/
 }
 #map .bluemedal > div:nth-child(3) {
 	position: relative;
-	top: -17px;
+	/*top: -17px;*/
 }
 /* Ruby Medal */
 #map .rubymedal {
@@ -106,7 +116,7 @@
 	-webkit-box-shadow: inset 0px 0px 4px #FB3939, 0px 0px 4px #FB3939, 0px 2px 4px #FB3939;
 	box-shadow: inset 0px 0px 4px #FB3939, 0px 0px 4px #FB3939, 0px 2px 4px #FB3939;
 	background-color: #FCC2C9;
-	height: 92px;
+	min-height: 92px;
 }
 
 /* Anything */
@@ -124,10 +134,6 @@
 }
 #map .empty_tid {
 	width: 260px;
-}
-#map .tid_bubble {
-	max-width: 238px;
-	max-height: 65px;
 }
 #map .tid_bgRight {
 	height: 199px;
@@ -151,10 +157,6 @@
 	position: relative;
 	left: -26px;
 	top: 16px;
-}
-#map #dies-stats > li {
-	height: 92px;
-	vertical-align: bottom;
 }
 .li_title {
 	color: #fff;
@@ -308,8 +310,8 @@ div.links > ul::-webkit-scrollbar-track {
 }
 #map .ui-slider-range {
 	background: transparent url("/img/design/xp_completion_fill.png") no-repeat center top;
-/*	height: 17px !important;
-*/	margin-left: 4px;
+	/*height: 17px !important;*/
+	margin-left: 4px;
 	font-size: .8em;
 	padding-top: .3em;
 }
