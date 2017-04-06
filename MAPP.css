@@ -2,6 +2,9 @@
 	max-width: 238px !important;
 	max-height: 65px !important;
 }
+#container_bg {
+	min-height: 150px;
+}
 /* Tab */
 #maptab {
 	text-transform: none !important;
