@@ -1,35 +1,35 @@
 {
-	"lng": "fr",
+	"lng": "en",
 	"resources": {
-		"fr": {
+		"en": {
 			"translation": {
-				"profile": "Fiche",
-				"setfiltr": "Paramètres et filtres",
+				"profile": "File",
+				"setfiltr": "Settings and filters",
 				"casting": "Casting",
 				"casting_desc": "",
-				"shipstat": "Statistiques de voyages",
+				"shipstat": "Voyages statistics",
 				"shipstat_desc": "",
-				"charstat": "Statistiques de personnages",
+				"charstat": "Characters statistics",
 				"charstat_desc": "",
-				"deadstat": "Statistiques de morts",
+				"deadstat": "Deaths statistics",
 				"deadstat_desc": "",
 				"slider": "Voyages",
-				"slider_desc": "Selecciona la cantidad de naves a analizar. Puedes eliminar del análisis tanto las naves más recientes como las más antiguas.<br/><em>Click on one of the side of the bar and drag to the desired amount.</em>",
-				"days": "jours.cycles",
+				"slider_desc": "Select the number of ships to analyze. You can remove from the analysis the most recent and the oldest ships.<br/><em>Haz click en cualquiera de los extremos de la barra y arrastra hasta la cantidad deseada.</em>",
+				"days": "days.cycles",
 				"explo": "explorations",
-				"rsrch": "recherches",
-				"proj": "projets",
-				"scann": "planètes",
-				"glory": "triomphe",
+				"rsrch": "researches",
+				"proj": "projects",
+				"scann": "planets ",
+				"glory": "glory",
 				"HD": "hunters",
 				"SG": "spores",
-				"NM": "nombre de mush",
-				"RB": "bases rebelles",
-				"average": "moy : ",
-				"cycles": "cycles : ",
+				"NM": "number of mush",
+				"RB": "rebel bases",
+				"average": "avg: ",
+				"cycles": "cycles: ",
 				"hcycles": "cycles <img src='/img/icons/ui/p_alive.png'> : ",
 				"mcycles": "cycles <img src='/img/icons/ui/p_mush.png'> : ",
-				"voyages": "voyages : "
+				"voyages": "voyages: "
 			}
 		}
 	}
