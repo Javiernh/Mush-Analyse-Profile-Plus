@@ -3,20 +3,33 @@
 	"resources": {
 		"fr": {
 			"translation": {
-				"file": "Fiche",
+				"profile": "Fiche",
 				"setfiltr": "Paramètres et filtres",
+				"casting": "Casting",
+				"casting_desc": "",
 				"shipstat": "Statistiques de voyages",
+				"shipstat_desc": "",
 				"charstat": "Statistiques de personnages",
+				"charstat_desc": "",
 				"deadstat": "Statistiques de morts",
-				"days": "jours",
+				"deadstat_desc": "",
+				"slider": "Voyages",
+				"slider_desc": "Select the number of ships to analyze. You can remove from the analysis the most recent and the oldest ships.<br/><em>Click on one of the side of the bar and drag to the desired amount.</em>",
+				"days": "jours.cycles",
 				"explo": "explorations",
 				"rsrch": "recherches",
 				"proj": "projets",
 				"scann": "planètes",
 				"glory": "triomphe",
-				"average": "moy",
-				"cycles": "cycles: ",
-				"voyages": "voyages: "
+				"HD": "hunters",
+				"SG": "spores",
+				"NM": "nombre de mush",
+				"RB": "bases rebelles",
+				"average": "moy : ",
+				"cycles": "cycles : ",
+				"hcycles": "cycles <img src='/img/icons/ui/p_alive.png'> : ",
+				"mcycles": "cycles <img src='/img/icons/ui/p_mush.png'> : ",
+				"voyages": "voyages : "
 			}
 		}
 	}
