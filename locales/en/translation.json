@@ -1,22 +1,35 @@
 {
-	"lng": "en",
+	"lng": "fr",
 	"resources": {
-		"en": {
+		"fr": {
 			"translation": {
-				"file": "File",
-				"setfiltr": "Settings and filters",
-				"shipstat": "Voyages statistics",
-				"charstat": "Characters statistics",
-				"deadstat": "Deaths statistics",
-				"days": "days",
+				"profile": "Fiche",
+				"setfiltr": "Paramètres et filtres",
+				"casting": "Casting",
+				"casting_desc": "",
+				"shipstat": "Statistiques de voyages",
+				"shipstat_desc": "",
+				"charstat": "Statistiques de personnages",
+				"charstat_desc": "",
+				"deadstat": "Statistiques de morts",
+				"deadstat_desc": "",
+				"slider": "Voyages",
+				"slider_desc": "Selecciona la cantidad de naves a analizar. Puedes eliminar del análisis tanto las naves más recientes como las más antiguas.<br/><em>Click on one of the side of the bar and drag to the desired amount.</em>",
+				"days": "jours.cycles",
 				"explo": "explorations",
-				"rsrch": "research",
-				"proj": "projects",
-				"scann": "planets",
-				"glory": "glory",
-				"average": "avg",
-				"cycles": "cycles: ",
-				"voyages": "voyages: "
+				"rsrch": "recherches",
+				"proj": "projets",
+				"scann": "planètes",
+				"glory": "triomphe",
+				"HD": "hunters",
+				"SG": "spores",
+				"NM": "nombre de mush",
+				"RB": "bases rebelles",
+				"average": "moy : ",
+				"cycles": "cycles : ",
+				"hcycles": "cycles <img src='/img/icons/ui/p_alive.png'> : ",
+				"mcycles": "cycles <img src='/img/icons/ui/p_mush.png'> : ",
+				"voyages": "voyages : "
 			}
 		}
 	}
