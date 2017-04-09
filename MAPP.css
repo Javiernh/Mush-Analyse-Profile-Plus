@@ -61,8 +61,8 @@
 	-webkit-border-radius: 3px;
 	color: #090a61;
 	font-size: 100%;
-	width: 90px;
-	padding: 6px 9px 6px 9px;
+	width: 95px;
+	padding: 6px;
 	margin: 4px 4px 4px 4px;
 	font-variant: small-caps;
 	vertical-align: bottom;
@@ -81,7 +81,7 @@
 	-webkit-box-shadow: inset 0px 0px 4px goldenrod, 0px 0px 4px goldenrod, 0px 2px 4px goldenrod;
 	box-shadow: inset 0px 0px 4px goldenrod, 0px 0px 4px goldenrod, 0px 2px 4px goldenrod;
 	background-color: #FCF5C2;
-	padding: 9px 9px 9px 9px !important;
+	padding: 8px 6px !important;
 }
 /* Blue Medal */
 #map .bluemedal {
@@ -120,6 +120,29 @@
 	box-shadow: inset 0px 0px 4px #FB3939, 0px 0px 4px #FB3939, 0px 2px 4px #FB3939;
 	background-color: #FCC2C9;
 	min-height: 92px;
+}
+/* Death Medal */
+#map .deathmedal {
+	border-color: #BDBDBD #3E3E3E #434343 #3E3E3E;
+	-moz-box-shadow: inset 0px 0px 4px #606060, 0px 0px 4px #606060, 0px 2px 4px #606060;
+	-webkit-box-shadow: inset 0px 0px 4px #606060, 0px 0px 4px #606060, 0px 2px 4px #606060;
+	box-shadow: inset 0px 0px 4px #606060, 0px 0px 4px #606060, 0px 2px 4px #606060;
+	background-color: #D2D2D2;
+	min-height: 92px;
+}
+#map .stroke {
+	color: white;
+	text-shadow:
+		-1px -1px 5px black,
+		-1px 0px 5px black,
+		-1px 1px 5px black,
+		0px 1px 5px black,
+		0px -1px 5px black,
+		1px 1px 5px black,
+		1px 0px 5px black,
+		1px -1px 5px black;
+	font-weight: 600;
+	font-size: 21px;
 }
 
 /* Anything */
