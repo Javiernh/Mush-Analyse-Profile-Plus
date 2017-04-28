@@ -21,6 +21,19 @@
 #map .boxContent  {
 	padding: 10px;
 }
+#map input {
+	height: 22px;
+	padding: 0px 4px;
+	/* text-align: right; */
+	background: transparent;
+	/* cursor: pointer; */
+	border: 1px inset;
+	border-color: #4e5162;
+	font-size: 15px;
+	color: #FEB500;
+	width: 50px;
+	margin-top: 0px;
+}
 #map .confLine {
 	width: 49px;
 	display: inline-block;
