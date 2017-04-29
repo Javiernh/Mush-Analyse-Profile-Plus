@@ -24,7 +24,7 @@
 #map input {
 	height: 22px;
 	padding: 0px 4px;
-	/* text-align: right; */
+	/* text-align: center; */
 	background: transparent;
 	/* cursor: pointer; */
 	border: 1px inset;
@@ -341,33 +341,34 @@ div.links > ul::-webkit-scrollbar-track {
 	color: #fff;
 }
 #map .map-slider {
-	display: inline-block;
-	width: 90%;
+	display: inline-block !important;
+	width: 90% !important;
 	height: 17px;
 	margin-top: 3px;
-	margin-left: 10px;
+	margin-left: 14px !important;
 }
 #map .ui-slider-range {
 	background: transparent url("/img/design/xp_completion_fill.png") no-repeat center top;
 	/*height: 17px !important;*/
-	margin-left: 4px;
+	margin-left: 0px;
 	font-size: .8em;
 	padding-top: .3em;
 }
 #map [class^=map-handle-]{
 	color: white;
-	width: 25px !important;
+	width: 0px !important;
 	border: none !important;
-	padding-top: 1.9em;
+	height: 17px;
+	margin-top: 0.3em;
 	background: none !important;
 }
 #map .map-handle-left{
-	margin-left: -20px !important;
-	text-align: right;
+	margin-left: 0px !important;
+	/*text-align: right;*/
 }
 #map .map-handle-right{
 	margin-left: 0px !important;
-	text-align: left;
+	/*text-align: left;*/
 }
 #map .compframe {
 	width: 290px;
