@@ -37,7 +37,7 @@
 #map .confLine {
 	width: 49px;
 	display: inline-block;
-	margin-left: calc( ( 100% - 49px * 5 ) / 6 );
+	margin-left: calc((100% - 49px * 7) / 8);
 }
 #map .confLine > img {
 	margin-left: calc( 50% - 13px );
@@ -350,7 +350,7 @@ div.links > ul::-webkit-scrollbar-track {
 #map .ui-slider-range {
 	background: transparent url("/img/design/xp_completion_fill.png") no-repeat center top;
 	/*height: 17px !important;*/
-	margin-left: 0px;
+	/*margin-left: 0px;*/
 	font-size: .8em;
 	padding-top: .3em;
 }
