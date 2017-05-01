@@ -35,7 +35,9 @@
 				"cycles": "ciclos: ",
 				"hcycles": "ciclos <img src='/img/icons/ui/p_alive.png'> : ",
 				"mcycles": "ciclos <img src='/img/icons/ui/p_mush.png'> : ",
-				"voyages": "viajes: "
+				"voyages": "viajes: ",
+				"analyze": "Analizar",
+				"analyze_desc": "Comienza el análisis del rango de naves escogido."
 			}
 		}
 	}
