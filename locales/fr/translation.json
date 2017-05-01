@@ -35,7 +35,9 @@
 				"cycles": "cycles : ",
 				"hcycles": "cycles <img src='/img/icons/ui/p_alive.png'> : ",
 				"mcycles": "cycles <img src='/img/icons/ui/p_mush.png'> : ",
-				"voyages": "voyages : "
+				"voyages": "voyages : ",
+				"analyze": "Analyser",
+				"analyze_desc": ""
 			}
 		}
 	}
