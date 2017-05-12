@@ -23,30 +23,22 @@
 ( function() {
     'use strict';
 
-	var wait;
-
 	String.prototype.capitalize = function() {
 		return this.replace( "_", " " ).replace( /(?:^|\s)\S/g, function( a ) {
 			return a.toUpperCase();
 		});
 	};
 
-	Function.prototype.curry = function() {
-		var toArray = function( obj ) {
-			return Array.prototype.slice.call( obj );
-		};
-
-		if ( arguments.length < 1 ) {
-			return this;
-		}
-
-		var __method = this;
-		var args = toArray( arguments );
-		return function() {
-			return __method.apply( this, args.concat( toArray( arguments )));
-		};
+	$.prototype.addtip = function() {
+		// console.debug( "Entering 'addtip' function." );
+		var args = arguments[ 0 ];
+		var html = "'<div class=\\'tiptop\\'><div class=\\'tipbottom\\'><div class=\\'tipbg\\'><div class=\\'tipcontent\\'><h1>" +
+					( args.tiptitle ? args.tiptitle : "" ) + "</h1>" + ( args.tipdesc ? args.tipdesc : "" ) +
+					"</div></div></div></div>'";
+		return this.attr( "onmouseout", "Main.hideTip();" ).attr( "onmouseover", "Main.showTip(this, " + html + ")" );
 	};
 
+	var wait;
 	var MAP = {
 		title: GM_info.script.name.match( /\b(\w)/g ).join( "" ) + " v" + GM_info.script.version,
 		URL: "http://" + document.domain,
@@ -160,7 +152,7 @@
 			}
 		},
 
-		addtip: function() {
+/* 		addtip: function() {
 			// console.debug( "Entering 'addtip' function." );
 			var args = arguments[ 0 ];
 			var html = "'<div class=\\'tiptop\\'><div class=\\'tipbottom\\'><div class=\\'tipbg\\'><div class=\\'tipcontent\\'><h1>" +
@@ -168,7 +160,7 @@
 						"</div></div></div></div>'";
 			this.attr( "onmouseout", "Main.hideTip();" ).attr( "onmouseover", "Main.showTip(this, " + html + ")" );
 		},
-
+ */
 		slider: function() {
 			// console.debug( "Entering 'slider' function." );
 			var args = arguments[ 0 ], __method = this,
@@ -180,10 +172,6 @@
 			/* Create a range slider to select the ships to be analyzed */
 			var div = $( "<div>" ).addClass( args.slideClass )//.css( { "display": "inline-block", "width": "90%" } )
 				.appendTo( compframe );
-			__method.addtip.call( div, {
-				tiptitle: args.tiptitle,
-				tipdesc: args.tipdesc
-			});
 			$( "<div>" ).addClass( "map-handle-left ui-slider-handle" ).appendTo( div );
 			$( "<div>" ).addClass( "map-handle-right ui-slider-handle" ).appendTo( div );
 			var handleL = $( ".map-handle-left" ),
@@ -212,6 +200,7 @@
 			// $( ".map-handle-right" ).val( div.slider( "values", 1 ));
 			amountL.val( div.slider( "values", 0 ));
 			amountR.val( div.slider( "values", 1 ));
+			return div;
 		},
 
 		button: function() {
@@ -228,10 +217,6 @@
 				buta.attr( "target", "_blank" );
 			}
 	*/
-			if ( args[ 0 ].tiptitle || args[ 0 ].tipdesc ) {
-				__method.addtip.call( buta, { tiptitle: args[ 0 ].tiptitle, tipdesc: args[ 0 ].tipdesc } );
-			}
-
 			return but;
 		},
 
@@ -244,7 +229,6 @@
 			var div = $( "<div>" )
 					.addClass( "confLine" )
 					.appendTo( args.addTo );
-			__method.addtip.call( div, {tiptitle: args.tiptitle, tipdesc: args.tipdesc } );
 			$( "<img>" )
 				.attr( "src", args.img )
 				.appendTo( div );
@@ -253,10 +237,8 @@
 					.on( "click", function() {
 						$( this ).children( "img:last" ).toggleClass( "opt_act" );
 						param = __method.data.parameters[ args.parameter ] = $( this ).children( "img:last" ).is( ".opt_act" );
-						if ( args.target ) args.target.toggle( "blind", 500 );
-						// TODO: casting/random & mush/human filter
-						// else {  }
 					})
+					.on( "click", args.onclick ? args.onclick : function() { return false; })
 					.appendTo( div );
 			$( "<img>" )
 				.attr( "src", "/img/design/switch_bg.gif" )
@@ -266,6 +248,7 @@
 				.attr( "src", "/img/design/switch.png" )
 				.addClass( "mask inl-blck" )
 				.appendTo( yesnoblock );
+			return div;
 		},
 
 		analysis: function( cdTripEntry, shipID ) {
@@ -276,7 +259,7 @@
 			/* Load voyages from local data */
 			__voyages[ shipID ] = JSON.parse( localStorage.getItem( "MAP_" + shipID ) );
 
-			// ( __param.human === true ) ? ( __voyages[ shipID ][ heroID ].MC > 0 ) ? return false : 
+			// TODO: Arreglar el conteo de análisis en caso de que entre en estas condiciones.
 			if ( __param.human === false ) {
 				if ( __voyages[ shipID ][ heroID ].MC === 0 ) return false;
 			}
@@ -371,12 +354,15 @@
 			// console.groupEnd();
 
 			++__analysis.Qty;
-			// if ( __voyages.Qty == __analysis.Qty + __analysis.skip ) {
-				// clearTimeout( wait );
-				// $( "#start img" ).attr( "src", "/img/icons/ui/pa_comp.png" );
-				// __method.display.call( __method );
-				// __analysis.Qty = 0;
-			// }
+			var check = __analysis.Qty + __analysis.skip;
+			console.warn( "Analysis: " + check );
+			if ( __voyages.Qty == check ) {
+				clearTimeout( wait );
+				$( "#start img" ).attr( "src", "/img/icons/ui/pa_comp.png" );
+				__method.display.call( __method );
+				__analysis.Qty = 0;
+				__analysis.skip = 0;
+			}
 		},
 
 		setup: function( cdTripEntry, index ) {
@@ -596,102 +582,145 @@
 				visibility: "hide"
 			});
 
-			/* Creating filters and options */
+			/* Creating trip filter */
 			__method.slider({
 				addTo: setfilt,
 				slideClass: "map-slider",
 				max: cdTripEntry.length,
+			}).addtip({
 				tiptitle: i18next.t( "slider" ),
 				tipdesc: i18next.t( "slider_desc" )
 			});
-			__method.confLine({
+			/* Creating human filter */
+			var ch = __method.confLine({
 				addTo: setfilt,
 				parameter: "human",
-				tiptitle: i18next.t( "human" ),
-				tipdesc: i18next.t( "human_desc" ),
 				// img: "/img/icons/ui/whos_ugly.png",
 				img: "/img/icons/skills/optimistic.png",
+				onclick: function() {
+					var a = $( this ).children( "img:last" ), b = cm.children( ".yesnoblock" ).children( "img:last" );
+					if ( !a.is( ".opt_act" ) && !b.is( ".opt_act" ) ) {
+						b.toggleClass( "opt_act" );
+						__method.data.parameters.mush = b.is( ".opt_act" );
+					}
+				}
+			}).addtip({
+				tiptitle: i18next.t( "human" ),
+				tipdesc: i18next.t( "human_desc" ),
 			});
-			__method.confLine({
+			/* Creating mush filter */
+			var cm = __method.confLine({
 				addTo: setfilt,
 				parameter: "mush",
-				tiptitle: i18next.t( "mush" ),
-				tipdesc: i18next.t( "mush_desc" ),
 				// img: "/img/icons/ui/no_mush_bar.png",
 				img: "/img/icons/skills/anonymous.png",
+				onclick: function() {
+					var a = $( this ).children( "img:last" ), b = ch.children( ".yesnoblock" ).children( "img:last" );
+					if ( !a.is( ".opt_act" ) && !b.is( ".opt_act" ) ) {
+						b.toggleClass( "opt_act" );
+						__method.data.parameters.human = b.is( ".opt_act" );
+					}
+				}
+			}).addtip({
+				tiptitle: i18next.t( "mush" ),
+				tipdesc: i18next.t( "mush_desc" ),
 			});
-			__method.confLine({
+			/* Creating casting filter */
+			var cc = __method.confLine({
 				addTo: setfilt,
 				parameter: "casting",
-				tiptitle: i18next.t( "casting" ),
-				tipdesc: i18next.t( "casting_desc" ),
 				// img: "/img/icons/ui/ticket_any.png",
 				img: "/img/icons/ui/ticket.png",
+				onclick: function() {
+					var a = $( this ).children( "img:last" ), b = cr.children( ".yesnoblock" ).children( "img:last" );
+					if ( !a.is( ".opt_act" ) && !b.is( ".opt_act" ) ) {
+						b.toggleClass( "opt_act" );
+						__method.data.parameters.random = b.is( ".opt_act" );
+					}
+				}
+			}).addtip({
+				tiptitle: i18next.t( "casting" ),
+				tipdesc: i18next.t( "casting_desc" ),
 			});
-			__method.confLine({
+			/* Creating random filter */
+			var cr = __method.confLine({
 				addTo: setfilt,
 				parameter: "random",
+				img: "/img/icons/ui/freeticket.png",
+				onclick: function() {
+					var a = $( this ).children( "img:last" ), b = cc.children( ".yesnoblock" ).children( "img:last" );
+					if ( !a.is( ".opt_act" ) && !b.is( ".opt_act" ) ) {
+						b.toggleClass( "opt_act" );
+						__method.data.parameters.casting = b.is( ".opt_act" );
+					}
+				}
+			}).addtip({
 				tiptitle: i18next.t( "random" ),
 				tipdesc: i18next.t( "random_desc" ),
-				img: "/img/icons/ui/freeticket.png",
 			});
+			/* Creating ship stat option */
 			__method.confLine({
 				addTo: setfilt,
 				parameter: "shipstat",
+				img: "/img/icons/ui/" + __data.keys.ship + ".png",
+				onclick: function() { __sels.ships.closest( ".bgtablesummar" ).toggle( "blind", 500 ); }
+			}).addtip({
 				tiptitle: i18next.t( "shipstat" ),
 				tipdesc: i18next.t( "shipstat_desc" ),
-				img: "/img/icons/ui/" + __data.keys.ship + ".png",
-				target: __sels.ships.closest( ".bgtablesummar" )
 			});
+			/* Creating char stat option */
 			__method.confLine({
 				addTo: setfilt,
 				parameter: "charstat",
+				img: "/img/icons/ui/" + __data.keys.chars + ".png",
+				onclick: function() { __sels.charac.closest( ".bgtablesummar" ).toggle( "blind", 500 ); }
+			}).addtip({
 				tiptitle: i18next.t( "charstat" ),
 				tipdesc: i18next.t( "charstat_desc" ),
-				img: "/img/icons/ui/" + __data.keys.chars + ".png",
-				target: __sels.charac.closest( ".bgtablesummar" )
 			});
+			/* Creating death stat option */
 			__method.confLine({
 				addTo: setfilt,
 				parameter: "deadstat",
+				img: "/img/icons/ui/" + __data.keys.death + ".png",
+				onclick: function() { __sels.deaths.closest( ".bgtablesummar" ).toggle( "blind", 500 ); }
+			}).addtip({
 				tiptitle: i18next.t( "deadstat" ),
 				tipdesc: i18next.t( "deadstat_desc" ),
-				img: "/img/icons/ui/" + __data.keys.death + ".png",
-				target: __sels.deaths.closest( ".bgtablesummar" )
 			});
 
 			__data.voyages.Qty = cdTripEntry.length;
-			__data.analysis.skip = 0;
+			// __data.analysis.skip = 0;
 
 			/* Creating start analysis button */
 			__method.button({
 				content: "<img src=\"/img/icons/ui/pa_comp.png\" style=\"height: 16px\"> " + i18next.t( "analyze" ),
 				onclick: function() {
+					var min = $( ".map-slider" ).slider( "values", 0 ),
+						max = $( ".map-slider" ).slider( "values", 1 );
 					__data.reset.call( __data.analysis );
 					$( "#start img" ).attr( "src", "/img/icons/ui/loading1.gif" );
 					$( "#map .column2 .data .boxContent > ul" ).empty();
-					for ( var i = 0; i < cdTripEntry.length + 1; i++ ) {
+					__data.analysis.skip = __data.voyages.Qty - ( max - min );
+					for ( var i = min; i < max; i++ ) {
 						/* Skip "min" first ships */
-						if ( i < $( ".map-slider" ).slider( "values", 0 ) ) continue;
+//						if ( i < min ) continue;
 						/* Skip "max" last ships */
-						else if ( i > $( ".map-slider" ).slider( "values", 1 ) - 1 ) {
-							$( "#start img" ).attr( "src", "/img/icons/ui/pa_comp.png" );
-							__method.display.call( __method );
-							__data.analysis.Qty = 0;
-							break;
-						}
-
-						__method.setup( cdTripEntry[ i ], i );
+//						else if ( i > max ) break;
+						__method.setup( cdTripEntry[ i ] );
 					}
 				},
+			}).addtip({
 				tiptitle: i18next.t( "analyze" ),
 				tipdesc: i18next.t( "analyze_desc" )
 			}).attr("id", "start").appendTo( setfilt );
 
-	/*		wait = setTimeout( function() {
+			wait = setTimeout( function() {
 				__method.display.call( __method );
+				$( "#start img" ).attr( "src", "/img/icons/ui/pa_comp.png" );
+				throw "ERROR: Time limit exceeded.";
 			}, 20000 );
-	*/	}
+		}
 	};
 
 	MAP.init();
