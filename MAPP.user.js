@@ -247,6 +247,9 @@
 			$( "<img>" )
 				.attr( "src", "/img/design/switch.png" )
 				.addClass( "mask inl-blck" )
+				.addClass( function() {
+					if ( args.value ) return "opt_act";
+				})
 				.appendTo( yesnoblock );
 			return div;
 		},
@@ -259,93 +262,94 @@
 			/* Load voyages from local data */
 			__voyages[ shipID ] = JSON.parse( localStorage.getItem( "MAP_" + shipID ) );
 
-			// TODO: Arreglar el conteo de análisis en caso de que entre en estas condiciones.
-			if ( __param.human === false ) {
-				if ( __voyages[ shipID ][ heroID ].MC === 0 ) return false;
+			statements: {
+				if ( __param.human === false ) {
+					if ( __voyages[ shipID ][ heroID ].MC === 0 ) break statements;
+				}
+				if ( __param.mush === false ) {
+					if ( __voyages[ shipID ][ heroID ].MC > 0 ) break statements;
+				}
+				if ( __param.casting === false ) {
+					if ( __voyages[ shipID ].ST == "casting" ) break statements;
+				}
+				if ( __param.random === false ) {
+					if ( __voyages[ shipID ].ST == "random" ) break statements;
+				}
+
+				/* Heroes' used list */
+				if ( __analysis.heroName ) {
+					if ( __analysis.heroName[ heroID] > 0 ) __analysis.heroName[ heroID ]++;
+					else __analysis.heroName[ heroID ] = 1;
+				} else __analysis.heroName = {};
+
+				/* Human Cycles (HC) */
+				__heroes[ heroID ].HC = ( __heroes[ heroID ].HC > 0 ) ? __heroes[ heroID ].HC + ( +__voyages[ shipID ][ heroID ].HC ) : +__voyages[ shipID ][ heroID ].HC;
+
+				/* Mush Cycles (MC) */
+				__heroes[ heroID ].MC = ( __heroes[ heroID ].MC > 0 ) ? __heroes[ heroID ].MC + ( +__voyages[ shipID ][ heroID ].MC ) : +__voyages[ shipID ][ heroID ].MC;
+
+				/* Hunters defeated (HD) */
+				if ( __analysis.HD < __voyages[ shipID ].HD ) __analysis.HD = __voyages[ shipID ].HD;
+				__analysis.tot_HD += __voyages[ shipID ].HD;
+
+				/* Spores generated (SG) */
+				if ( __analysis.SG < __voyages[ shipID ].SG ) __analysis.SG = __voyages[ shipID ].SG;
+				__analysis.tot_SG += __voyages[ shipID ].SG;
+
+				/* Number of Mush (NM) */
+				if ( __analysis.NM < __voyages[ shipID ].NM ) __analysis.NM = __voyages[ shipID ].NM;
+				__analysis.tot_NM += __voyages[ shipID ].NM;
+
+				/* Rebel bases contacted (RB) */
+				if ( __analysis.RB < __voyages[ shipID ].RB ) __analysis.RB = __voyages[ shipID ].RB;
+				__analysis.tot_RB += __voyages[ shipID ].RB;
+
+				/* Get character name */
+				__voyages[ shipID ].heroName = cdTripEntry.children[ 0 ].textContent.trim();
+
+				/* Heroes' voyages number (VN) */
+				__heroes[ heroID ].VN = ( __heroes[ heroID ].VN > 0 ) ? __heroes[ heroID ].VN + 1 : 1;
+
+				/* Get ship max and total days */
+				// __voyages[ shipID ].days = + cdTripEntry.children[ 1 ].textContent;
+				// __analysis.tot_days += __voyages[ shipID ].days;
+				var n = __voyages[ shipID ].days = ( __voyages[ shipID ][ heroID ].HC + __voyages[ shipID ][ heroID ].MC ) / 8;
+				if ( __analysis.days < n ) __analysis.days = parseFloat( Math.floor( n ) + "." + (( n * 8 ) % 8 ));
+				__analysis.tot_days += ( __voyages[ shipID ][ heroID ].HC + __voyages[ shipID ][ heroID ].MC ) / 8;
+
+				/* Get explorations number and total */
+				__voyages[ shipID ].explo = + cdTripEntry.children[ 2 ].textContent;
+				if ( __analysis.explo < __voyages[ shipID ].explo ) __analysis.explo = __voyages[ shipID ].explo;
+				__analysis.tot_explo += __voyages[ shipID ].explo;
+
+				/* Get researches number and total */
+				__voyages[ shipID ].rsrch = + cdTripEntry.children[ 3 ].textContent;
+				if ( __analysis.rsrch < __voyages[ shipID ].rsrch ) __analysis.rsrch = __voyages[ shipID ].rsrch;
+				__analysis.tot_rsrch += __voyages[ shipID ].rsrch;
+
+				/* Get Neron projects number and total */
+				__voyages[ shipID ].proj = + cdTripEntry.children[ 4 ].textContent;
+				if ( __analysis.proj < __voyages[ shipID ].proj ) __analysis.proj = __voyages[ shipID ].proj;
+				__analysis.tot_proj += __voyages[ shipID ].proj;
+
+				/* Get planets scanned number and total */
+				__voyages[ shipID ].scann = + cdTripEntry.children[ 5 ].textContent;
+				if ( __analysis.scann < __voyages[ shipID ].scann ) __analysis.scann = __voyages[ shipID ].scann;
+				__analysis.tot_scann += __voyages[ shipID ].scann;
+
+				/* Get titles at the end of the ship:
+				 * title_01 (Commander), title_02 (Neron Admin), title_03 (COM Officer) */
+				__voyages[ shipID ].title = cdTripEntry.children[ 6 ].innerHTML.match( /title_\d\d/g );
+
+				/* Get glory quantity at the end of the ship and total */
+				__voyages[ shipID ].glory = parseInt( cdTripEntry.children[ 7 ].textContent );
+				if ( __analysis.glory < __voyages[ shipID ].glory ) __analysis.glory = __voyages[ shipID ].glory;
+				__analysis.tot_glory += __voyages[ shipID ].glory;
+
+				/* Get cause of death */
+				var cod = __voyages[ shipID ].death = cdTripEntry.children[ 8 ].textContent;
+				__analysis.death[ cod ] = ( __analysis.death[ cod ] > 0 ) ? __analysis.death[ cod ] + 1 : 1;
 			}
-			if ( __param.mush === false ) {
-				if ( __voyages[ shipID ][ heroID ].MC > 0 ) return false;
-			}
-			if ( __param.casting === false ) {
-				if ( __voyages[ shipID ].ST == "casting" ) return false;
-			}
-			if ( __param.random === false ) {
-				if ( __voyages[ shipID ].ST == "random" ) return false;
-			}
-
-			/* Heroes' used list */
-			if ( __analysis.heroName ) {
-				if ( __analysis.heroName[ heroID] > 0 ) __analysis.heroName[ heroID ]++;
-				else __analysis.heroName[ heroID ] = 1;
-			} else __analysis.heroName = {};
-
-			/* Human Cycles (HC) */
-			__heroes[ heroID ].HC = ( __heroes[ heroID ].HC > 0 ) ? __heroes[ heroID ].HC + ( +__voyages[ shipID ][ heroID ].HC ) : +__voyages[ shipID ][ heroID ].HC;
-
-			/* Mush Cycles (MC) */
-			__heroes[ heroID ].MC = ( __heroes[ heroID ].MC > 0 ) ? __heroes[ heroID ].MC + ( +__voyages[ shipID ][ heroID ].MC ) : +__voyages[ shipID ][ heroID ].MC;
-
-			/* Hunters defeated (HD) */
-			if ( __analysis.HD < __voyages[ shipID ].HD ) __analysis.HD = __voyages[ shipID ].HD;
-			__analysis.tot_HD += __voyages[ shipID ].HD;
-
-			/* Spores generated (SG) */
-			if ( __analysis.SG < __voyages[ shipID ].SG ) __analysis.SG = __voyages[ shipID ].SG;
-			__analysis.tot_SG += __voyages[ shipID ].SG;
-
-			/* Number of Mush (NM) */
-			if ( __analysis.NM < __voyages[ shipID ].NM ) __analysis.NM = __voyages[ shipID ].NM;
-			__analysis.tot_NM += __voyages[ shipID ].NM;
-
-			/* Rebel bases contacted (RB) */
-			if ( __analysis.RB < __voyages[ shipID ].RB ) __analysis.RB = __voyages[ shipID ].RB;
-			__analysis.tot_RB += __voyages[ shipID ].RB;
-
-			/* Get character name */
-			__voyages[ shipID ].heroName = cdTripEntry.children[ 0 ].textContent.trim();
-
-			/* Heroes' voyages number (VN) */
-			__heroes[ heroID ].VN = ( __heroes[ heroID ].VN > 0 ) ? __heroes[ heroID ].VN + 1 : 1;
-
-			/* Get ship max and total days */
-			// __voyages[ shipID ].days = + cdTripEntry.children[ 1 ].textContent;
-			// __analysis.tot_days += __voyages[ shipID ].days;
-			var n = __voyages[ shipID ].days = ( __voyages[ shipID ][ heroID ].HC + __voyages[ shipID ][ heroID ].MC ) / 8;
-			if ( __analysis.days < n ) __analysis.days = parseFloat( Math.floor( n ) + "." + (( n * 8 ) % 8 ));
-			__analysis.tot_days += ( __voyages[ shipID ][ heroID ].HC + __voyages[ shipID ][ heroID ].MC ) / 8;
-
-			/* Get explorations number and total */
-			__voyages[ shipID ].explo = + cdTripEntry.children[ 2 ].textContent;
-			if ( __analysis.explo < __voyages[ shipID ].explo ) __analysis.explo = __voyages[ shipID ].explo;
-			__analysis.tot_explo += __voyages[ shipID ].explo;
-
-			/* Get researches number and total */
-			__voyages[ shipID ].rsrch = + cdTripEntry.children[ 3 ].textContent;
-			if ( __analysis.rsrch < __voyages[ shipID ].rsrch ) __analysis.rsrch = __voyages[ shipID ].rsrch;
-			__analysis.tot_rsrch += __voyages[ shipID ].rsrch;
-
-			/* Get Neron projects number and total */
-			__voyages[ shipID ].proj = + cdTripEntry.children[ 4 ].textContent;
-			if ( __analysis.proj < __voyages[ shipID ].proj ) __analysis.proj = __voyages[ shipID ].proj;
-			__analysis.tot_proj += __voyages[ shipID ].proj;
-
-			/* Get planets scanned number and total */
-			__voyages[ shipID ].scann = + cdTripEntry.children[ 5 ].textContent;
-			if ( __analysis.scann < __voyages[ shipID ].scann ) __analysis.scann = __voyages[ shipID ].scann;
-			__analysis.tot_scann += __voyages[ shipID ].scann;
-
-			/* Get titles at the end of the ship:
-			 * title_01 (Commander), title_02 (Neron Admin), title_03 (COM Officer) */
-			__voyages[ shipID ].title = cdTripEntry.children[ 6 ].innerHTML.match( /title_\d\d/g );
-
-			/* Get glory quantity at the end of the ship and total */
-			__voyages[ shipID ].glory = parseInt( cdTripEntry.children[ 7 ].textContent );
-			if ( __analysis.glory < __voyages[ shipID ].glory ) __analysis.glory = __voyages[ shipID ].glory;
-			__analysis.tot_glory += __voyages[ shipID ].glory;
-
-			/* Get cause of death */
-			var cod = __voyages[ shipID ].death = cdTripEntry.children[ 8 ].textContent;
-			__analysis.death[ cod ] = ( __analysis.death[ cod ] > 0 ) ? __analysis.death[ cod ] + 1 : 1;
 
 			// localStorage.removeItem("MAP_" + shipID);
 			// console.group( "- localStorage " + shipID );
@@ -355,7 +359,6 @@
 
 			++__analysis.Qty;
 			var check = __analysis.Qty + __analysis.skip;
-			console.warn( "Analysis: " + check );
 			if ( __voyages.Qty == check ) {
 				clearTimeout( wait );
 				$( "#start img" ).attr( "src", "/img/icons/ui/pa_comp.png" );
@@ -595,6 +598,7 @@
 			var ch = __method.confLine({
 				addTo: setfilt,
 				parameter: "human",
+				value: true,
 				// img: "/img/icons/ui/whos_ugly.png",
 				img: "/img/icons/skills/optimistic.png",
 				onclick: function() {
@@ -612,6 +616,7 @@
 			var cm = __method.confLine({
 				addTo: setfilt,
 				parameter: "mush",
+				value: true,
 				// img: "/img/icons/ui/no_mush_bar.png",
 				img: "/img/icons/skills/anonymous.png",
 				onclick: function() {
@@ -629,6 +634,7 @@
 			var cc = __method.confLine({
 				addTo: setfilt,
 				parameter: "casting",
+				value: true,
 				// img: "/img/icons/ui/ticket_any.png",
 				img: "/img/icons/ui/ticket.png",
 				onclick: function() {
@@ -646,6 +652,7 @@
 			var cr = __method.confLine({
 				addTo: setfilt,
 				parameter: "random",
+				value: true,
 				img: "/img/icons/ui/freeticket.png",
 				onclick: function() {
 					var a = $( this ).children( "img:last" ), b = cc.children( ".yesnoblock" ).children( "img:last" );
