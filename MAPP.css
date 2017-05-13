@@ -96,7 +96,7 @@
 	background-color: #FCF5C2;
 	padding: 8px 6px !important;
 }
-/* Blue Medal */
+/* Blue & Ruby Medals */
 #map .bluemedal {
 	border-color: #A6EEFB #01c3df #01c3df #01c3df;
 	-moz-box-shadow: inset 0px 0px 4px #3965fb, 0px 0px 4px #3965fb, 0px 2px 4px #3965fb;
@@ -105,7 +105,16 @@
 	background-color: #c2f3fc;
 	/*height: 95px;*/
 }
-#map .bluemedal .bodychar {
+#map .rubymedal {
+	border-color: #FBA6B0 #DF011C #DF0125 #DF011C;
+	-moz-box-shadow: inset 0px 0px 4px #FB3939, 0px 0px 4px #FB3939, 0px 2px 4px #FB3939;
+	-webkit-box-shadow: inset 0px 0px 4px #FB3939, 0px 0px 4px #FB3939, 0px 2px 4px #FB3939;
+	box-shadow: inset 0px 0px 4px #FB3939, 0px 0px 4px #FB3939, 0px 2px 4px #FB3939;
+	background-color: #FCC2C9;
+	min-height: 92px;
+}
+#map .bluemedal .bodychar,
+#map .rubymedal .bodychar {
 	margin-left: calc( 50% - 14px );
 	position: relative;
 	opacity: 1;
@@ -114,25 +123,18 @@
 	background: url('http://mush.twinoid.es/img/art/char.png') no-repeat;
 	/*z-index: 4;*/
 }
-#map .bluemedal > div:nth-child(2) {
+#map .bluemedal > div:nth-child(2),
+#map .rubymedal > div:nth-child(2) {
 	position: relative;
 	height: 0px;
 	/*width: 90px;*/
 	top: -28px;
 	/*z-index: 4;*/
 }
-#map .bluemedal > div:nth-child(3) {
+#map .bluemedal > div:nth-child(3),
+#map .rubymedal > div:nth-child(3) {
 	position: relative;
 	/*top: -17px;*/
-}
-/* Ruby Medal */
-#map .rubymedal {
-	border-color: #FBA6B0 #DF011C #DF0125 #DF011C;
-	-moz-box-shadow: inset 0px 0px 4px #FB3939, 0px 0px 4px #FB3939, 0px 2px 4px #FB3939;
-	-webkit-box-shadow: inset 0px 0px 4px #FB3939, 0px 0px 4px #FB3939, 0px 2px 4px #FB3939;
-	box-shadow: inset 0px 0px 4px #FB3939, 0px 0px 4px #FB3939, 0px 2px 4px #FB3939;
-	background-color: #FCC2C9;
-	min-height: 92px;
 }
 /* Death Medal */
 #map .deathmedal {
