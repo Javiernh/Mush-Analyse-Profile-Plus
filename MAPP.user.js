@@ -225,7 +225,7 @@
 			/* Selector same as casting selecting options */
 			var __method = this, args = arguments[ 0 ];
 
-			var param = __method.data.parameters[ args.parameter ] = false;
+			var param = __method.data.parameters[ args.parameter ] = args.value;
 			var div = $( "<div>" )
 					.addClass( "confLine" )
 					.appendTo( args.addTo );
@@ -425,12 +425,11 @@
 
 		createMedal: function( medal, img, key ) {
 			// console.debug( "Entering 'createMedal' function." );
-			var __voyages = this.data.voyages, __analysis = this.data.analysis, __heroes = __analysis.heroes,
-				div = $( "<li>" ).addClass( medal );
+			var __data =  this.data, __voyages = this.data.voyages, __analysis = this.data.analysis, __heroes = __analysis.heroes,
+				div = $( "<li>" );
 				//div = $( "<div>" ).appendTo( li );
 			switch ( medal ) {
 				case "goldmedal":
-					/* .css( { "width": "26px", "height" : "26px" } ) */
 					$( "<img>" ).attr( "src", "/img/icons/ui/" + img + ".png" ).appendTo( div );
 					$( "</br>" ).appendTo( div );
 					$( "<strong>" ).addClass( "li_title" ).text( i18next.t( key ) ).appendTo( div );
@@ -449,10 +448,16 @@
 						hero = $( "<div>" ).appendTo( div );
 					$( "<strong>" ).addClass( "li_title" ).text( character.capitalize() ).appendTo( hero );
 					var stats = $( "<div>" ).appendTo( div );
-					$( "<p>" ).text( i18next.t( "cycles" ) + ( __heroes[ heroID ].HC /* + __heroes[ heroID ].MC */ ) ).appendTo( stats );
-					/* Separate HC and MC */
-					// $( "<p>" ).text( i18next.t( "hcycles" ) + ( __heroes[ heroID ].HC /* + __heroes[ heroID ].MC */ ) ).appendTo( stats );
-					// $( "<p>" ).text( i18next.t( "mcycles" ) + ( __heroes[ heroID ].MC /* + __heroes[ heroID ].HC */ ) ).appendTo( stats );
+					/* Number of Cycles ( Human / Mush ) */
+					if ( __data.parameters.mush && !__data.parameters.human ) {
+						$( "<p>" ).text( i18next.t( "cycles" ) + ( __heroes[ heroID ].MC ) ).appendTo( stats );
+					} else if ( __data.parameters.mush && __data.parameters.human ) {
+						medal = ( __heroes[ heroID ].MC > __heroes[ heroID ].HC ) ? "rubymedal" : medal;
+						$( "<p>" ).text( i18next.t( "cycles" ) + ( __heroes[ heroID ].HC + __heroes[ heroID ].MC ) ).appendTo( stats );
+					} else {
+						$( "<p>" ).text( i18next.t( "cycles" ) + ( __heroes[ heroID ].HC /* + __heroes[ heroID ].MC */ ) ).appendTo( stats );
+					}
+					/* Number of voyages */
 					$( "<p>" ).text( i18next.t( "voyages" ) + __heroes[ heroID ].VN ).appendTo( stats );
 					var bAvg = $( "<p>" ).appendTo( stats );
 					$( "<em>" ).text( (( __heroes[ heroID ].VN / __analysis.Qty ) * 100 ).toFixed( 2 ) + "%" ).appendTo( bAvg );
@@ -464,7 +469,7 @@
 					$( "<strong>" ).text( death ).appendTo( dead );
 			}
 			// return li;
-			return div;
+			return div.addClass( medal );
 		},
 
 		keysSortedBy: function( order, sortedBy ) {
@@ -504,8 +509,11 @@
 			var arr_heroName = __method.keysSortedBy.call( __analysis.heroes, "desc", "VN" );
 			for ( var hero in arr_heroName ) {
 				if ( __analysis.heroes[ arr_heroName[ hero ] ].VN === undefined ) continue;
-				var bluemedal = __method.createMedal( "bluemedal", __data.heroes[ arr_heroName[ hero ]], arr_heroName[ hero ] );
-				bluemedal.appendTo( __sels.charac );
+				var charmedal = ( __data.parameters.mush && !__data.parameters.human ) ?
+				__method.createMedal( "rubymedal", __data.heroes[ arr_heroName[ hero ]], arr_heroName[ hero ] ):
+				__method.createMedal( "bluemedal", __data.heroes[ arr_heroName[ hero ]], arr_heroName[ hero ] );
+				// var bluemedal = __method.createMedal( "bluemedal", __data.heroes[ arr_heroName[ hero ]], arr_heroName[ hero ] );
+				charmedal.appendTo( __sels.charac );
 			}
 
 			/* Create ruby medals */
@@ -630,6 +638,23 @@
 				tiptitle: i18next.t( "mush" ),
 				tipdesc: i18next.t( "mush_desc" ),
 			});
+			/* Creating random filter */
+			var cr = __method.confLine({
+				addTo: setfilt,
+				parameter: "random",
+				value: true,
+				img: "/img/icons/ui/freeticket.png",
+				onclick: function() {
+					var a = $( this ).children( "img:last" ), b = cc.children( ".yesnoblock" ).children( "img:last" );
+					if ( !a.is( ".opt_act" ) && !b.is( ".opt_act" ) ) {
+						b.toggleClass( "opt_act" );
+						__method.data.parameters.casting = b.is( ".opt_act" );
+					}
+				}
+			}).addtip({
+				tiptitle: i18next.t( "random" ),
+				tipdesc: i18next.t( "random_desc" ),
+			});
 			/* Creating casting filter */
 			var cc = __method.confLine({
 				addTo: setfilt,
@@ -648,27 +673,11 @@
 				tiptitle: i18next.t( "casting" ),
 				tipdesc: i18next.t( "casting_desc" ),
 			});
-			/* Creating random filter */
-			var cr = __method.confLine({
-				addTo: setfilt,
-				parameter: "random",
-				value: true,
-				img: "/img/icons/ui/freeticket.png",
-				onclick: function() {
-					var a = $( this ).children( "img:last" ), b = cc.children( ".yesnoblock" ).children( "img:last" );
-					if ( !a.is( ".opt_act" ) && !b.is( ".opt_act" ) ) {
-						b.toggleClass( "opt_act" );
-						__method.data.parameters.casting = b.is( ".opt_act" );
-					}
-				}
-			}).addtip({
-				tiptitle: i18next.t( "random" ),
-				tipdesc: i18next.t( "random_desc" ),
-			});
 			/* Creating ship stat option */
 			__method.confLine({
 				addTo: setfilt,
 				parameter: "shipstat",
+				value: false,
 				img: "/img/icons/ui/" + __data.keys.ship + ".png",
 				onclick: function() { __sels.ships.closest( ".bgtablesummar" ).toggle( "blind", 500 ); }
 			}).addtip({
@@ -679,6 +688,7 @@
 			__method.confLine({
 				addTo: setfilt,
 				parameter: "charstat",
+				value: false,
 				img: "/img/icons/ui/" + __data.keys.chars + ".png",
 				onclick: function() { __sels.charac.closest( ".bgtablesummar" ).toggle( "blind", 500 ); }
 			}).addtip({
@@ -689,6 +699,7 @@
 			__method.confLine({
 				addTo: setfilt,
 				parameter: "deadstat",
+				value: false,
 				img: "/img/icons/ui/" + __data.keys.death + ".png",
 				onclick: function() { __sels.deaths.closest( ".bgtablesummar" ).toggle( "blind", 500 ); }
 			}).addtip({
