@@ -17,12 +17,18 @@
 #map .column2 {
 	margin-left: 260px;
 }
+#map .col1 {
+	width: 80%;
+}
+#map .col2 {
+	width: 20%;
+}
 /* Box */
 #map .boxContent  {
 	padding: 10px;
 }
 #map input {
-	height: 22px;
+	height: 18px;
 	padding: 0px 4px;
 	/* text-align: center; */
 	background: transparent;
@@ -32,7 +38,7 @@
 	font-size: 15px;
 	color: #FEB500;
 	width: 50px;
-	margin-top: 0px;
+	margin-bottom: 1px;
 }
 #map .confLine {
 	width: 49px;
@@ -50,6 +56,9 @@
 }
 #map .yesnoblock > .opt_act {
 	margin-left: -26px;
+}
+#map .but {
+	width: 25%;
 }
 /* Medals */
 #map ul {
