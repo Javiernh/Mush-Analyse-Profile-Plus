@@ -2,6 +2,12 @@
 	max-width: 238px !important;
 	max-height: 65px !important;
 }
+.clearfix {
+	content: "";
+	clear: both;
+	display: table;
+	/*overflow: auto;*/
+}
 #container_bg {
 	min-height: 150px;
 }
@@ -19,13 +25,16 @@
 }
 #map .col1 {
 	width: 80%;
+	float: left;
 }
 #map .col2 {
 	width: 20%;
+	float: left;
 }
 /* Box */
 #map .boxContent  {
-	padding: 10px;
+	padding: 1%;
+	width: 98%;
 }
 #map input {
 	height: 18px;
@@ -56,9 +65,6 @@
 }
 #map .yesnoblock > .opt_act {
 	margin-left: -26px;
-}
-#map .but {
-	width: 25%;
 }
 /* Medals */
 #map ul {
