@@ -130,7 +130,7 @@
 }
 #map .bluemedal .bodychar,
 #map .rubymedal .bodychar {
-	margin-left: calc( 50% - 14px );
+	margin: 0 calc( 50% - 14px );
 	position: relative;
 	opacity: 1;
 	width: 28px;
