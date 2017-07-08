@@ -1,5 +1,6 @@
 .tid_bubble {
-	max-width: 238px !important;
+	max-width: 100% !important;
+	margin-left: 5px;
 	max-height: 65px !important;
 }
 .clearfix {
@@ -20,8 +21,17 @@
 	margin: 1%;
 	width: 98%;
 }
+#map .column {
+	/*position: absolute;*/
+	float: left;
+	margin-top: 20px;
+	width: 33.3%;
+}
 #map .column2 {
-	margin-left: 260px;
+	/*margin-left: 260px;*/
+	float: left;
+	margin-top: 20px;
+	width: 66.6%;
 }
 #map .col1 {
 	width: 80%;
@@ -138,8 +148,8 @@
 	background: url('http://mush.twinoid.es/img/art/char.png') no-repeat;
 	/*z-index: 4;*/
 }
-#map .bluemedal > div:nth-child(2),
-#map .rubymedal > div:nth-child(2) {
+#map .bluemedal > p:nth-child(2),
+#map .rubymedal > p:nth-child(2) {
 	position: relative;
 	height: 0px;
 	/*width: 90px;*/
@@ -181,9 +191,6 @@
 }
 #map td {
 	vertical-align: top;
-}
-#map .column {
-	position: absolute;
 }
 #map .column ul {
 	padding: 15px;
